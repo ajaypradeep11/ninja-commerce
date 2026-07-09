@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Put } from '@nestjs/common';
-import { User } from '@prisma/client';
+import type { User } from '@prisma/client';
 import { CurrentUser } from '../auth/current-user.decorator';
-import { AuthUser } from '../auth/auth.types';
+import type { AuthUser } from '../auth/auth.types';
 import { UpdateAddressesDto } from './dto/update-addresses.dto';
 import { UsersService } from './users.service';
 

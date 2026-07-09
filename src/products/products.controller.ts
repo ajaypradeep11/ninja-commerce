@@ -11,9 +11,9 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { Product } from '@prisma/client';
+import type { Product } from '@prisma/client';
 import { AdminGuard } from '../auth/admin.guard';
-import { AuthUser } from '../auth/auth.types';
+import type { AuthUser } from '../auth/auth.types';
 import { Public } from '../auth/public.decorator';
 import { AdjustStockDto } from './dto/adjust-stock.dto';
 import { CreateProductDto } from './dto/create-product.dto';
