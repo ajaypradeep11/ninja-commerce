@@ -27,7 +27,18 @@ function makeTx(): Tx {
   };
 }
 
-function completedEvent(): Stripe.Event {
+const shippingDetails = {
+  name: 'Ship To Person',
+  address: { country: 'CA', city: 'Toronto' },
+};
+const billingDetails = { address: { country: 'US' }, name: 'A B' };
+
+function completedEvent(
+  overrides: {
+    payment_status?: string;
+    collected_information?: unknown;
+  } = {},
+): Stripe.Event {
   return {
     id: 'evt_1',
     type: 'checkout.session.completed',
@@ -37,7 +48,10 @@ function completedEvent(): Stripe.Event {
         metadata: { orderId: 'o1' },
         payment_intent: 'pi_1',
         amount_total: 5000,
-        customer_details: { address: { country: 'US' }, name: 'A B' },
+        payment_status: 'paid',
+        customer_details: billingDetails,
+        collected_information: { shipping_details: shippingDetails },
+        ...overrides,
       },
     },
   } as unknown as Stripe.Event;
@@ -92,8 +106,21 @@ describe('WebhooksService', () => {
         status: 'PAID',
         stripePaymentIntentId: 'pi_1',
         totalCents: 5000,
+        shippingAddress: shippingDetails,
       }),
     });
+  });
+
+  it('does not mark the order paid when payment_status is not paid (e.g. pending async payment)', async () => {
+    tx.order.findUnique.mockResolvedValue({
+      id: 'o1',
+      status: 'PENDING',
+      subtotalCents: 5000,
+      items: [{ productId: 'p1', quantity: 2 }],
+    });
+    await service.handleEvent(completedEvent({ payment_status: 'unpaid' }));
+    expect(tx.product.updateMany).not.toHaveBeenCalled();
+    expect(tx.order.update).not.toHaveBeenCalled();
   });
 
   it('does not double-process an already-paid order', async () => {
@@ -144,7 +171,9 @@ describe('WebhooksService', () => {
     const event = {
       id: 'evt_3',
       type: 'charge.refunded',
-      data: { object: { id: 'ch_1', payment_intent: 'pi_1' } },
+      data: {
+        object: { id: 'ch_1', payment_intent: 'pi_1', refunded: true },
+      },
     } as unknown as Stripe.Event;
     await service.handleEvent(event);
     expect(tx.order.findFirst).toHaveBeenCalledWith({
@@ -159,6 +188,24 @@ describe('WebhooksService', () => {
       where: { id: 'o1' },
       data: { status: 'REFUNDED' },
     });
+  });
+
+  it('ignores partial refunds (charge.refunded === false)', async () => {
+    tx.order.findFirst.mockResolvedValue({
+      id: 'o1',
+      status: 'PAID',
+      items: [{ productId: 'p1', quantity: 2 }],
+    });
+    const event = {
+      id: 'evt_3b',
+      type: 'charge.refunded',
+      data: {
+        object: { id: 'ch_2', payment_intent: 'pi_1', refunded: false },
+      },
+    } as unknown as Stripe.Event;
+    await service.handleEvent(event);
+    expect(tx.product.updateMany).not.toHaveBeenCalled();
+    expect(tx.order.update).not.toHaveBeenCalled();
   });
 
   it('ignores unhandled event types without touching the db', async () => {

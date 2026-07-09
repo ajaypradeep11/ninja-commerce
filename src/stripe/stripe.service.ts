@@ -8,7 +8,9 @@ export class StripeService {
   private readonly webhookSecret: string;
 
   constructor(config: ConfigService) {
-    this.client = new Stripe(config.getOrThrow<string>('STRIPE_SECRET_KEY'));
+    this.client = new Stripe(config.getOrThrow<string>('STRIPE_SECRET_KEY'), {
+      apiVersion: '2026-06-24.dahlia',
+    });
     this.webhookSecret = config.getOrThrow<string>('STRIPE_WEBHOOK_SECRET');
   }
 

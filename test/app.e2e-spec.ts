@@ -121,6 +121,10 @@ describe('Ecommerce API (e2e)', () => {
   });
 
   it('webhook marks the order paid and decrements stock', async () => {
+    const shippingDetails = {
+      name: 'Ship To Person',
+      address: { country: 'CA', city: 'Toronto' },
+    };
     const event = {
       id: 'evt_e2e_1',
       type: 'checkout.session.completed',
@@ -130,7 +134,9 @@ describe('Ecommerce API (e2e)', () => {
           metadata: { orderId },
           payment_intent: 'pi_e2e_1',
           amount_total: 5000,
+          payment_status: 'paid',
           customer_details: { name: 'Cust Omer', address: { country: 'US' } },
+          collected_information: { shipping_details: shippingDetails },
         },
       },
     };
@@ -143,6 +149,7 @@ describe('Ecommerce API (e2e)', () => {
 
     const order = await prisma.order.findUnique({ where: { id: orderId } });
     expect(order?.status).toBe('PAID');
+    expect(order?.shippingAddress).toEqual(shippingDetails);
     const product = await prisma.product.findUnique({ where: { id: productId } });
     expect(product?.stockQty).toBe(8);
 

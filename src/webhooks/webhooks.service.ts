@@ -65,6 +65,12 @@ export class WebhooksService {
       this.logger.warn(`Session ${session.id} has no orderId metadata`);
       return;
     }
+    if (session.payment_status !== 'paid') {
+      this.logger.warn(
+        `Session ${session.id} for order ${orderId} has payment_status "${session.payment_status}" — not marking paid`,
+      );
+      return;
+    }
     const order = await tx.order.findUnique({
       where: { id: orderId },
       include: { items: true },
@@ -83,6 +89,13 @@ export class WebhooksService {
       }
     }
 
+    const shipping =
+      session.collected_information?.shipping_details ??
+      (session as unknown as { shipping_details?: unknown })
+        .shipping_details ??
+      session.customer_details ??
+      null;
+
     await tx.order.update({
       where: { id: orderId },
       data: {
@@ -92,7 +105,8 @@ export class WebhooksService {
             ? session.payment_intent
             : (session.payment_intent?.id ?? null),
         totalCents: session.amount_total ?? order.subtotalCents,
-        shippingAddress: (session.customer_details ?? {}) as object,
+        shippingAddress:
+          shipping === null ? Prisma.JsonNull : (shipping as object),
       },
     });
   }
@@ -118,6 +132,13 @@ export class WebhooksService {
         ? charge.payment_intent
         : charge.payment_intent?.id;
     if (!paymentIntentId) return;
+
+    if (!charge.refunded) {
+      this.logger.warn(
+        `Partial refund on ${charge.id} — order left unchanged, manual review`,
+      );
+      return;
+    }
 
     const order = await tx.order.findFirst({
       where: { stripePaymentIntentId: paymentIntentId },
