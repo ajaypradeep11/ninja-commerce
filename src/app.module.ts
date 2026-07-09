@@ -12,6 +12,7 @@ import { ProductsModule } from './products/products.module';
 import { StripeModule } from './stripe/stripe.module';
 import { CheckoutModule } from './checkout/checkout.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
+import { OrdersModule } from './orders/orders.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { WebhooksModule } from './webhooks/webhooks.module';
     StripeModule,
     CheckoutModule,
     WebhooksModule,
+    OrdersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

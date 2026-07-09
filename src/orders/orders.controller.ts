@@ -1,0 +1,53 @@
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
+import type { Order } from '@prisma/client';
+import { AdminGuard } from '../auth/admin.guard';
+import type { AuthUser } from '../auth/auth.types';
+import { CurrentUser } from '../auth/current-user.decorator';
+import { ListOrdersQuery } from './dto/list-orders.query';
+import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
+import { OrdersService } from './orders.service';
+
+@Controller('orders')
+export class OrdersController {
+  constructor(private readonly orders: OrdersService) {}
+
+  @Get('me')
+  findMine(@CurrentUser() user: AuthUser) {
+    return this.orders.findForUser(user.uid);
+  }
+
+  @UseGuards(AdminGuard)
+  @Get()
+  findAll(@Query() query: ListOrdersQuery) {
+    return this.orders.findAll(query);
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string, @CurrentUser() user: AuthUser) {
+    return this.orders.findOne(id, user);
+  }
+
+  @UseGuards(AdminGuard)
+  @Patch(':id/status')
+  updateStatus(
+    @Param('id') id: string,
+    @Body() dto: UpdateOrderStatusDto,
+  ): Promise<Order> {
+    return this.orders.updateStatus(id, dto.status);
+  }
+
+  @UseGuards(AdminGuard)
+  @Post(':id/refund')
+  refund(@Param('id') id: string): Promise<{ refundId: string }> {
+    return this.orders.refund(id);
+  }
+}
