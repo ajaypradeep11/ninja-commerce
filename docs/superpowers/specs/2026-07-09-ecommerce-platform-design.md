@@ -36,7 +36,7 @@ NestJS owns all data and all Stripe interaction: checkout session creation, webh
 - **Category** — name, slug, sortOrder.
 - **Order** — userId, email, shipping address, stripeSessionId, stripePaymentIntentId, status, line-items snapshot (product name + unit price copied at purchase time so later product edits don't rewrite history), totals.
   - Status flow: `pending → paid → shipped → delivered`; terminal branches `cancelled`, `refunded`.
-- **Review** — productId, userId, rating (1–5), text. One review per user per product; only permitted after the user has a delivered/paid order containing that product.
+- **Review** — productId, userId, rating (1–5), text. One review per user per product; only permitted after the user has an order containing that product in status `paid` or later (shipped/delivered).
 - **User** — Firebase UID (primary identity), email, role (`customer` | `admin`), saved addresses.
 
 ## Auth
