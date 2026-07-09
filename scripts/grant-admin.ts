@@ -4,8 +4,7 @@
  *
  * Usage: npm run grant-admin -- admin@example.com
  */
-import * as admin from 'firebase-admin';
-import { initializeApp } from 'firebase-admin/app';
+import { applicationDefault, initializeApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 
 async function main(): Promise<void> {
@@ -15,7 +14,7 @@ async function main(): Promise<void> {
     process.exit(1);
   }
   const app = initializeApp({
-    credential: (admin as any).credential.applicationDefault(),
+    credential: applicationDefault(),
   });
   const auth = getAuth(app);
   const user = await auth.getUserByEmail(email);
