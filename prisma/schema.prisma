@@ -1,0 +1,111 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+model Category {
+  id        String    @id @default(cuid())
+  name      String
+  slug      String    @unique
+  sortOrder Int       @default(0)
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Product {
+  id          String      @id @default(cuid())
+  name        String
+  slug        String      @unique
+  description String
+  priceCents  Int
+  images      String[]
+  stockQty    Int         @default(0)
+  active      Boolean     @default(true)
+  category    Category    @relation(fields: [categoryId], references: [id])
+  categoryId  String
+  reviews     Review[]
+  orderItems  OrderItem[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([categoryId])
+}
+
+model User {
+  id        String   @id // Firebase UID
+  email     String   @unique
+  role      Role     @default(CUSTOMER)
+  addresses Json     @default("[]")
+  orders    Order[]
+  reviews   Review[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Order {
+  id                    String      @id @default(cuid())
+  user                  User        @relation(fields: [userId], references: [id])
+  userId                String
+  email                 String
+  status                OrderStatus @default(PENDING)
+  stripeSessionId       String?     @unique
+  stripePaymentIntentId String?     @unique
+  shippingAddress       Json?
+  subtotalCents         Int
+  totalCents            Int?
+  items                 OrderItem[]
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}
+
+model OrderItem {
+  id         String  @id @default(cuid())
+  order      Order   @relation(fields: [orderId], references: [id])
+  orderId    String
+  product    Product @relation(fields: [productId], references: [id])
+  productId  String
+  name       String // snapshot at purchase time
+  priceCents Int // snapshot at purchase time
+  quantity   Int
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  rating    Int
+  text      String
+  createdAt DateTime @default(now())
+
+  @@unique([productId, userId])
+}
+
+model ProcessedStripeEvent {
+  id        String   @id // Stripe event id
+  type      String
+  createdAt DateTime @default(now())
+}

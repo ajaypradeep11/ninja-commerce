@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { AppService } from './app.service';
         FIREBASE_PROJECT_ID: Joi.string().required(),
       }),
     }),
+    PrismaModule,
   ],
   controllers: [AppController],
   providers: [AppService],
