@@ -11,6 +11,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
 import type { Product } from '@prisma/client';
 import { AdminGuard } from '../auth/admin.guard';
 import type { AuthUser } from '../auth/auth.types';
@@ -18,6 +19,7 @@ import { Public } from '../auth/public.decorator';
 import { AdjustStockDto } from './dto/adjust-stock.dto';
 import { CreateProductDto } from './dto/create-product.dto';
 import { ListProductsQuery } from './dto/list-products.query';
+import { PaginatedProductsDto, ProductResponseDto } from './dto/product-response.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import {
   PaginatedProducts,
@@ -31,6 +33,7 @@ export class ProductsController {
 
   @Public()
   @Get()
+  @ApiOkResponse({ type: PaginatedProductsDto })
   findAll(
     @Query() query: ListProductsQuery,
     @Req() req: { user?: AuthUser },
@@ -43,18 +46,23 @@ export class ProductsController {
 
   @Public()
   @Get(':slug')
+  @ApiOkResponse({ type: ProductResponseDto })
   findBySlug(@Param('slug') slug: string): Promise<ProductWithRating> {
     return this.products.findBySlug(slug);
   }
 
   @UseGuards(AdminGuard)
   @Post()
+  @ApiBearerAuth()
+  @ApiCreatedResponse({ type: ProductResponseDto })
   create(@Body() dto: CreateProductDto): Promise<Product> {
     return this.products.create(dto);
   }
 
   @UseGuards(AdminGuard)
   @Patch(':id/stock')
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: ProductResponseDto })
   adjustStock(
     @Param('id') id: string,
     @Body() dto: AdjustStockDto,
@@ -64,6 +72,8 @@ export class ProductsController {
 
   @UseGuards(AdminGuard)
   @Patch(':id')
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: ProductResponseDto })
   update(
     @Param('id') id: string,
     @Body() dto: UpdateProductDto,
@@ -73,6 +83,8 @@ export class ProductsController {
 
   @UseGuards(AdminGuard)
   @Delete(':id')
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: ProductResponseDto })
   deactivate(@Param('id') id: string): Promise<Product> {
     return this.products.deactivate(id);
   }
