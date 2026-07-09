@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { CategoryResponseDto } from '../../categories/dto/category-response.dto';
 
-export class ProductResponseDto {
+export class ProductBaseResponseDto {
   id!: string;
   name!: string;
   slug!: string;
@@ -13,6 +13,9 @@ export class ProductResponseDto {
   categoryId!: string;
   createdAt!: Date;
   updatedAt!: Date;
+}
+
+export class ProductResponseDto extends ProductBaseResponseDto {
   @ApiProperty({ type: Number, nullable: true })
   averageRating!: number | null;
   reviewCount!: number;
