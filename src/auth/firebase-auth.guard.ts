@@ -21,17 +21,33 @@ export class FirebaseAuthGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]);
-    if (isPublic) return true;
-
     const req = context
       .switchToHttp()
       .getRequest<{ headers: Record<string, string>; user?: AuthUser }>();
     const header = req.headers.authorization ?? '';
-    if (!header.startsWith('Bearer ')) {
+    const token = header.startsWith('Bearer ') ? header.slice(7) : null;
+
+    if (isPublic) {
+      if (token) {
+        try {
+          const decoded = await this.firebase.verifyIdToken(token);
+          req.user = {
+            uid: decoded.uid,
+            email: decoded.email ?? '',
+            admin: decoded.admin === true,
+          };
+        } catch {
+          // public route: ignore bad tokens
+        }
+      }
+      return true;
+    }
+
+    if (!token) {
       throw new UnauthorizedException('Missing bearer token');
     }
     try {
-      const decoded = await this.firebase.verifyIdToken(header.slice(7));
+      const decoded = await this.firebase.verifyIdToken(token);
       req.user = {
         uid: decoded.uid,
         email: decoded.email ?? '',
