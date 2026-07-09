@@ -73,6 +73,7 @@ describe('ProductsService', () => {
   });
 
   it('adjustStock guards against going negative', async () => {
+    prisma.product.findUnique.mockResolvedValue({ id: 'p1' });
     prisma.product.updateMany.mockResolvedValue({ count: 0 });
     await expect(service.adjustStock('p1', -5)).rejects.toBeInstanceOf(ConflictException);
     expect(prisma.product.updateMany).toHaveBeenCalledWith({
@@ -89,6 +90,12 @@ describe('ProductsService', () => {
       where: { id: 'p1' },
       data: { stockQty: { increment: 10 } },
     });
+  });
+
+  it('adjustStock 404s on unknown product', async () => {
+    prisma.product.findUnique.mockResolvedValue(null);
+    await expect(service.adjustStock('missing', 5)).rejects.toBeInstanceOf(NotFoundException);
+    expect(prisma.product.updateMany).not.toHaveBeenCalled();
   });
 
   it('deactivate sets active false', async () => {

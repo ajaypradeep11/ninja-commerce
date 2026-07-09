@@ -132,6 +132,12 @@ export class ProductsService {
   }
 
   async adjustStock(id: string, delta: number): Promise<Product> {
+    const exists = await this.prisma.product.findUnique({
+      where: { id },
+      select: { id: true },
+    });
+    if (!exists) throw new NotFoundException('Product not found');
+
     const where: Prisma.ProductWhereInput & { id: string } =
       delta < 0 ? { id, stockQty: { gte: -delta } } : { id };
     const result = await this.prisma.product.updateMany({
