@@ -40,7 +40,7 @@ ecommerce-admin/
 ## API prep (changes in `ecommerce-api`, done first)
 
 1. **Swagger response schemas** — enable the `@nestjs/swagger` CLI plugin in `nest-cli.json`; add response DTO classes for endpoints the admin consumes (products, categories, orders, paginated list wrappers) so the generated client gets real response types.
-2. **Admin access to inactive products** — `GET /products?includeInactive=true` (admin-guarded flag; public callers still get active-only), plus fetch-by-ID for the edit form.
+2. **Admin access to inactive products** — already exists as `GET /products?all=true` (admin-guarded flag). Add admin-guarded fetch-by-ID (`GET /products/id/:id`, returns inactive products too) for the edit form, and an `email` filter on `GET /orders` for order search.
 3. **Dashboard stats** — `GET /admin/stats` (admin-guarded) returning `{ ordersToday, lowStockProducts }`. "Orders today" = orders created since UTC midnight with status PAID or later; "low stock" = active products with `stockQty <= 5` (constant in the API, not configurable in v1).
 4. **OpenAPI export** — `npm run openapi:emit` writes `openapi.json` for the admin repo to generate from.
 5. **Emulator support** — API verifies emulator-issued tokens via `FIREBASE_AUTH_EMULATOR_HOST` (native Admin SDK behavior; config only).
@@ -58,9 +58,9 @@ ecommerce-admin/
 App shell behind the auth guard: sidebar (Dashboard / Products / Categories / Orders), header with user email + sign out.
 
 - **Dashboard** — two stat cards from `GET /admin/stats`; low-stock card links to the affected products.
-- **Products** — DataTable (name, category, price, stock, active, rating) with search, category filter, include-inactive toggle; row click → edit. Create/edit share one form: name, slug (auto from name, editable), description, price (entered as dollars, stored as cents), category select, stock, active toggle, image upload to Firebase Storage (URL array, drag-to-reorder). Deactivate = soft toggle with confirm; hard delete only for never-ordered products (API enforces).
+- **Products** — DataTable (name, category, price, stock, active, rating) with search, category filter, include-inactive toggle; row click → edit. Create/edit share one form: name, slug (auto from name, editable), description, price (entered as dollars, stored as cents), category select, stock, active toggle, image upload to Firebase Storage (URL array, drag-to-reorder). Deactivate/reactivate = the `active` toggle with confirm dialog; no hard delete in v1 (the API's DELETE endpoint deactivates).
 - **Categories** — table with inline create/rename, drag-to-reorder writing `sortOrder`, delete with confirm (API blocks deleting categories with products).
-- **Orders** — DataTable (order #, date, email, total, status badge), status filter + email search, paginated. Detail: line-item snapshot, shipping address, Stripe IDs, status timeline. Actions shown only when legal per PAID→SHIPPED→DELIVERED: **Mark shipped**, **Mark delivered**; **Refund** with confirm dialog stating the amount — status flips to REFUNDED when the webhook lands, UI shows "refund pending" and polls until then.
+- **Orders** — DataTable (order #, date, email, total, status badge), status filter + email search, paginated. Detail: line-item snapshot, shipping address, Stripe IDs, created/updated timestamps (no status-change history table in v1). Actions shown only when legal per PAID→SHIPPED→DELIVERED: **Mark shipped**, **Mark delivered**; **Refund** with confirm dialog stating the amount — status flips to REFUNDED when the webhook lands, UI shows "refund pending" and polls until then.
 
 ## Data flow
 
