@@ -43,3 +43,28 @@ test('network failure surfaces status 0', async () => {
   expect(err).toBeInstanceOf(ApiError);
   expect(err.status).toBe(0);
 });
+
+// Regression: Next.js marks a route dynamic (e.g. because a Server Component
+// fetch used `cache: 'no-store'`) by throwing a control-flow error carrying
+// `digest: 'DYNAMIC_SERVER_USAGE'`. The generated hey-api client swallows any
+// thrown error from the underlying fetch call and returns it as `{ error }`
+// instead of rethrowing it, so `unwrap` must detect and rethrow this specific
+// shape untouched rather than masking it as an ApiError — otherwise Next can
+// no longer recognize it and `next build` fails instead of rendering the
+// route dynamically.
+test('rethrows a Next.js dynamic-server-usage control-flow error untouched (result.error path)', async () => {
+  const dynamicError = Object.assign(new Error('Dynamic server usage: Route / ...'), {
+    digest: 'DYNAMIC_SERVER_USAGE',
+  });
+  const call = Promise.resolve({ data: undefined, error: dynamicError, response: undefined });
+  const err = await unwrap(call).catch((e) => e);
+  expect(err).toBe(dynamicError);
+});
+
+test('rethrows a Next.js dynamic-server-usage control-flow error untouched (thrown path)', async () => {
+  const dynamicError = Object.assign(new Error('Dynamic server usage: Route / ...'), {
+    digest: 'DYNAMIC_SERVER_USAGE',
+  });
+  const err = await unwrap(Promise.reject(dynamicError)).catch((e) => e);
+  expect(err).toBe(dynamicError);
+});
