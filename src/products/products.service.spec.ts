@@ -106,4 +106,35 @@ describe('ProductsService', () => {
       data: { active: false },
     });
   });
+
+  describe('findByIdAdmin', () => {
+    it('returns an inactive product with rating aggregates', async () => {
+      const product = {
+        id: 'p1',
+        name: 'Tee',
+        slug: 'tee',
+        active: false,
+        category: { id: 'c1' },
+      };
+      prisma.product.findUnique.mockResolvedValue(product);
+      prisma.review.groupBy.mockResolvedValue([
+        { productId: 'p1', _avg: { rating: 4 }, _count: { rating: 2 } },
+      ]);
+
+      const result = await service.findByIdAdmin('p1');
+
+      expect(prisma.product.findUnique).toHaveBeenCalledWith({
+        where: { id: 'p1' },
+        include: { category: true },
+      });
+      expect(result.averageRating).toBe(4);
+      expect(result.reviewCount).toBe(2);
+      expect(result.active).toBe(false);
+    });
+
+    it('throws NotFoundException when the product does not exist', async () => {
+      prisma.product.findUnique.mockResolvedValue(null);
+      await expect(service.findByIdAdmin('nope')).rejects.toThrow(NotFoundException);
+    });
+  });
 });

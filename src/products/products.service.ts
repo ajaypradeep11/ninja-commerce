@@ -92,6 +92,16 @@ export class ProductsService {
     return { items: await this.withRatings(products), total, page, pageSize };
   }
 
+  async findByIdAdmin(id: string): Promise<ProductWithRating> {
+    const product = await this.prisma.product.findUnique({
+      where: { id },
+      include: { category: true },
+    });
+    if (!product) throw new NotFoundException('Product not found');
+    const [withRating] = await this.withRatings([product]);
+    return withRating;
+  }
+
   async findBySlug(slug: string): Promise<ProductWithRating> {
     const product = await this.prisma.product.findUnique({
       where: { slug },

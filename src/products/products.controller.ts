@@ -48,6 +48,14 @@ export class ProductsController {
     return this.products.findAll(query, query.all === true);
   }
 
+  @UseGuards(AdminGuard)
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: ProductResponseDto })
+  @Get('id/:id')
+  findByIdAdmin(@Param('id') id: string): Promise<ProductWithRating> {
+    return this.products.findByIdAdmin(id);
+  }
+
   @Public()
   @Get(':slug')
   @ApiOkResponse({ type: ProductResponseDto })
