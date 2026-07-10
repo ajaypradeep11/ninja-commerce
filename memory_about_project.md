@@ -11,6 +11,7 @@
 - Design reference: https://www.nonasties.in (screenshots in `reference/nonasties-screenshots/`)
 - Subagent-driven development with per-task review; plans in `docs/superpowers/plans/`
 - Obsidian vault Memory folder: `~/MyEverything/Personal/Memory/` (this project's note: `Ecommerce Project Memory.md`)
+- GitHub mirror: `github.com/ajaypradeep11/ecommerce-generic` (**private**) — monorepo of meta docs + all three repos folded in via `git subtree` (2026-07-10, full history). Local repos stay separate/canonical. To update the mirror: clone it, then `git subtree pull --prefix=ecommerce-<name> ~/Work/Ecommerce/ecommerce-<name> master` per repo (+ plain merge for meta docs), push.
 
 ## Tech Stack
 | Layer | Choice |
