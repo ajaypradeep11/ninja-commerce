@@ -19,3 +19,14 @@ if (
     disableWarnings: true,
   });
 }
+
+if (
+  process.env.NODE_ENV === 'production' &&
+  process.env.NEXT_PUBLIC_USE_EMULATORS !== 'true' &&
+  typeof window !== 'undefined' &&
+  process.env.NEXT_PUBLIC_FIREBASE_API_KEY === 'fake-api-key'
+) {
+  console.error(
+    'Everloom misconfiguration: placeholder Firebase config reached a production runtime. Set real NEXT_PUBLIC_FIREBASE_* env vars in the hosting platform.',
+  );
+}
