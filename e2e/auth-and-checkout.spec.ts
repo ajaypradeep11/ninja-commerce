@@ -30,9 +30,9 @@ test.describe('auth', () => {
       await page.waitForURL(/checkout\.stripe\.com/, { timeout: 15_000 });
     } else {
       // Placeholder Stripe key on this machine → API returns 502 → UI shows
-      // a clean failure toast, no redirect, cart left untouched.
+      // the provider-error toast, no redirect, cart left untouched.
       await expect(
-        visibleText(page, 'Checkout failed. Try again.'),
+        visibleText(page, 'Payment provider error — please try again later'),
       ).toBeVisible({
         timeout: 10_000,
       });
