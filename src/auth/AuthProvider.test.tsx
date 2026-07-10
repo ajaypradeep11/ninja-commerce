@@ -75,4 +75,28 @@ describe('AuthProvider', () => {
     await act(async () => fire(null));
     expect(await screen.findByText(/signed-out/)).toBeInTheDocument();
   });
+
+  it('handles token refresh rejection gracefully', async () => {
+    let fire: (u: User | null) => void = () => {};
+    onAuthStateChangedMock.mockImplementation((_auth, cb) => {
+      fire = cb;
+      return () => {};
+    });
+    render(
+      <AuthProvider>
+        <Probe />
+      </AuthProvider>,
+    );
+    const failingUser = {
+      uid: 'u1',
+      getIdTokenResult: vi
+        .fn()
+        .mockRejectedValue(new Error('Network error')),
+    } as unknown as User;
+
+    await act(async () => fire(failingUser));
+    expect(
+      await screen.findByText('user:u1 admin:false'),
+    ).toBeInTheDocument();
+  });
 });

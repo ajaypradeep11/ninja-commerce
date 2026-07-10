@@ -31,9 +31,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
       // Force refresh so a freshly granted admin claim is visible after re-login.
-      void user.getIdTokenResult(true).then((token) => {
-        setState({ user, isAdmin: token.claims.admin === true, loading: false });
-      });
+      void user
+        .getIdTokenResult(true)
+        .then((token) => {
+          setState({
+            user,
+            isAdmin: token.claims.admin === true,
+            loading: false,
+          });
+        })
+        .catch(() => {
+          setState({ user, isAdmin: false, loading: false });
+        });
     });
   }, []);
 
