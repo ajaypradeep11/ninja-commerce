@@ -54,8 +54,7 @@ function errorCodeOf(error: unknown): string {
 // '/\evil.com' would otherwise resolve to the protocol-relative '//evil.com'.
 function safeNext(raw: string | null): string {
   if (!raw || raw[0] !== '/') return '/';
-  const second = raw[1];
-  if (second === '/' || second === '\\') return '/';
+  if (raw[1] === '/' || raw[1] === '\\' || /[\x00-\x1f]/.test(raw)) return '/';
   return raw;
 }
 

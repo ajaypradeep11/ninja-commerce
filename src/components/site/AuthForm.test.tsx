@@ -183,6 +183,22 @@ describe('AuthForm', () => {
     await waitFor(() => expect(replaceMock).toHaveBeenCalledWith('/'));
   });
 
+  it('rejects a control-char variant next value (tab-smuggling guard)', async () => {
+    // WHATWG URL parsing strips ASCII tab/CR/LF before parsing,
+    // so '/\t/evil.com' would pass through if only the first two
+    // characters were checked, decoding to '/<TAB>/evil.com'.
+    searchParams = new URLSearchParams({ next: '/\t/evil.com' });
+    signInWithEmailAndPasswordMock.mockResolvedValue({});
+    const user = userEvent.setup();
+    render(<AuthForm mode="login" />);
+
+    await user.type(screen.getByLabelText('Email'), 'shopper@example.com');
+    await user.type(screen.getByLabelText('Password'), 'password123');
+    await user.click(screen.getByRole('button', { name: 'Sign in' }));
+
+    await waitFor(() => expect(replaceMock).toHaveBeenCalledWith('/'));
+  });
+
   it('preserves the next param in the swap link', () => {
     searchParams = new URLSearchParams({ next: '/account' });
     render(<AuthForm mode="login" />);
