@@ -29,7 +29,7 @@ export function Footer() {
               </Link>
             </li>
             <li>
-              <Link href="/shipping" className="text-ink hover:text-indigo">
+              <Link href="/shipping-returns" className="text-ink hover:text-indigo">
                 Shipping &amp; returns
               </Link>
             </li>
