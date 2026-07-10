@@ -37,9 +37,13 @@ async function main(): Promise<void> {
   const tee = await prisma.product.upsert({
     where: { slug: 'organic-cotton-tee' },
     update: {
-      images: imgs('organic-cotton-tee'),
+      name: 'Organic Cotton Tee',
       description:
         'A mid-weight everyday tee in 100% GOTS-certified organic cotton. Pre-washed so it keeps its shape, wash after wash.',
+      priceCents: 2900,
+      images: imgs('organic-cotton-tee'),
+      stockQty: 40,
+      categoryId: tees.id,
     },
     create: {
       name: 'Organic Cotton Tee',
@@ -55,9 +59,13 @@ async function main(): Promise<void> {
   const hoodie = await prisma.product.upsert({
     where: { slug: 'heavyweight-hoodie' },
     update: {
-      images: imgs('heavyweight-hoodie'),
+      name: 'Heavyweight Hoodie',
       description:
         'A brushed-fleece hoodie in a heavier 400gsm organic cotton blend. Relaxed fit, dropped shoulder, and a kangaroo pocket built for cold mornings.',
+      priceCents: 7900,
+      images: imgs('heavyweight-hoodie'),
+      stockQty: 3, // low stock on purpose (threshold is 5)
+      categoryId: hoodies.id,
     },
     create: {
       name: 'Heavyweight Hoodie',
@@ -73,9 +81,13 @@ async function main(): Promise<void> {
   await prisma.product.upsert({
     where: { slug: 'retired-crewneck' },
     update: {
-      images: imgs('retired-crewneck'),
+      name: 'Retired Crewneck',
       description:
         'A discontinued colourway of our standard crewneck. Same 350gsm organic fleece, no longer in production.',
+      priceCents: 5900,
+      images: imgs('retired-crewneck'),
+      stockQty: 0,
+      categoryId: hoodies.id,
     },
     create: {
       name: 'Retired Crewneck',
@@ -92,7 +104,15 @@ async function main(): Promise<void> {
 
   await prisma.product.upsert({
     where: { slug: 'boxy-tee-ecru' },
-    update: {},
+    update: {
+      name: 'Boxy Tee — Ecru',
+      description:
+        'A boxier, cropped cut of our house tee in undyed ecru organic cotton. Dropped shoulders and a wider body for an off-duty fit.',
+      priceCents: 3200,
+      images: imgs('boxy-tee-ecru'),
+      stockQty: 25,
+      categoryId: tees.id,
+    },
     create: {
       name: 'Boxy Tee — Ecru',
       slug: 'boxy-tee-ecru',
@@ -106,7 +126,15 @@ async function main(): Promise<void> {
   });
   await prisma.product.upsert({
     where: { slug: 'longsleeve-indigo' },
-    update: {},
+    update: {
+      name: 'Longsleeve — Indigo',
+      description:
+        'A long-sleeve tee in a garment-dyed indigo that fades gently with every wash. Ribbed crew neck, same organic cotton jersey as the rest of the line.',
+      priceCents: 3900,
+      images: imgs('longsleeve-indigo'),
+      stockQty: 18,
+      categoryId: tees.id,
+    },
     create: {
       name: 'Longsleeve — Indigo',
       slug: 'longsleeve-indigo',
@@ -120,7 +148,15 @@ async function main(): Promise<void> {
   });
   await prisma.product.upsert({
     where: { slug: 'pocket-tee-madder' },
-    update: {},
+    update: {
+      name: 'Pocket Tee — Madder',
+      description:
+        'A chest-pocket tee dyed with madder root for a warm, earthy red that varies slightly piece to piece. Currently sold out — restocking soon.',
+      priceCents: 3400,
+      images: imgs('pocket-tee-madder'),
+      stockQty: 0,
+      categoryId: tees.id,
+    },
     create: {
       name: 'Pocket Tee — Madder',
       slug: 'pocket-tee-madder',
@@ -134,7 +170,15 @@ async function main(): Promise<void> {
   });
   await prisma.product.upsert({
     where: { slug: 'zip-hoodie-flax' },
-    update: {},
+    update: {
+      name: 'Zip Hoodie — Flax',
+      description:
+        'A full-zip hoodie in a light flax colourway, cut from the same 400gsm organic fleece as the pullover. Ribbed cuffs and hem keep the shape over time.',
+      priceCents: 8900,
+      images: imgs('zip-hoodie-flax'),
+      stockQty: 12,
+      categoryId: hoodies.id,
+    },
     create: {
       name: 'Zip Hoodie — Flax',
       slug: 'zip-hoodie-flax',
@@ -148,7 +192,15 @@ async function main(): Promise<void> {
   });
   await prisma.product.upsert({
     where: { slug: 'french-terry-sweatpant' },
-    update: {},
+    update: {
+      name: 'French Terry Sweatpant',
+      description:
+        'A tapered sweatpant in brushed French terry, with an elastic waistband and drawcord. Cut from the same organic cotton as the rest of the range.',
+      priceCents: 6900,
+      images: imgs('french-terry-sweatpant'),
+      stockQty: 20,
+      categoryId: sweatpants.id,
+    },
     create: {
       name: 'French Terry Sweatpant',
       slug: 'french-terry-sweatpant',
@@ -162,7 +214,15 @@ async function main(): Promise<void> {
   });
   await prisma.product.upsert({
     where: { slug: 'lounge-short' },
-    update: {},
+    update: {
+      name: 'Lounge Short',
+      description:
+        'A relaxed lounge short in mid-weight French terry, with side pockets and a covered elastic waistband. Only a few left in this run.',
+      priceCents: 4400,
+      images: imgs('lounge-short'),
+      stockQty: 5,
+      categoryId: sweatpants.id,
+    },
     create: {
       name: 'Lounge Short',
       slug: 'lounge-short',
@@ -176,7 +236,15 @@ async function main(): Promise<void> {
   });
   await prisma.product.upsert({
     where: { slug: 'beanie-rib-knit' },
-    update: {},
+    update: {
+      name: 'Rib Knit Beanie',
+      description:
+        'A snug, ribbed beanie knit from organic cotton yarn. One size, unlined, with a folded cuff.',
+      priceCents: 2400,
+      images: imgs('beanie-rib-knit'),
+      stockQty: 30,
+      categoryId: accessories.id,
+    },
     create: {
       name: 'Rib Knit Beanie',
       slug: 'beanie-rib-knit',
@@ -190,7 +258,15 @@ async function main(): Promise<void> {
   });
   await prisma.product.upsert({
     where: { slug: 'tote-everyday' },
-    update: {},
+    update: {
+      name: 'Everyday Tote',
+      description:
+        'A heavy-canvas tote built for daily use, with reinforced straps and a flat base that stands on its own. Undyed organic cotton canvas.',
+      priceCents: 1800,
+      images: imgs('tote-everyday'),
+      stockQty: 50,
+      categoryId: accessories.id,
+    },
     create: {
       name: 'Everyday Tote',
       slug: 'tote-everyday',
@@ -204,7 +280,15 @@ async function main(): Promise<void> {
   });
   await prisma.product.upsert({
     where: { slug: 'canvas-cap' },
-    update: {},
+    update: {
+      name: 'Canvas Cap',
+      description:
+        'A low-profile six-panel cap in the same heavy canvas as the tote, with a brass buckle strap for adjustable sizing.',
+      priceCents: 2800,
+      images: imgs('canvas-cap'),
+      stockQty: 14,
+      categoryId: accessories.id,
+    },
     create: {
       name: 'Canvas Cap',
       slug: 'canvas-cap',
