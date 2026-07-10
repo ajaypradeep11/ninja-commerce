@@ -12,8 +12,10 @@ import {
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
+  ApiQuery,
 } from '@nestjs/swagger';
 import type { Order } from '@prisma/client';
+import { OrderStatus } from '@prisma/client';
 import { AdminGuard } from '../auth/admin.guard';
 import type { AuthUser } from '../auth/auth.types';
 import { CurrentUser } from '../auth/current-user.decorator';
@@ -41,6 +43,10 @@ export class OrdersController {
   @ApiOkResponse({ type: PaginatedOrdersDto })
   @UseGuards(AdminGuard)
   @Get()
+  @ApiQuery({ name: 'status', required: false, enum: OrderStatus })
+  @ApiQuery({ name: 'email', required: false, type: String })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'pageSize', required: false, type: Number })
   findAll(@Query() query: ListOrdersQuery) {
     return this.orders.findAll(query);
   }

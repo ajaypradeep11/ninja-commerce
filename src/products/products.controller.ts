@@ -11,7 +11,12 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiQuery,
+} from '@nestjs/swagger';
 import type { Product } from '@prisma/client';
 import { AdminGuard } from '../auth/admin.guard';
 import type { AuthUser } from '../auth/auth.types';
@@ -38,6 +43,16 @@ export class ProductsController {
   @Public()
   @Get()
   @ApiOkResponse({ type: PaginatedProductsDto })
+  @ApiQuery({ name: 'category', required: false, type: String })
+  @ApiQuery({ name: 'q', required: false, type: String })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'pageSize', required: false, type: Number })
+  @ApiQuery({
+    name: 'sort',
+    required: false,
+    enum: ['newest', 'price_asc', 'price_desc'],
+  })
+  @ApiQuery({ name: 'all', required: false, type: Boolean })
   findAll(
     @Query() query: ListProductsQuery,
     @Req() req: { user?: AuthUser },
