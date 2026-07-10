@@ -4,14 +4,34 @@ import { MemoryRouter, Route, Routes } from 'react-router';
 import { vi } from 'vitest';
 
 const createMutate = vi.fn();
+const updateMutate = vi.fn();
+const existingProduct = {
+  id: 'p1',
+  name: 'Organic Cotton Tee',
+  slug: 'organic-cotton-tee',
+  description: 'Soft tee',
+  priceCents: 2999,
+  images: [],
+  stockQty: 10,
+  active: true,
+  categoryId: 'c1',
+  averageRating: null,
+  reviewCount: 0,
+  createdAt: '',
+  updatedAt: '',
+};
 vi.mock('@/api/hooks/products', () => ({
-  useProduct: () => ({ data: undefined, isLoading: false, error: null }),
+  useProduct: () => ({ data: existingProduct, isLoading: false, error: null }),
   useCreateProduct: () => ({ mutate: createMutate, isPending: false }),
-  useUpdateProduct: () => ({ mutate: vi.fn(), isPending: false }),
+  useUpdateProduct: () => ({ mutate: updateMutate, isPending: false }),
 }));
+const stableCategories = [
+  { id: 'c1', name: 'Tees', slug: 'tees', sortOrder: 0 },
+  { id: 'c2', name: 'Hoodies', slug: 'hoodies', sortOrder: 1 },
+];
 vi.mock('@/api/hooks/categories', () => ({
   useCategories: () => ({
-    data: [{ id: 'c1', name: 'Tees', slug: 'tees', sortOrder: 0 }],
+    data: stableCategories,
     isLoading: false,
     error: null,
   }),
@@ -27,6 +47,16 @@ function renderNew() {
     <MemoryRouter initialEntries={['/products/new']}>
       <Routes>
         <Route path="/products/new" element={<ProductFormPage />} />
+      </Routes>
+    </MemoryRouter>,
+  );
+}
+
+function renderEdit() {
+  return render(
+    <MemoryRouter initialEntries={['/products/p1']}>
+      <Routes>
+        <Route path="/products/:id" element={<ProductFormPage />} />
       </Routes>
     </MemoryRouter>,
   );
@@ -86,5 +116,35 @@ describe('ProductFormPage (create)', () => {
 
     expect(await screen.findByText(/valid price/i)).toBeInTheDocument();
     expect(createMutate).not.toHaveBeenCalled();
+  });
+});
+
+describe('ProductFormPage (edit)', () => {
+  beforeEach(() => updateMutate.mockClear());
+
+  it('prefills the category select from the fetched product and submits it unchanged', async () => {
+    const user = userEvent.setup();
+    renderEdit();
+
+    // All other fields land from the fetched product.
+    await waitFor(() =>
+      expect(screen.getByLabelText('Name')).toHaveValue('Organic Cotton Tee'),
+    );
+
+    // The category trigger should reflect the fetched category, not the placeholder.
+    await waitFor(() =>
+      expect(
+        screen.getByRole('combobox', { name: 'Category' }),
+      ).toHaveTextContent('Tees'),
+    );
+
+    // Submit without touching the category select at all (user just clicks save).
+    await user.click(screen.getByRole('button', { name: /save changes/i }));
+
+    await waitFor(() => expect(updateMutate).toHaveBeenCalled());
+    expect(updateMutate.mock.calls[0][0]).toMatchObject({
+      id: 'p1',
+      body: expect.objectContaining({ categoryId: 'c1' }),
+    });
   });
 });

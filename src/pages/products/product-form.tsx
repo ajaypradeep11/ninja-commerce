@@ -80,16 +80,29 @@ export function ProductFormPage() {
 
   useEffect(() => {
     if (isEdit && existing) {
-      form.reset({
-        name: existing.name,
-        slug: existing.slug,
-        description: existing.description,
-        price: centsToDollars(existing.priceCents),
-        categoryId: existing.categoryId,
-        stockQty: existing.stockQty,
-        active: existing.active,
-        images: existing.images,
-      });
+      // Deferred to a macrotask: Radix's <Select> mounts its hidden native
+      // <select> before its items finish registering as native <option>s.
+      // If we call form.reset() with a real categoryId in the same effect
+      // flush as that initial mount, the Select's internal value-sync effect
+      // can fire while the native <select> still has zero <option>s, silently
+      // fail to apply the value, and echo an empty-string change event back
+      // into react-hook-form — clobbering categoryId back to ''. Pushing the
+      // reset past the current render/effect cycle lets Select's own item
+      // registration settle first, so the value lands rather than being
+      // stomped back to empty (see product-form.test.tsx "edit" suite).
+      const timer = setTimeout(() => {
+        form.reset({
+          name: existing.name,
+          slug: existing.slug,
+          description: existing.description,
+          price: centsToDollars(existing.priceCents),
+          categoryId: existing.categoryId,
+          stockQty: existing.stockQty,
+          active: existing.active,
+          images: existing.images,
+        });
+      }, 0);
+      return () => clearTimeout(timer);
     }
   }, [isEdit, existing, form]);
 
