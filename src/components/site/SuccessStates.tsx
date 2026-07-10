@@ -151,11 +151,14 @@ export function SuccessStates() {
 
   // Stripe checkout has finished; clear the cart exactly once regardless of
   // sign-in state. Guarded against React StrictMode's double-invoked effect.
+  // Gated on sessionId so a stale/bookmarked visit with no session_id (which
+  // redirects home) doesn't silently wipe a non-empty cart on the way out.
   useEffect(() => {
+    if (!sessionId) return;
     if (clearedRef.current) return;
     clearedRef.current = true;
     clearCart();
-  }, []);
+  }, [sessionId]);
 
   useEffect(() => {
     if (!sessionId || loading || !user) return;
