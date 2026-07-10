@@ -7,7 +7,6 @@ import { SITE } from '@/lib/site';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ProductCard } from '@/components/site/ProductCard';
-import { UspStrip } from '@/components/site/UspStrip';
 
 const COLLAGE_POSITION = [
   'top-0 left-2 sm:left-4',
@@ -84,14 +83,12 @@ export default async function HomePage() {
 
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
         <p className="font-mono text-xs tracking-wide text-ink/60">NEW ARRIVALS</p>
-        <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-10 sm:grid-cols-4">
+        <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-4">
           {products.items.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
       </section>
-
-      <UspStrip />
     </>
   );
 }
