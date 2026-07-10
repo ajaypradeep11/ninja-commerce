@@ -17,7 +17,7 @@
 - TypeScript **strict** in both repos. TDD: every task with logic writes the failing test first. Commit at the end of every task (smaller commits within a task are fine).
 - Brand name **"Everloom"** and all brand copy come only from `src/lib/site.ts` — never hard-code the brand string in components.
 - Design tokens (exact): colors `cotton #FAF7F2`, `ink #23201C`, `indigo #2F4A7A`, `madder #A64B35`, `flax #E7DFD2`; fonts Bricolage Grotesque (display), Public Sans (body), IBM Plex Mono (prices/labels/badges), all via `next/font/google`.
-- Ports on this machine: storefront `http://localhost:3000`; API `PORT=3002` (3001 is occupied; `.env` default stays 3001); Firebase Auth emulator `127.0.0.1:9098`, emulator UI `4001`, storage `9199` (started from `ecommerce-admin`: `npm run emulators`); Postgres via `docker compose up -d db` in ecommerce-api. Emulator project id `demo-ecommerce`.
+- Ports on this machine: storefront defaults to `http://localhost:3000`, but 3000 is occupied here by unrelated ninja-hr Docker containers — **run `PORT=3005 npm run dev` and use `http://localhost:3005` for all local browsing/E2E**. Committed files (env examples, Playwright default baseURL, README default) keep 3000 for portability; the API's local gitignored `.env` already points `FRONTEND_URL` and `CORS_ORIGINS` at 3005 (controller-applied). API `PORT=3002` (3001 is occupied; `.env` default stays 3001); Firebase Auth emulator `127.0.0.1:9098`, emulator UI `4001`, storage `9199` (started from `ecommerce-admin`: `npm run emulators`); Postgres via `docker compose up -d db` in ecommerce-api. Emulator project id `demo-ecommerce`.
 - Storefront env: `NEXT_PUBLIC_API_URL=http://localhost:3002`, `NEXT_PUBLIC_FIREBASE_API_KEY=fake-api-key`, `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=demo-ecommerce.firebaseapp.com`, `NEXT_PUBLIC_FIREBASE_PROJECT_ID=demo-ecommerce`, `NEXT_PUBLIC_USE_EMULATORS=true` in `.env.development` (committed, fake values only) and blank template `.env.example`.
 - Server components fetch with the generated SDK and `cache: 'no-store'` (pass `next` fetch options via the client's `fetch` — see Task 4). Auth'd calls (`/orders*`, `/me*`, `POST /checkout`, `POST …/reviews`) happen **only in client components**.
 - The API has no machine-readable error codes: branch on `ApiError.status` and render `ApiError.message` (e.g. checkout 409 `"Only 3 left of Heavyweight Hoodie"`).
@@ -1350,7 +1350,7 @@ git add -A && git commit -m "feat: static pages, 404, error boundary, a11y polis
 npm i -D @playwright/test && npx playwright install chromium
 ```
 
-`playwright.config.ts`: `testDir: 'e2e'`, `use: { baseURL: 'http://localhost:3000' }`, single chromium project, `retries: 0`, `fullyParallel: false` (auth flows share the emulator).
+`playwright.config.ts`: `testDir: 'e2e'`, `use: { baseURL: process.env.BASE_URL ?? 'http://localhost:3000' }` (this machine: `BASE_URL=http://localhost:3005 npm run e2e`), single chromium project, `retries: 0`, `fullyParallel: false` (auth flows share the emulator).
 
 - [ ] **Step 2: `e2e/smoke.spec.ts`**
 
@@ -1387,7 +1387,7 @@ git add -A && git commit -m "test: Playwright smoke — browse, cart math, auth,
 1. cd ecommerce-api && docker compose up -d db && npx prisma migrate dev && npm run seed:demo
 2. cd ecommerce-admin && npm run emulators          # auth :9098, UI :4001
 3. cd ecommerce-api && PORT=3002 npm run start:dev
-4. cd ecommerce-storefront && npm run dev            # :3000
+4. cd ecommerce-storefront && npm run dev            # :3000 (this machine: PORT=3005 npm run dev)
 5. (optional, real checkout) stripe listen --forward-to localhost:3002/webhooks/stripe
 ```
 
