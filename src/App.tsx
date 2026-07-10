@@ -7,6 +7,7 @@ import { AppShell } from '@/components/layout/AppShell';
 import { CategoriesPage } from '@/pages/categories';
 import { LoginPage } from '@/pages/login';
 import { ProductsPage } from '@/pages/products';
+import { ProductFormPage } from '@/pages/products/product-form';
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 10_000 } },
@@ -28,8 +29,8 @@ export default function App() {
             >
               <Route index element={<div>Dashboard (Task 15)</div>} />
               <Route path="products" element={<ProductsPage />} />
-              <Route path="products/new" element={<div>New product (Task 13)</div>} />
-              <Route path="products/:id" element={<div>Edit product (Task 13)</div>} />
+              <Route path="products/new" element={<ProductFormPage />} />
+              <Route path="products/:id" element={<ProductFormPage />} />
               <Route path="categories" element={<CategoriesPage />} />
               <Route path="orders" element={<div>Orders (Task 14)</div>} />
               <Route path="orders/:id" element={<div>Order detail (Task 14)</div>} />
