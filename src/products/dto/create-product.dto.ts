@@ -25,7 +25,7 @@ export class CreateProductDto {
   priceCents!: number;
 
   @IsArray()
-  @IsUrl({}, { each: true })
+  @IsUrl({ require_tld: false }, { each: true })
   images!: string[];
 
   @IsInt()

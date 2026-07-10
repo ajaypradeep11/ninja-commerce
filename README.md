@@ -33,6 +33,18 @@ npm test          # unit tests (no DB needed)
 npm run test:e2e  # integration tests against ecommerce_test DB
 ```
 
+## Local admin development
+
+To run the admin SPA against a local emulator:
+
+```bash
+cd ../ecommerce-admin && npm run emulators  # Terminal 1
+cd ../ecommerce-api
+npm run seed:emulator  # Admin: admin@example.com / password123
+npm run seed:demo      # Demo catalog + orders
+PORT=3002 npm run start:dev  # Terminal 2 (emulator uses :3001, admin on :5174)
+```
+
 ## Key invariants
 
 - Prices are integer cents; currency is USD.

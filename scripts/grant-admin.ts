@@ -13,9 +13,11 @@ async function main(): Promise<void> {
     console.error('Usage: npm run grant-admin -- <email>');
     process.exit(1);
   }
-  const app = initializeApp({
-    credential: applicationDefault(),
-  });
+  const app = initializeApp(
+    process.env.FIREBASE_AUTH_EMULATOR_HOST
+      ? { projectId: process.env.FIREBASE_PROJECT_ID ?? 'demo-ecommerce' }
+      : { credential: applicationDefault() },
+  );
   const auth = getAuth(app);
   const user = await auth.getUserByEmail(email);
   await auth.setCustomUserClaims(user.uid, { admin: true });
