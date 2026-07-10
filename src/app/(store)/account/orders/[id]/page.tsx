@@ -6,6 +6,7 @@ import { useOrder } from '@/api/hooks/account';
 import { ApiError } from '@/api/unwrap';
 import { OrderStatusBadge } from '@/components/site/OrderStatusBadge';
 import { Price } from '@/components/site/Price';
+import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { normalizeShippingAddress } from '@/lib/shipping-address';
 
@@ -33,7 +34,7 @@ function NotFoundNotice() {
 
 export default function OrderDetailPage() {
   const params = useParams<{ id: string }>();
-  const { data: order, isLoading, error } = useOrder(params.id);
+  const { data: order, isLoading, error, refetch } = useOrder(params.id);
 
   if (isLoading) {
     return <Skeleton className="h-40 w-full" />;
@@ -44,6 +45,21 @@ export default function OrderDetailPage() {
     (error.status === 403 || error.status === 404)
   ) {
     return <NotFoundNotice />;
+  }
+
+  if (error) {
+    return (
+      <div className="py-12 text-center">
+        <p className="text-ink/70">We couldn&rsquo;t load this order.</p>
+        <Button
+          variant="outline"
+          className="mt-4"
+          onClick={() => void refetch()}
+        >
+          Retry
+        </Button>
+      </div>
+    );
   }
 
   if (!order) {

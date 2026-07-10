@@ -49,9 +49,14 @@ function errorCodeOf(error: unknown): string {
 
 // Open-redirect guard: only ever redirect to same-origin, path-relative
 // destinations. Anything else (protocol-relative, absolute, javascript:, ...)
-// falls back to '/'.
+// falls back to '/'. Reject a second character of '/' or '\' — browsers'
+// WHATWG URL parsing normalizes leading backslashes to forward slashes, so
+// '/\evil.com' would otherwise resolve to the protocol-relative '//evil.com'.
 function safeNext(raw: string | null): string {
-  return raw && raw.startsWith('/') && !raw.startsWith('//') ? raw : '/';
+  if (!raw || raw[0] !== '/') return '/';
+  const second = raw[1];
+  if (second === '/' || second === '\\') return '/';
+  return raw;
 }
 
 const COPY = {

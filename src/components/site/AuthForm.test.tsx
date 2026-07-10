@@ -167,6 +167,22 @@ describe('AuthForm', () => {
     await waitFor(() => expect(replaceMock).toHaveBeenCalledWith('/'));
   });
 
+  it('rejects a backslash-variant next value (open-redirect guard)', async () => {
+    // WHATWG URL parsing normalizes leading backslashes to forward slashes,
+    // so '/\evil.com' would resolve to '//evil.com' (protocol-relative) if
+    // only the first character were checked.
+    searchParams = new URLSearchParams({ next: '/\\evil.com' });
+    signInWithEmailAndPasswordMock.mockResolvedValue({});
+    const user = userEvent.setup();
+    render(<AuthForm mode="login" />);
+
+    await user.type(screen.getByLabelText('Email'), 'shopper@example.com');
+    await user.type(screen.getByLabelText('Password'), 'password123');
+    await user.click(screen.getByRole('button', { name: 'Sign in' }));
+
+    await waitFor(() => expect(replaceMock).toHaveBeenCalledWith('/'));
+  });
+
   it('preserves the next param in the swap link', () => {
     searchParams = new URLSearchParams({ next: '/account' });
     render(<AuthForm mode="login" />);

@@ -129,6 +129,26 @@ describe('CheckoutButton', () => {
     expect(applyCartRefreshMock).toHaveBeenCalledWith(lines);
   });
 
+  it('toasts the API message on a 502 (e.g. Stripe session-creation failure), without re-running the refresh', async () => {
+    useAuthMock.mockReturnValue({ user: { uid: 'u1' }, loading: false });
+    checkoutControllerCreateMock.mockResolvedValue({
+      error: { message: 'Payment provider is unavailable. Try again shortly.' },
+      response: { status: 502 },
+    });
+    const lines = [makeLine()];
+    const user = userEvent.setup();
+    renderWithClient(<CheckoutButton lines={lines} />);
+
+    await user.click(screen.getByRole('button', { name: 'Checkout' }));
+
+    await vi.waitFor(() =>
+      expect(toastErrorMock).toHaveBeenCalledWith(
+        'Payment provider is unavailable. Try again shortly.',
+      ),
+    );
+    expect(applyCartRefreshMock).not.toHaveBeenCalled();
+  });
+
   it('toasts a generic failure message for other errors, without re-running the refresh', async () => {
     useAuthMock.mockReturnValue({ user: { uid: 'u1' }, loading: false });
     checkoutControllerCreateMock.mockRejectedValue(new ApiError(500, 'boom'));

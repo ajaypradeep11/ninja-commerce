@@ -16,7 +16,7 @@ function formatMemberSince(iso: string): string {
 }
 
 export default function AccountPage() {
-  const { data: me, isLoading } = useMe();
+  const { data: me, isLoading, error, refetch } = useMe();
   const { signOutUser } = useAuth();
   const router = useRouter();
 
@@ -25,8 +25,23 @@ export default function AccountPage() {
     router.push('/');
   }
 
-  if (isLoading || !me) {
+  if (isLoading) {
     return <Skeleton className="h-40 w-full" />;
+  }
+
+  if (error || !me) {
+    return (
+      <div className="py-12 text-center">
+        <p className="text-ink/70">We couldn&rsquo;t load your account.</p>
+        <Button
+          variant="outline"
+          className="mt-4"
+          onClick={() => void refetch()}
+        >
+          Retry
+        </Button>
+      </div>
+    );
   }
 
   return (

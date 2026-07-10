@@ -30,6 +30,10 @@ export function CheckoutButton({ lines }: { lines: CartLine[] }) {
         void applyCartRefresh(lines);
         return;
       }
+      if (error instanceof ApiError && error.status === 502) {
+        toast.error(error.message);
+        return;
+      }
       toast.error('Checkout failed. Try again.');
     },
   });

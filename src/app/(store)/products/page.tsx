@@ -24,7 +24,7 @@ function parseSort(value: string | string[] | undefined): Sort {
 function parsePage(value: string | string[] | undefined): number {
   const raw = Number(first(value));
   const parsed = Math.floor(raw);
-  return Number.isNaN(parsed) || parsed < 1 ? 1 : parsed;
+  return !Number.isFinite(parsed) || parsed < 1 ? 1 : parsed;
 }
 
 interface ProductsPageProps {

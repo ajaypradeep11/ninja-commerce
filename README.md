@@ -52,6 +52,8 @@ just rely on the committed defaults:
   every value via the hosting platform's environment; a runtime guard
   (`src/auth/firebase.ts`) refuses to boot against leaked placeholder
   Firebase config in production.
+- `NEXT_PUBLIC_SUCCESS_TIMEOUT_MS` — how long the success page polls for the
+  order to appear before giving up (default 60000ms).
 
 ## Tests
 

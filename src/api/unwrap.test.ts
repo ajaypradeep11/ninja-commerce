@@ -41,7 +41,7 @@ test('network failure surfaces status 0', async () => {
     (e) => e,
   );
   expect(err).toBeInstanceOf(ApiError);
-  expect(err.status).toBe(0);
+  expect((err as ApiError).status).toBe(0);
 });
 
 // Regression: Next.js marks a route dynamic (e.g. because a Server Component
