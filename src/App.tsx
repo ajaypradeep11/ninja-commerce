@@ -4,6 +4,7 @@ import { Toaster } from '@/components/ui/sonner';
 import { AuthProvider } from '@/auth/AuthProvider';
 import { RequireAdmin } from '@/auth/RequireAdmin';
 import { AppShell } from '@/components/layout/AppShell';
+import { DashboardPage } from '@/pages/dashboard';
 import { CategoriesPage } from '@/pages/categories';
 import { LoginPage } from '@/pages/login';
 import { OrdersPage } from '@/pages/orders';
@@ -29,7 +30,7 @@ export default function App() {
                 </RequireAdmin>
               }
             >
-              <Route index element={<div>Dashboard (Task 15)</div>} />
+              <Route index element={<DashboardPage />} />
               <Route path="products" element={<ProductsPage />} />
               <Route path="products/new" element={<ProductFormPage />} />
               <Route path="products/:id" element={<ProductFormPage />} />
