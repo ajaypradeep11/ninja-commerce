@@ -7,6 +7,7 @@ import {
 import { SITE } from '@/lib/site';
 import '@/api/client';
 import './globals.css';
+import { Providers } from './providers';
 
 const display = Bricolage_Grotesque({
   subsets: ['latin'],
@@ -35,7 +36,7 @@ export default function RootLayout({
       className={`${display.variable} ${sans.variable} ${mono.variable}`}
     >
       <body className="bg-cotton font-sans text-ink antialiased">
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
