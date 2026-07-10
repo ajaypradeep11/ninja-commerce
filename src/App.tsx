@@ -6,6 +6,7 @@ import { RequireAdmin } from '@/auth/RequireAdmin';
 import { AppShell } from '@/components/layout/AppShell';
 import { CategoriesPage } from '@/pages/categories';
 import { LoginPage } from '@/pages/login';
+import { ProductsPage } from '@/pages/products';
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 10_000 } },
@@ -26,7 +27,7 @@ export default function App() {
               }
             >
               <Route index element={<div>Dashboard (Task 15)</div>} />
-              <Route path="products" element={<div>Products (Task 12)</div>} />
+              <Route path="products" element={<ProductsPage />} />
               <Route path="products/new" element={<div>New product (Task 13)</div>} />
               <Route path="products/:id" element={<div>Edit product (Task 13)</div>} />
               <Route path="categories" element={<CategoriesPage />} />
