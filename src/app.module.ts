@@ -14,6 +14,7 @@ import { CheckoutModule } from './checkout/checkout.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
 import { OrdersModule } from './orders/orders.module';
 import { ReviewsModule } from './reviews/reviews.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { ReviewsModule } from './reviews/reviews.module';
     WebhooksModule,
     OrdersModule,
     ReviewsModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],
