@@ -1,32 +1,42 @@
-# React + TypeScript + Vite
+# ecommerce-admin
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Admin portal for the ecommerce platform. React 19 + Vite + TypeScript,
+Tailwind v4 + shadcn/ui, TanStack Query over a generated OpenAPI client,
+Firebase Auth (admin custom claim required).
 
-Currently, two official plugins are available:
+## Dev loop (four terminals)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+    # 1. Postgres (in ecommerce-api)
+    docker compose up -d db
 
-## React Compiler
+    # 2. Firebase emulators (here) — Auth :9098, Storage :9199, UI :4001
+    # Emulators need Java: export PATH=/opt/homebrew/opt/openjdk/bin:$PATH
+    npm run emulators
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+    # 3. API (in ecommerce-api) — 3001 is taken on this machine
+    PORT=3002 npm run start:dev
 
-## Expanding the Oxlint configuration
+    # 4. Admin SPA (here) — http://localhost:5174
+    npm run dev
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+One-time setup after the emulators are up (both in ecommerce-api):
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
-```
+    npm run seed:emulator   # admin@example.com / password123
+    npm run seed:demo       # demo catalog + orders
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## Regenerating the API client
+
+    # in ecommerce-api: refresh openapi.json
+    npm run openapi:emit
+    # here: regenerate src/api/generated
+    npm run generate:api
+
+## Tests
+
+    npm test
+
+## Production notes (Phase 2 does not deploy)
+
+- Set real `VITE_FIREBASE_*` values and `VITE_USE_EMULATORS=false`.
+- `storage.rules` is wide open for authed users — lock down before deploying.
+- Grant the admin claim with ecommerce-api's `npm run grant-admin -- <email>`.
