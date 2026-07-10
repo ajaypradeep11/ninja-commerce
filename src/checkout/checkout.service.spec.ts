@@ -1,4 +1,8 @@
-import { ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  BadGatewayException,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CheckoutService } from './checkout.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { StripeService } from '../stripe/stripe.service';
@@ -94,12 +98,12 @@ describe('CheckoutService', () => {
     expect(result).toEqual({ url: 'https://stripe.test/session', orderId: 'o1' });
   });
 
-  it('cancels the order if Stripe session creation fails', async () => {
+  it('cancels the order and maps the failure to a 502 if Stripe session creation fails', async () => {
     prisma.product.findMany.mockResolvedValue([tee]);
     stripe.client.checkout.sessions.create.mockRejectedValue(new Error('stripe down'));
     await expect(
       service.createSession(user, { items: [{ productId: 'p1', quantity: 1 }] }),
-    ).rejects.toThrow('stripe down');
+    ).rejects.toBeInstanceOf(BadGatewayException);
     expect(prisma.order.update).toHaveBeenCalledWith({
       where: { id: 'o1' },
       data: { status: 'CANCELLED' },
@@ -114,6 +118,13 @@ describe('CheckoutService', () => {
           { productId: 'p1', quantity: 2 },
         ],
       }),
+    ).rejects.toBeInstanceOf(ConflictException);
+  });
+
+  it('rejects insufficient stock with a 409 ConflictException (not swallowed by the Stripe failure mapping)', async () => {
+    prisma.product.findMany.mockResolvedValue([{ ...tee, stockQty: 2 }]);
+    await expect(
+      service.createSession(user, { items: [{ productId: 'p1', quantity: 3 }] }),
     ).rejects.toBeInstanceOf(ConflictException);
   });
 });

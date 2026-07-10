@@ -1,6 +1,9 @@
 import {
+  BadGatewayException,
   ConflictException,
+  HttpException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -16,6 +19,8 @@ const SHIPPING_COUNTRIES = [
 
 @Injectable()
 export class CheckoutService {
+  private readonly logger = new Logger(CheckoutService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly stripe: StripeService,
@@ -102,7 +107,16 @@ export class CheckoutService {
         where: { id: order.id },
         data: { status: 'CANCELLED' },
       });
-      throw e;
+      if (e instanceof HttpException) {
+        throw e;
+      }
+      this.logger.error(
+        `Stripe session creation failed for order ${order.id}`,
+        e instanceof Error ? e.stack : String(e),
+      );
+      throw new BadGatewayException(
+        'Payment provider error — please try again later',
+      );
     }
   }
 }
