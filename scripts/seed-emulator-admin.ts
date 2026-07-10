@@ -11,7 +11,7 @@ const EMAIL = 'admin@example.com';
 const PASSWORD = 'password123';
 
 async function main(): Promise<void> {
-  process.env.FIREBASE_AUTH_EMULATOR_HOST ??= '127.0.0.1:9099';
+  process.env.FIREBASE_AUTH_EMULATOR_HOST ??= '127.0.0.1:9098';
   const app = initializeApp({
     projectId: process.env.FIREBASE_PROJECT_ID ?? 'demo-ecommerce',
   });
