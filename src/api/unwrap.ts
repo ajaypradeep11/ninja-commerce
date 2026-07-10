@@ -6,7 +6,7 @@ export interface ApiError {
 interface SdkResult<T> {
   data?: T;
   error?: unknown;
-  response: Response;
+  response?: Response;
 }
 
 function messageFrom(error: unknown): string {
@@ -22,7 +22,7 @@ export async function unwrap<T>(call: Promise<SdkResult<T>>): Promise<T> {
   const { data, error, response } = await call;
   if (error !== undefined) {
     const apiError: ApiError = {
-      status: response.status,
+      status: response?.status ?? 0,
       message: messageFrom(error),
     };
     throw apiError;
