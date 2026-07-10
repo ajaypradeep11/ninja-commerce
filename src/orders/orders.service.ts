@@ -4,6 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import type { Order, OrderItem, OrderStatus } from '@prisma/client';
 import type { AuthUser } from '../auth/auth.types';
 import { PrismaService } from '../prisma/prisma.service';
@@ -40,8 +41,11 @@ export class OrdersService {
     page: number;
     pageSize: number;
   }> {
-    const { status, page = 1, pageSize = 20 } = query;
-    const where = status ? { status } : {};
+    const { status, email, page = 1, pageSize = 20 } = query;
+    const where: Prisma.OrderWhereInput = {
+      ...(status ? { status } : {}),
+      ...(email ? { email: { contains: email, mode: 'insensitive' as const } } : {}),
+    };
     const [items, total] = await Promise.all([
       this.prisma.order.findMany({
         where,

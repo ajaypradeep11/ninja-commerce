@@ -104,4 +104,17 @@ describe('OrdersService', () => {
     });
     await expect(service.refund('o1')).rejects.toBeInstanceOf(ConflictException);
   });
+
+  it('filters by email case-insensitively', async () => {
+    prisma.order.findMany.mockResolvedValue([]);
+    prisma.order.count.mockResolvedValue(0);
+
+    await service.findAll({ email: 'Buyer@', page: 1, pageSize: 20 });
+
+    expect(prisma.order.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { email: { contains: 'Buyer@', mode: 'insensitive' } },
+      }),
+    );
+  });
 });

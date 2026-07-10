@@ -1,11 +1,15 @@
 import { Type } from 'class-transformer';
-import { IsIn, IsInt, IsOptional, Max, Min } from 'class-validator';
+import { IsIn, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
 import { OrderStatus } from '@prisma/client';
 
 export class ListOrdersQuery {
   @IsOptional()
   @IsIn(Object.values(OrderStatus))
   status?: OrderStatus;
+
+  @IsOptional()
+  @IsString()
+  email?: string;
 
   @IsOptional()
   @Type(() => Number)
