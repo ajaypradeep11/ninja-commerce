@@ -50,10 +50,12 @@ function AddressForm({
   initial,
   onSubmit,
   onCancel,
+  disabled,
 }: {
   initial?: AddressDto;
   onSubmit: (values: AddressDto) => void;
   onCancel: () => void;
+  disabled?: boolean;
 }) {
   const {
     register,
@@ -147,7 +149,9 @@ function AddressForm({
         <Button type="button" variant="outline" onClick={onCancel}>
           Cancel
         </Button>
-        <Button type="submit">Save</Button>
+        <Button type="submit" disabled={disabled}>
+          Save
+        </Button>
       </DialogFooter>
     </form>
   );
@@ -159,10 +163,12 @@ function AddressCard({
   address,
   onEdit,
   onDelete,
+  disabled,
 }: {
   address: AddressDto;
   onEdit: () => void;
   onDelete: () => void;
+  disabled?: boolean;
 }) {
   const [confirming, setConfirming] = useState(false);
 
@@ -186,26 +192,33 @@ function AddressCard({
       {confirming ? (
         <div className="mt-3 flex items-center gap-3">
           <span className="text-sm text-ink/70">Remove this address?</span>
-          <Button size="sm" onClick={onDelete}>
+          <Button size="sm" onClick={onDelete} disabled={disabled}>
             Confirm
           </Button>
           <Button
             size="sm"
             variant="outline"
             onClick={() => setConfirming(false)}
+            disabled={disabled}
           >
             Cancel
           </Button>
         </div>
       ) : (
         <div className="mt-3 flex gap-3">
-          <Button size="sm" variant="outline" onClick={onEdit}>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onEdit}
+            disabled={disabled}
+          >
             Edit
           </Button>
           <Button
             size="sm"
             variant="outline"
             onClick={() => setConfirming(true)}
+            disabled={disabled}
           >
             Delete
           </Button>
@@ -248,7 +261,11 @@ export function AddressManager() {
         <h2 className="font-mono text-xs tracking-wide text-ink/60 uppercase">
           Saved addresses
         </h2>
-        <Button size="sm" onClick={() => setDialog({ mode: 'add' })}>
+        <Button
+          size="sm"
+          onClick={() => setDialog({ mode: 'add' })}
+          disabled={updateAddresses.isPending}
+        >
           Add address
         </Button>
       </div>
@@ -261,10 +278,11 @@ export function AddressManager() {
         <div className="mt-4 grid gap-4">
           {addresses.map((address, index) => (
             <AddressCard
-              key={index}
+              key={`${address.line1}|${address.postalCode}|${index}`}
               address={address}
               onEdit={() => setDialog({ mode: 'edit', index })}
               onDelete={() => handleDelete(index)}
+              disabled={updateAddresses.isPending}
             />
           ))}
         </div>
@@ -294,6 +312,7 @@ export function AddressManager() {
                   ? handleAdd(values)
                   : handleEdit(dialog.index, values)
               }
+              disabled={updateAddresses.isPending}
             />
           )}
         </DialogContent>

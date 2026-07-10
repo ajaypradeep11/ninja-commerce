@@ -4,10 +4,11 @@ import type { AddressDto, UserResponseDto } from '@/api/generated';
 
 const useMeMock = vi.fn();
 const mutateMock = vi.fn();
+const useUpdateAddressesMock = vi.fn();
 
 vi.mock('@/api/hooks/account', () => ({
   useMe: () => useMeMock(),
-  useUpdateAddresses: () => ({ mutate: mutateMock, isPending: false }),
+  useUpdateAddresses: () => useUpdateAddressesMock(),
 }));
 
 import { AddressManager } from './AddressManager';
@@ -40,6 +41,10 @@ const ADDR_2: AddressDto = {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  useUpdateAddressesMock.mockReturnValue({
+    mutate: mutateMock,
+    isPending: false,
+  });
 });
 
 describe('AddressManager', () => {
@@ -123,5 +128,25 @@ describe('AddressManager', () => {
       await screen.findByText('Use a 2-letter country code'),
     ).toBeInTheDocument();
     expect(mutateMock).not.toHaveBeenCalled();
+  });
+
+  it('disables all mutating controls while an update is in flight', () => {
+    useUpdateAddressesMock.mockReturnValue({
+      mutate: mutateMock,
+      isPending: true,
+    });
+    useMeMock.mockReturnValue({ data: makeUser([ADDR_1, ADDR_2]) });
+    render(<AddressManager />);
+
+    expect(screen.getByRole('button', { name: 'Add address' })).toBeDisabled();
+
+    const homeCard = screen
+      .getByText('Home')
+      .closest('[data-testid="address-card"]');
+    expect(homeCard).not.toBeNull();
+    const card = within(homeCard as HTMLElement);
+
+    expect(card.getByRole('button', { name: 'Edit' })).toBeDisabled();
+    expect(card.getByRole('button', { name: 'Delete' })).toBeDisabled();
   });
 });
