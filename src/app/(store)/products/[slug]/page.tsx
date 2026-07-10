@@ -2,7 +2,10 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { cache } from 'react';
-import { productsControllerFindAll, productsControllerFindBySlug } from '@/api/generated';
+import {
+  productsControllerFindAll,
+  productsControllerFindBySlug,
+} from '@/api/generated';
 import type { ProductResponseDto } from '@/api/generated';
 import { ApiError, unwrap } from '@/api/unwrap';
 import { serverFetchOptions } from '@/api/server';
@@ -11,6 +14,7 @@ import { Gallery } from '@/components/site/Gallery';
 import { Price } from '@/components/site/Price';
 import { RatingStars } from '@/components/site/RatingStars';
 import { RelatedProducts } from '@/components/site/RelatedProducts';
+import { Reviews } from '@/components/site/Reviews';
 import { StockLine } from '@/components/site/StockLine';
 import {
   Accordion,
@@ -36,7 +40,9 @@ const getProduct = cache(async (slug: string): Promise<ProductResponseDto> => {
   }
 });
 
-async function getRelatedProducts(product: ProductResponseDto): Promise<ProductResponseDto[]> {
+async function getRelatedProducts(
+  product: ProductResponseDto,
+): Promise<ProductResponseDto[]> {
   if (!product.category?.slug) return [];
   const related = await unwrap(
     productsControllerFindAll({
@@ -47,7 +53,9 @@ async function getRelatedProducts(product: ProductResponseDto): Promise<ProductR
   return related.items.filter((p) => p.id !== product.id).slice(0, 4);
 }
 
-export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
   const product = await getProduct(slug);
   return {
@@ -76,13 +84,21 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </Link>
           )}
 
-          <h1 className="mt-2 font-display text-3xl text-ink sm:text-4xl">{product.name}</h1>
+          <h1 className="mt-2 font-display text-3xl text-ink sm:text-4xl">
+            {product.name}
+          </h1>
 
           <Price cents={product.priceCents} className="mt-4 text-2xl" />
 
           {product.averageRating !== null && (
-            <Link href="#reviews" className="mt-2 inline-block hover:text-indigo">
-              <RatingStars rating={product.averageRating} count={product.reviewCount} />
+            <Link
+              href="#reviews"
+              className="mt-2 inline-block hover:text-indigo"
+            >
+              <RatingStars
+                rating={product.averageRating}
+                count={product.reviewCount}
+              />
             </Link>
           )}
 
@@ -102,7 +118,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
               <AccordionContent>
                 <p>{product.description}</p>
                 <p className="mt-2">
-                  100% GOTS-certified organic cotton. Machine wash cold, hang dry.
+                  100% GOTS-certified organic cotton. Machine wash cold, hang
+                  dry.
                 </p>
               </AccordionContent>
             </AccordionItem>
@@ -111,7 +128,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
               <AccordionContent>
                 <p>
                   Ships within 48 hours. Free returns for 30 days — see our{' '}
-                  <Link href="/shipping-returns" className="underline hover:text-indigo">
+                  <Link
+                    href="/shipping-returns"
+                    className="underline hover:text-indigo"
+                  >
                     shipping &amp; returns policy
                   </Link>
                   .
@@ -120,7 +140,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </AccordionItem>
           </Accordion>
 
-          {/* reviews: task 10 */}
+          <Reviews productId={product.id} slug={slug} />
         </div>
       </div>
 
