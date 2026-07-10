@@ -5,6 +5,7 @@ import {
   IBM_Plex_Mono,
 } from 'next/font/google';
 import { SITE } from '@/lib/site';
+import '@/api/client';
 import './globals.css';
 
 const display = Bricolage_Grotesque({
