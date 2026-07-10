@@ -36,7 +36,11 @@ async function main(): Promise<void> {
 
   const tee = await prisma.product.upsert({
     where: { slug: 'organic-cotton-tee' },
-    update: { images: imgs('organic-cotton-tee') },
+    update: {
+      images: imgs('organic-cotton-tee'),
+      description:
+        'A mid-weight everyday tee in 100% GOTS-certified organic cotton. Pre-washed so it keeps its shape, wash after wash.',
+    },
     create: {
       name: 'Organic Cotton Tee',
       slug: 'organic-cotton-tee',
@@ -50,7 +54,11 @@ async function main(): Promise<void> {
   });
   const hoodie = await prisma.product.upsert({
     where: { slug: 'heavyweight-hoodie' },
-    update: { images: imgs('heavyweight-hoodie') },
+    update: {
+      images: imgs('heavyweight-hoodie'),
+      description:
+        'A brushed-fleece hoodie in a heavier 400gsm organic cotton blend. Relaxed fit, dropped shoulder, and a kangaroo pocket built for cold mornings.',
+    },
     create: {
       name: 'Heavyweight Hoodie',
       slug: 'heavyweight-hoodie',
@@ -64,7 +72,11 @@ async function main(): Promise<void> {
   });
   await prisma.product.upsert({
     where: { slug: 'retired-crewneck' },
-    update: { images: imgs('retired-crewneck') },
+    update: {
+      images: imgs('retired-crewneck'),
+      description:
+        'A discontinued colourway of our standard crewneck. Same 350gsm organic fleece, no longer in production.',
+    },
     create: {
       name: 'Retired Crewneck',
       slug: 'retired-crewneck',
