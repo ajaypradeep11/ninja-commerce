@@ -1,11 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { Minus, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import type { ProductResponseDto } from '@/api/generated';
 import { addLine } from '@/cart/store';
 import { Button } from '@/components/ui/button';
+import { QtyStepper } from './QtyStepper';
 
 export function AddToCart({ product }: { product: ProductResponseDto }) {
   const { id, slug, name, priceCents, images, stockQty } = product;
@@ -28,27 +28,7 @@ export function AddToCart({ product }: { product: ProductResponseDto }) {
 
   return (
     <div className="flex items-center gap-4">
-      <div className="flex items-center border border-ink">
-        <button
-          type="button"
-          aria-label="Decrease quantity"
-          onClick={() => setQty((q) => Math.max(1, q - 1))}
-          className="p-2 text-ink hover:text-indigo disabled:opacity-40"
-          disabled={qty <= 1}
-        >
-          <Minus aria-hidden className="size-4" />
-        </button>
-        <span className="w-8 text-center font-mono">{qty}</span>
-        <button
-          type="button"
-          aria-label="Increase quantity"
-          onClick={() => setQty((q) => Math.min(max, q + 1))}
-          className="p-2 text-ink hover:text-indigo disabled:opacity-40"
-          disabled={qty >= max}
-        >
-          <Plus aria-hidden className="size-4" />
-        </button>
-      </div>
+      <QtyStepper value={qty} onChange={setQty} max={max} />
       <Button onClick={handleAdd} size="lg" className="flex-1 bg-ink text-cotton hover:bg-ink/90">
         Add to cart
       </Button>
