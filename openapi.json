@@ -21,9 +21,21 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponseDto"
+                }
+              }
+            }
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Users"
         ]
@@ -45,9 +57,21 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponseDto"
+                }
+              }
+            }
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Users"
         ]
@@ -502,9 +526,22 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckoutSessionResponseDto"
+                }
+              }
+            }
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a Stripe Checkout session for the current cart",
         "tags": [
           "Checkout"
         ]
@@ -759,11 +796,18 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductReviewsResponseDto"
+                }
+              }
+            }
           }
         },
         "tags": [
-          "Reviews"
+          "reviews"
         ]
       },
       "post": {
@@ -790,11 +834,24 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewResponseDto"
+                }
+              }
+            }
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a review (purchase-gated, one per user per product)",
         "tags": [
-          "Reviews"
+          "reviews"
         ]
       }
     },
@@ -874,6 +931,47 @@
           "city",
           "postalCode",
           "country"
+        ]
+      },
+      "UserResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Firebase UID"
+          },
+          "email": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "CUSTOMER",
+              "ADMIN"
+            ]
+          },
+          "addresses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AddressDto"
+            }
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "role",
+          "addresses",
+          "createdAt",
+          "updatedAt"
         ]
       },
       "UpdateAddressesDto": {
@@ -1231,6 +1329,23 @@
           "items"
         ]
       },
+      "CheckoutSessionResponseDto": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "Stripe hosted checkout URL to redirect the customer to"
+          },
+          "orderId": {
+            "type": "string",
+            "description": "Local order id created in PENDING state"
+          }
+        },
+        "required": [
+          "url",
+          "orderId"
+        ]
+      },
       "OrderStatus": {
         "type": "string",
         "enum": [
@@ -1391,6 +1506,63 @@
         },
         "required": [
           "refundId"
+        ]
+      },
+      "ReviewResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "productId": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "text": {
+            "type": "string"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "productId",
+          "userId",
+          "rating",
+          "text",
+          "createdAt"
+        ]
+      },
+      "ProductReviewsResponseDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReviewResponseDto"
+            }
+          },
+          "averageRating": {
+            "type": "number",
+            "nullable": true
+          },
+          "count": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "items",
+          "averageRating",
+          "count"
         ]
       },
       "CreateReviewDto": {
