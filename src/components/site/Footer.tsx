@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { SITE } from '@/lib/site';
+import { ThemeSwitcher } from './ThemeSwitcher';
 import { UspStrip } from './UspStrip';
 
 const MARQUEE_TEXT = Array.from({ length: 8 }, () => `${SITE.name.toUpperCase()} ✳`).join(' ');
@@ -52,10 +53,11 @@ export function Footer() {
         </div>
       </div>
 
-      <div className="mx-auto max-w-6xl px-4 pb-8 text-sm sm:px-6">
+      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 pb-8 text-sm sm:px-6">
         <a href={`mailto:${SITE.contactEmail}`} className="text-ink hover:text-brand">
           {SITE.contactEmail}
         </a>
+        <ThemeSwitcher />
       </div>
 
       <div className="overflow-hidden border-t border-ink/10 py-6">
