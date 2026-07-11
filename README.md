@@ -55,6 +55,13 @@ just rely on the committed defaults:
 - `NEXT_PUBLIC_SUCCESS_TIMEOUT_MS` — how long the success page polls for the
   order to appear before giving up (default 60000ms).
 
+## Theming
+
+Six built-in themes (everloom, noir, meadow, arcade, atelier, ninja) are
+switchable live from the footer. Set the default with `NEXT_PUBLIC_THEME`,
+hide the switcher with `NEXT_PUBLIC_SHOW_THEME_SWITCHER=false`, or add your
+own theme with one CSS block + one registry entry — see [THEMING.md](./THEMING.md).
+
 ## Tests
 
 ```bash
