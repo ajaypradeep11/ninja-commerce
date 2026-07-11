@@ -79,7 +79,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
           <p className="text-ink/70">
             No products match. Try clearing the search or picking another category.
           </p>
-          <Link href="/products" className="mt-4 inline-block text-indigo hover:underline">
+          <Link href="/products" className="mt-4 inline-block text-brand hover:underline">
             Clear filters
           </Link>
         </div>

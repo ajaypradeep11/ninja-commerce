@@ -1,6 +1,6 @@
 import { addLine, setQuantity, removeLine, clearCart, updateLineMeta, getLines, subscribe, subtotalCents, cartCount } from './store';
 
-const tee = { productId: 'p1', slug: 'organic-cotton-tee', name: 'Organic Cotton Tee', priceCents: 2900, image: null, stockQty: 40 };
+const tee = { productId: 'p1', slug: 'organic-surface-tee', name: 'Organic Cotton Tee', priceCents: 2900, image: null, stockQty: 40 };
 const hoodie = { productId: 'p2', slug: 'heavyweight-hoodie', name: 'Heavyweight Hoodie', priceCents: 7900, image: null, stockQty: 3 };
 
 beforeEach(() => {

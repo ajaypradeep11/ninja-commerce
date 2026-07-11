@@ -9,24 +9,24 @@ describe('OrderStatusBadge', () => {
     expect(badge).toHaveClass('text-ink/60');
   });
 
-  it('renders PAID as "Paid" ink-on-flax', () => {
+  it('renders PAID as "Paid" ink-on-subtle', () => {
     render(<OrderStatusBadge status="PAID" />);
     const badge = screen.getByText('Paid');
-    expect(badge).toHaveClass('bg-flax');
+    expect(badge).toHaveClass('bg-subtle');
     expect(badge).toHaveClass('text-ink');
   });
 
-  it('renders SHIPPED as "Shipped" ink-on-flax', () => {
+  it('renders SHIPPED as "Shipped" ink-on-subtle', () => {
     render(<OrderStatusBadge status="SHIPPED" />);
     const badge = screen.getByText('Shipped');
-    expect(badge).toHaveClass('bg-flax');
+    expect(badge).toHaveClass('bg-subtle');
     expect(badge).toHaveClass('text-ink');
   });
 
-  it('renders DELIVERED as "Delivered" ink-on-flax', () => {
+  it('renders DELIVERED as "Delivered" ink-on-subtle', () => {
     render(<OrderStatusBadge status="DELIVERED" />);
     const badge = screen.getByText('Delivered');
-    expect(badge).toHaveClass('bg-flax');
+    expect(badge).toHaveClass('bg-subtle');
     expect(badge).toHaveClass('text-ink');
   });
 
@@ -39,6 +39,6 @@ describe('OrderStatusBadge', () => {
   it('renders REFUNDED as "Refunded" in madder', () => {
     render(<OrderStatusBadge status="REFUNDED" />);
     const badge = screen.getByText('Refunded');
-    expect(badge).toHaveClass('text-madder');
+    expect(badge).toHaveClass('text-highlight');
   });
 });

@@ -3,7 +3,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 export default function HomeLoading() {
   return (
     <>
-      <section className="bg-flax">
+      <section className="bg-subtle">
         <div className="mx-auto grid max-w-6xl gap-12 px-4 py-16 sm:px-6 md:grid-cols-2 md:items-center md:py-24">
           <div className="space-y-4">
             <Skeleton className="h-10 w-full max-w-sm" />

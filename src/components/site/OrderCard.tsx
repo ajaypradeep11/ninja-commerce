@@ -18,7 +18,7 @@ export function OrderCard({ order }: { order: OrderResponseDto }) {
   return (
     <Link
       href={`/account/orders/${order.id}`}
-      className="flex items-center justify-between gap-4 border-b border-ink/10 py-6 first:pt-0 hover:text-indigo"
+      className="flex items-center justify-between gap-4 border-b border-ink/10 py-6 first:pt-0 hover:text-brand"
     >
       <div>
         <p className="font-mono text-sm text-ink">#{order.id.slice(0, 8)}</p>

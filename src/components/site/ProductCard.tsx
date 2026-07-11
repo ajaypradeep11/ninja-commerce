@@ -14,7 +14,7 @@ export function ProductCard({ product }: { product: ProductResponseDto }) {
       href={`/products/${slug}`}
       className="group block motion-safe:transition-transform motion-safe:duration-200 motion-safe:hover:-translate-y-1"
     >
-      <div className="relative aspect-3/4 overflow-hidden bg-flax motion-safe:transition-shadow motion-safe:duration-200 motion-safe:group-hover:shadow-sm">
+      <div className="relative aspect-3/4 overflow-hidden bg-subtle motion-safe:transition-shadow motion-safe:duration-200 motion-safe:group-hover:shadow-sm">
         {images[0] && (
           <Image
             src={images[0]}
@@ -25,12 +25,12 @@ export function ProductCard({ product }: { product: ProductResponseDto }) {
           />
         )}
         {outOfStock && (
-          <span className="absolute top-2 left-2 bg-flax px-2 py-1 font-mono text-[10px] tracking-wide text-ink">
+          <span className="absolute top-2 left-2 bg-subtle px-2 py-1 font-mono text-[10px] tracking-wide text-ink">
             OUT OF STOCK
           </span>
         )}
         {lowStock && (
-          <span className="absolute top-2 left-2 bg-madder px-2 py-1 font-mono text-[10px] tracking-wide text-cotton">
+          <span className="absolute top-2 left-2 bg-highlight px-2 py-1 font-mono text-[10px] tracking-wide text-surface">
             LOW STOCK
           </span>
         )}

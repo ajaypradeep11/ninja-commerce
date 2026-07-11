@@ -35,7 +35,7 @@ export default function RootLayout({
       lang="en"
       className={`${display.variable} ${sans.variable} ${mono.variable}`}
     >
-      <body className="bg-cotton font-sans text-ink antialiased">
+      <body className="bg-surface font-sans text-ink antialiased">
         <Providers>{children}</Providers>
       </body>
     </html>

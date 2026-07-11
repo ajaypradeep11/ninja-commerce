@@ -44,7 +44,7 @@ function SignInPrompt({ next }: { next: string }) {
       <p className="text-ink/70">Sign in to see your order.</p>
       <Link
         href={`/login?next=${encodeURIComponent(next)}`}
-        className="mt-4 inline-block text-indigo underline underline-offset-4 hover:no-underline"
+        className="mt-4 inline-block text-brand underline underline-offset-4 hover:no-underline"
       >
         Sign in to see your order
       </Link>
@@ -59,7 +59,7 @@ function ReassuranceView() {
         Your payment is confirmed with Stripe; the order is still processing. It will appear in your orders
         shortly.
       </p>
-      <Link href="/account/orders" className="mt-4 inline-block text-indigo underline underline-offset-4 hover:no-underline">
+      <Link href="/account/orders" className="mt-4 inline-block text-brand underline underline-offset-4 hover:no-underline">
         View your orders
       </Link>
     </div>
@@ -119,7 +119,7 @@ function PaidView({ order }: { order: OrderResponseDto }) {
 
       <Link
         href="/account/orders"
-        className="mt-10 inline-block text-indigo underline underline-offset-4 hover:no-underline"
+        className="mt-10 inline-block text-brand underline underline-offset-4 hover:no-underline"
       >
         View your orders
       </Link>

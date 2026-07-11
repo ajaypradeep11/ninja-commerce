@@ -4,11 +4,11 @@ import { cn } from '@/lib/utils';
 const STATUS_CONFIG: Record<OrderStatus, { label: string; className: string }> =
   {
     PENDING: { label: 'Awaiting payment', className: 'text-ink/60' },
-    PAID: { label: 'Paid', className: 'bg-flax text-ink' },
-    SHIPPED: { label: 'Shipped', className: 'bg-flax text-ink' },
-    DELIVERED: { label: 'Delivered', className: 'bg-flax text-ink' },
+    PAID: { label: 'Paid', className: 'bg-subtle text-ink' },
+    SHIPPED: { label: 'Shipped', className: 'bg-subtle text-ink' },
+    DELIVERED: { label: 'Delivered', className: 'bg-subtle text-ink' },
     CANCELLED: { label: 'Cancelled', className: 'text-ink/40' },
-    REFUNDED: { label: 'Refunded', className: 'text-madder' },
+    REFUNDED: { label: 'Refunded', className: 'text-highlight' },
   };
 
 export function OrderStatusBadge({ status }: { status: OrderStatus }) {

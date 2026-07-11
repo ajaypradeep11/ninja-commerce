@@ -29,14 +29,14 @@ export default async function HomePage() {
 
   return (
     <>
-      <section className="bg-flax">
+      <section className="bg-subtle">
         <div className="mx-auto grid max-w-6xl gap-12 px-4 py-16 sm:px-6 md:grid-cols-2 md:items-center md:py-24">
           <div>
             <h1 className="font-display text-4xl leading-tight text-ink sm:text-5xl">
               Basics you&apos;ll wear out before they wear down.
             </h1>
             <p className="mt-5 max-w-md text-ink/70">{SITE.tagline}</p>
-            <Button asChild size="lg" className="mt-8 bg-indigo text-cotton hover:bg-indigo/90">
+            <Button asChild size="lg" className="mt-8 bg-brand text-surface hover:bg-brand/90">
               <Link href="/products">Shop all</Link>
             </Button>
           </div>
@@ -47,7 +47,7 @@ export default async function HomePage() {
                   <div
                     key={product.id}
                     className={cn(
-                      'absolute aspect-3/4 w-36 overflow-hidden border border-cotton sm:w-48',
+                      'absolute aspect-3/4 w-36 overflow-hidden border border-surface sm:w-48',
                       COLLAGE_POSITION[i],
                     )}
                     style={{ zIndex: i }}
@@ -73,7 +73,7 @@ export default async function HomePage() {
             <Link
               key={category.id}
               href={`/products?category=${category.slug}`}
-              className="flex aspect-square items-center justify-center bg-flax p-4 text-center font-display text-lg text-ink transition-colors hover:bg-flax/70"
+              className="flex aspect-square items-center justify-center bg-subtle p-4 text-center font-display text-lg text-ink transition-colors hover:bg-subtle/70"
             >
               {category.name}
             </Link>

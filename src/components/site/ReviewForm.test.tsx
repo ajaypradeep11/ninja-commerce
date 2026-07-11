@@ -37,18 +37,18 @@ beforeEach(() => {
 describe('ReviewForm', () => {
   it('renders a sign-in link with the correct next param when signed out', () => {
     useAuthMock.mockReturnValue({ user: null, loading: false });
-    render(<ReviewForm productId="prod_1" slug="organic-cotton-tee" />);
+    render(<ReviewForm productId="prod_1" slug="organic-surface-tee" />);
 
     const link = screen.getByRole('link', { name: 'Sign in to review' });
     expect(link.getAttribute('href')).toBe(
-      '/login?next=%2Fproducts%2Forganic-cotton-tee',
+      '/login?next=%2Fproducts%2Forganic-surface-tee',
     );
     expect(reviewsControllerCreateMock).not.toHaveBeenCalled();
   });
 
   it('renders nothing actionable while auth state is loading', () => {
     useAuthMock.mockReturnValue({ user: null, loading: true });
-    render(<ReviewForm productId="prod_1" slug="organic-cotton-tee" />);
+    render(<ReviewForm productId="prod_1" slug="organic-surface-tee" />);
 
     expect(
       screen.queryByRole('link', { name: 'Sign in to review' }),
@@ -61,7 +61,7 @@ describe('ReviewForm', () => {
   it('shows a validation error when submitting without a rating', async () => {
     useAuthMock.mockReturnValue({ user: { uid: 'u1' }, loading: false });
     const user = userEvent.setup();
-    render(<ReviewForm productId="prod_1" slug="organic-cotton-tee" />);
+    render(<ReviewForm productId="prod_1" slug="organic-surface-tee" />);
 
     await user.type(
       screen.getByLabelText('Review'),
@@ -80,7 +80,7 @@ describe('ReviewForm', () => {
       response: { status: 403 },
     });
     const user = userEvent.setup();
-    render(<ReviewForm productId="prod_1" slug="organic-cotton-tee" />);
+    render(<ReviewForm productId="prod_1" slug="organic-surface-tee" />);
 
     await user.click(screen.getByRole('radio', { name: '5 stars' }));
     await user.type(screen.getByLabelText('Review'), 'Really solid tee.');
@@ -99,7 +99,7 @@ describe('ReviewForm', () => {
       response: { status: 409 },
     });
     const user = userEvent.setup();
-    render(<ReviewForm productId="prod_1" slug="organic-cotton-tee" />);
+    render(<ReviewForm productId="prod_1" slug="organic-surface-tee" />);
 
     await user.click(screen.getByRole('radio', { name: '4 stars' }));
     await user.type(screen.getByLabelText('Review'), 'Pretty good overall.');
@@ -114,7 +114,7 @@ describe('ReviewForm', () => {
     useAuthMock.mockReturnValue({ user: { uid: 'u1' }, loading: false });
     reviewsControllerCreateMock.mockRejectedValue(new ApiError(500, 'boom'));
     const user = userEvent.setup();
-    render(<ReviewForm productId="prod_1" slug="organic-cotton-tee" />);
+    render(<ReviewForm productId="prod_1" slug="organic-surface-tee" />);
 
     await user.click(screen.getByRole('radio', { name: '3 stars' }));
     await user.type(screen.getByLabelText('Review'), 'It was fine I guess.');
@@ -137,7 +137,7 @@ describe('ReviewForm', () => {
       },
     });
     const user = userEvent.setup();
-    render(<ReviewForm productId="prod_1" slug="organic-cotton-tee" />);
+    render(<ReviewForm productId="prod_1" slug="organic-surface-tee" />);
 
     await user.click(screen.getByRole('radio', { name: '5 stars' }));
     await user.type(screen.getByLabelText('Review'), 'Fantastic!');

@@ -129,7 +129,7 @@ export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
             {...register('email')}
           />
           {errors.email && (
-            <p className="text-sm text-madder">{errors.email.message}</p>
+            <p className="text-sm text-highlight">{errors.email.message}</p>
           )}
         </div>
         <div className="grid gap-2">
@@ -142,10 +142,10 @@ export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
             {...register('password')}
           />
           {errors.password && (
-            <p className="text-sm text-madder">{errors.password.message}</p>
+            <p className="text-sm text-highlight">{errors.password.message}</p>
           )}
         </div>
-        {formError && <p className="text-sm text-madder">{formError}</p>}
+        {formError && <p className="text-sm text-highlight">{formError}</p>}
         <Button type="submit" disabled={isSubmitting}>
           {copy.submit}
         </Button>
@@ -154,7 +154,7 @@ export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
         {copy.swapPrompt}{' '}
         <Link
           href={swapHref}
-          className="font-medium text-indigo underline underline-offset-4"
+          className="font-medium text-brand underline underline-offset-4"
         >
           {copy.swapLabel}
         </Link>

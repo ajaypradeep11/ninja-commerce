@@ -55,12 +55,12 @@ export function CheckoutButton({ lines }: { lines: CartLine[] }) {
         onClick={handleClick}
         disabled={disabled}
         size="lg"
-        className="w-full bg-indigo text-cotton hover:bg-indigo/90"
+        className="w-full bg-brand text-surface hover:bg-brand/90"
       >
         Checkout
       </Button>
       {hasOutOfStock && (
-        <p className="mt-2 font-mono text-sm text-madder">Remove out-of-stock items to check out.</p>
+        <p className="mt-2 font-mono text-sm text-highlight">Remove out-of-stock items to check out.</p>
       )}
     </div>
   );

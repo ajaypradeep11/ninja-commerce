@@ -29,7 +29,7 @@ export function AddToCart({ product }: { product: ProductResponseDto }) {
   return (
     <div className="flex items-center gap-4">
       <QtyStepper value={qty} onChange={setQty} max={max} />
-      <Button onClick={handleAdd} size="lg" className="flex-1 bg-ink text-cotton hover:bg-ink/90">
+      <Button onClick={handleAdd} size="lg" className="flex-1 bg-ink text-surface hover:bg-ink/90">
         Add to cart
       </Button>
     </div>

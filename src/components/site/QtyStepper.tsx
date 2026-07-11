@@ -19,7 +19,7 @@ export function QtyStepper({
         type="button"
         aria-label="Decrease quantity"
         onClick={() => onChange(Math.max(1, value - 1))}
-        className="p-2 text-ink hover:text-indigo disabled:opacity-40"
+        className="p-2 text-ink hover:text-brand disabled:opacity-40"
         disabled={disabled || value <= 1}
       >
         <Minus aria-hidden className="size-4" />
@@ -29,7 +29,7 @@ export function QtyStepper({
         type="button"
         aria-label="Increase quantity"
         onClick={() => onChange(Math.min(max, value + 1))}
-        className="p-2 text-ink hover:text-indigo disabled:opacity-40"
+        className="p-2 text-ink hover:text-brand disabled:opacity-40"
         disabled={disabled || value >= max}
       >
         <Plus aria-hidden className="size-4" />
