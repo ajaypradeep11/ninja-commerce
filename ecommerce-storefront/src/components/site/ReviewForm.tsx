@@ -60,7 +60,7 @@ export function ReviewForm({
       <div className="mt-10">
         <Link
           href={`/login?next=${encodeURIComponent(`/products/${slug}`)}`}
-          className="inline-block font-mono text-xs tracking-wide text-indigo underline underline-offset-4"
+          className="inline-block font-mono text-xs tracking-wide text-brand underline underline-offset-4"
         >
           Sign in to review
         </Link>
@@ -107,7 +107,7 @@ export function ReviewForm({
           {STAR_VALUES.map((value) => (
             <label
               key={value}
-              className="flex size-9 cursor-pointer items-center justify-center border border-ink font-mono text-sm text-ink/70 transition-colors has-checked:bg-ink has-checked:text-cotton hover:text-indigo"
+              className="flex size-9 cursor-pointer items-center justify-center border border-ink font-mono text-sm text-ink/70 transition-colors has-checked:bg-ink has-checked:text-surface hover:text-brand"
             >
               <input
                 type="radio"
@@ -121,7 +121,7 @@ export function ReviewForm({
           ))}
         </div>
         {errors.rating && (
-          <p className="mt-2 text-sm text-madder">{errors.rating.message}</p>
+          <p className="mt-2 text-sm text-highlight">{errors.rating.message}</p>
         )}
       </div>
 
@@ -140,11 +140,11 @@ export function ReviewForm({
           {...register('text')}
         />
         {errors.text && (
-          <p className="text-sm text-madder">{errors.text.message}</p>
+          <p className="text-sm text-highlight">{errors.text.message}</p>
         )}
       </div>
 
-      {formError && <p className="text-sm text-madder">{formError}</p>}
+      {formError && <p className="text-sm text-highlight">{formError}</p>}
 
       <Button type="submit" disabled={isSubmitting} className="w-fit">
         Submit review

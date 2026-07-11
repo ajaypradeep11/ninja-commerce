@@ -15,7 +15,7 @@ export function SearchBox() {
         type="search"
         name="q"
         placeholder="Search"
-        className="w-full max-w-48 rounded-none border border-ink/20 bg-cotton py-1.5 pr-3 pl-8 text-sm text-ink placeholder:text-ink/40 focus-visible:outline-2 focus-visible:outline-indigo"
+        className="w-full max-w-48 rounded-none border border-ink/20 bg-surface py-1.5 pr-3 pl-8 text-sm text-ink placeholder:text-ink/40 focus-visible:outline-2 focus-visible:outline-brand"
       />
     </form>
   );

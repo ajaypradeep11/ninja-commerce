@@ -54,7 +54,7 @@ export function ListingControls({ categories, activeCategory, sort, q }: Listing
           href={pillHref()}
           className={cn(
             'border border-ink px-3 py-1 font-mono text-xs tracking-wide transition-colors',
-            !activeCategory ? 'bg-ink text-cotton' : 'bg-cotton text-ink hover:bg-ink/5',
+            !activeCategory ? 'bg-ink text-surface' : 'bg-surface text-ink hover:bg-ink/5',
           )}
         >
           All
@@ -66,8 +66,8 @@ export function ListingControls({ categories, activeCategory, sort, q }: Listing
             className={cn(
               'border border-ink px-3 py-1 font-mono text-xs tracking-wide transition-colors',
               activeCategory === category.slug
-                ? 'bg-ink text-cotton'
-                : 'bg-cotton text-ink hover:bg-ink/5',
+                ? 'bg-ink text-surface'
+                : 'bg-surface text-ink hover:bg-ink/5',
             )}
           >
             {category.name}

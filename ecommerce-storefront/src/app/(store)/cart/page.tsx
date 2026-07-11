@@ -32,7 +32,7 @@ export default function CartPage() {
     return (
       <div className="mx-auto max-w-3xl px-4 py-24 text-center">
         <p className="text-ink/70">Your cart is empty.</p>
-        <Link href="/products" className="mt-4 inline-block text-indigo hover:underline">
+        <Link href="/products" className="mt-4 inline-block text-brand hover:underline">
           Continue shopping
         </Link>
       </div>

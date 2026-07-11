@@ -36,7 +36,7 @@ export function Pagination({ page, total, pageSize, basePath, searchParams }: Pa
       {hasPrev ? (
         <Link
           href={buildHref(basePath, searchParams, page - 1)}
-          className="font-mono text-xs tracking-wide text-ink hover:text-indigo"
+          className="font-mono text-xs tracking-wide text-ink hover:text-brand"
         >
           Prev
         </Link>
@@ -51,7 +51,7 @@ export function Pagination({ page, total, pageSize, basePath, searchParams }: Pa
       {hasNext ? (
         <Link
           href={buildHref(basePath, searchParams, page + 1)}
-          className="font-mono text-xs tracking-wide text-ink hover:text-indigo"
+          className="font-mono text-xs tracking-wide text-ink hover:text-brand"
         >
           Next
         </Link>

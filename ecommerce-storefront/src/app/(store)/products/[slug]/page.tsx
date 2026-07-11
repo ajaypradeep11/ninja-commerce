@@ -78,7 +78,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           {product.category && (
             <Link
               href={`/products?category=${product.category.slug}`}
-              className="font-mono text-xs tracking-wide text-ink/60 uppercase hover:text-indigo"
+              className="font-mono text-xs tracking-wide text-ink/60 uppercase hover:text-brand"
             >
               {product.category.name}
             </Link>
@@ -93,7 +93,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           {product.averageRating !== null && (
             <Link
               href="#reviews"
-              className="mt-2 inline-block hover:text-indigo"
+              className="mt-2 inline-block hover:text-brand"
             >
               <RatingStars
                 rating={product.averageRating}
@@ -130,7 +130,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   Ships within 48 hours. Free returns for 30 days — see our{' '}
                   <Link
                     href="/shipping-returns"
-                    className="underline hover:text-indigo"
+                    className="underline hover:text-brand"
                   >
                     shipping &amp; returns policy
                   </Link>

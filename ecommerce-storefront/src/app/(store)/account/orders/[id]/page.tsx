@@ -24,7 +24,7 @@ function NotFoundNotice() {
       <p className="text-ink/70">We couldn&rsquo;t find that order.</p>
       <Link
         href="/account/orders"
-        className="mt-4 inline-block text-indigo underline underline-offset-4 hover:no-underline"
+        className="mt-4 inline-block text-brand underline underline-offset-4 hover:no-underline"
       >
         Back to orders
       </Link>

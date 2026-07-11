@@ -97,7 +97,7 @@ function AddressForm({
           {...register('line1')}
         />
         {errors.line1 && (
-          <p className="text-sm text-madder">{errors.line1.message}</p>
+          <p className="text-sm text-highlight">{errors.line1.message}</p>
         )}
       </div>
       <div className="grid gap-2">
@@ -113,7 +113,7 @@ function AddressForm({
             {...register('city')}
           />
           {errors.city && (
-            <p className="text-sm text-madder">{errors.city.message}</p>
+            <p className="text-sm text-highlight">{errors.city.message}</p>
           )}
         </div>
         <div className="grid gap-2">
@@ -130,7 +130,7 @@ function AddressForm({
             {...register('postalCode')}
           />
           {errors.postalCode && (
-            <p className="text-sm text-madder">{errors.postalCode.message}</p>
+            <p className="text-sm text-highlight">{errors.postalCode.message}</p>
           )}
         </div>
         <div className="grid gap-2">
@@ -141,7 +141,7 @@ function AddressForm({
             {...register('country')}
           />
           {errors.country && (
-            <p className="text-sm text-madder">{errors.country.message}</p>
+            <p className="text-sm text-highlight">{errors.country.message}</p>
           )}
         </div>
       </div>

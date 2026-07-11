@@ -1,5 +1,6 @@
 "use client"
 
+import { useSyncExternalStore } from "react"
 import {
   CircleCheckIcon,
   InfoIcon,
@@ -7,15 +8,38 @@ import {
   OctagonXIcon,
   TriangleAlertIcon,
 } from "lucide-react"
-import { useTheme } from "next-themes"
 import { Toaster as Sonner, type ToasterProps } from "sonner"
+import { THEMES, resolveTheme } from "@/theme/registry"
+
+// Sonner has no notion of our theme registry, so we derive light/dark from
+// the live data-theme attribute rather than next-themes (which this project
+// doesn't otherwise use). A MutationObserver keeps it in sync with runtime
+// theme switches (see ThemeSwitcher).
+function subscribe(callback: () => void) {
+  const observer = new MutationObserver(callback)
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["data-theme"],
+  })
+  return () => observer.disconnect()
+}
+
+function getSnapshot(): boolean {
+  const id = resolveTheme(document.documentElement.getAttribute("data-theme"))
+  return THEMES.find((t) => t.id === id)?.dark ?? false
+}
+
+// SSR/before-mount: default to light, matching the default theme (everloom).
+function getServerSnapshot(): boolean {
+  return false
+}
 
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme()
+  const dark = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
 
   return (
     <Sonner
-      theme={theme as ToasterProps["theme"]}
+      theme={dark ? "dark" : "light"}
       className="toaster group"
       icons={{
         success: <CircleCheckIcon className="size-4" />,

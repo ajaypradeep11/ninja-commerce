@@ -10,7 +10,7 @@ export function Gallery({ images, alt }: { images: string[]; alt: string }) {
 
   return (
     <div>
-      <div className="relative aspect-3/4 overflow-hidden bg-flax">
+      <div className="relative aspect-3/4 overflow-hidden bg-subtle">
         {activeImage && (
           <Image
             src={activeImage}
@@ -31,7 +31,7 @@ export function Gallery({ images, alt }: { images: string[]; alt: string }) {
               aria-label={`View image ${i + 1}`}
               onClick={() => setSelected(i)}
               className={cn(
-                'relative aspect-3/4 overflow-hidden bg-flax outline-offset-2',
+                'relative aspect-3/4 overflow-hidden bg-subtle outline-offset-2',
                 i === selected && 'ring-2 ring-ink ring-offset-2',
               )}
             >

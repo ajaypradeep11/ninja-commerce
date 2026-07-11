@@ -12,7 +12,7 @@ export default function NotFound() {
       </p>
       <Link
         href="/products"
-        className="mt-6 font-mono text-sm text-indigo underline underline-offset-4 hover:no-underline"
+        className="mt-6 font-mono text-sm text-brand underline underline-offset-4 hover:no-underline"
       >
         Back to the shop
       </Link>

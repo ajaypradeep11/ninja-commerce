@@ -34,7 +34,7 @@ export default function OrdersPage() {
         <p className="text-ink/70">No orders yet.</p>
         <Link
           href="/products"
-          className="mt-4 inline-block text-indigo underline underline-offset-4 hover:no-underline"
+          className="mt-4 inline-block text-brand underline underline-offset-4 hover:no-underline"
         >
           Start shopping
         </Link>

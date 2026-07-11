@@ -13,7 +13,7 @@ export default function ContactPage() {
       <p>
         <a
           href={`mailto:${SITE.contactEmail}`}
-          className="font-mono text-lg text-indigo underline underline-offset-4 hover:no-underline"
+          className="font-mono text-lg text-brand underline underline-offset-4 hover:no-underline"
         >
           {SITE.contactEmail}
         </a>
