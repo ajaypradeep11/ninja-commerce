@@ -29,7 +29,7 @@ and one signature divider class (`.selvedge`). Brand copy lives solely in
 - Tailwind v4 utilities (`bg-surface`, `text-ink`, …) already resolve through
   these variables, so **no component changes** are needed for theming.
 - **`src/theme/registry.ts`** is the typed source of truth:
-  `THEMES: { id, label, swatches: { surface, primary, accent } }[]`, plus
+  `THEMES: { id, label, swatches: { surface, brand, highlight } }[]`, plus
   `resolveTheme(value: unknown): ThemeId` (falls back to `everloom` for any
   invalid/unknown value). Used by the switcher UI and env-var validation.
 - **`src/app/layout.tsx`** loads all theme fonts via `next/font` (self-hosted,
@@ -39,15 +39,24 @@ and one signature divider class (`.selvedge`). Brand copy lives solely in
 ### Token rename (prerequisite, own commit)
 
 Rename the color tokens to semantic roles across the codebase (≈57 files
-incl. tests), mechanical find/replace, verified by the full test suite:
+incl. tests), mechanical find/replace, verified by the full test suite.
+
+**Naming amendment (2026-07-11):** `primary`/`accent`/`muted` collide with
+shadcn's existing `@theme inline` tokens (`bg-primary` is shadcn's button
+color), so the roles use collision-free names:
 
 | Old | New |
 |---|---|
 | `cotton` | `surface` |
 | `ink` | `ink` (unchanged) |
-| `indigo` | `primary` |
-| `madder` | `accent` |
-| `flax` | `muted` |
+| `indigo` | `brand` |
+| `madder` | `highlight` |
+| `flax` | `subtle` |
+
+Additionally, the shadcn semantic variables (`--background`, `--foreground`,
+`--primary`, `--border`, `--ring`, …) are re-pointed at the role tokens (via
+`var()`/`color-mix()`) so ui primitives (dialogs, selects, buttons) follow the
+active theme automatically.
 
 Applies to Tailwind class usages (`bg-cotton` → `bg-surface`), the `@theme`
 token names in `globals.css`, and the `.selvedge` gradient references.
@@ -56,14 +65,18 @@ token names in `globals.css`, and the `.selvedge` gradient references.
 
 Hex values are targets; the contrast audit (below) may fine-tune them.
 
-| Theme | surface | ink | primary | accent | muted | Display / Body | Radius | Divider signature |
+| Theme | surface | ink | brand | highlight | subtle | Display / Body | Radius | Divider signature |
 |---|---|---|---|---|---|---|---|---|
 | **everloom** (default) | `#faf7f2` | `#23201c` | `#2f4a7a` | `#a64b35` | `#e7dfd2` | Bricolage Grotesque / Public Sans | 0.625rem | woven selvedge stripe (unchanged) |
-| **noir** — dark luxury | `#12100d` | `#ece7dd` | `#c9a25f` gold | `#8c3b2e` oxblood | `#282420` | Cormorant Garamond / Inter | 0.25rem | thin double gold hairline |
-| **meadow** — organic wellness | `#f7f5ec` | `#1e2b20` | `#3f6b4a` moss | `#c26d4b` terracotta | `#dde5d4` | Fraunces / Nunito Sans | 1rem | soft dashed leaf-green band |
-| **arcade** — streetwear | `#f4f4f0` | `#111111` | `#2244ff` | `#ff2e88` | `#e2e2da` | Space Grotesk / Archivo | 0 | diagonal hazard stripes (ink/pink) |
-| **atelier** — gallery minimal | `#ffffff` | `#1a1a1a` | `#2b2b2b` | `#d4442e` (sparse) | `#ececec` | Libre Caslon Text / Karla | 0.125rem | single 1px ink hairline |
+| **noir** — dark luxury | `#12100d` | `#ece7dd` | `#c9a25f` gold | `#d1705a` terracotta | `#282420` | Cormorant Garamond / Inter | 0.25rem | thin double gold hairline |
+| **meadow** — organic wellness | `#f7f5ec` | `#1e2b20` | `#3f6b4a` moss | `#a54a2c` terracotta | `#dde5d4` | Fraunces / Nunito Sans | 1rem | soft dashed leaf-green band |
+| **arcade** — streetwear | `#f4f4f0` | `#111111` | `#2244ff` | `#cc0e63` pink | `#e2e2da` | Space Grotesk / Archivo | 0 | diagonal hazard stripes (ink/pink) |
+| **atelier** — gallery minimal | `#ffffff` | `#1a1a1a` | `#2b2b2b` | `#c93a24` vermilion (sparse) | `#ececec` | Libre Caslon Text / Karla | 0.125rem | single 1px ink hairline |
 | **ninja** — localninja.ca homage | `#0a0a0a` | `#f4f3ef` | `#ffd84d` yellow | `#e8be8e` tan | `#2a2a28` | Sora / Inter | 0.375rem | dashed yellow "blade" stripe |
+
+All highlight values above were pre-verified ≥ 4.5:1 against their surface
+(WCAG AA for normal text); the contrast audit is enforced by a unit test that
+parses `themes.css` and computes the ratios.
 
 - Mono font stays **IBM Plex Mono** in all themes (prices, order IDs).
 - The divider stays one class (`.selvedge`) whose appearance is driven by
@@ -73,12 +86,12 @@ Hex values are targets; the contrast audit (below) may fine-tune them.
 ### Contrast audit (explicit task)
 
 For every theme, verify WCAG AA for the key pairs: ink-on-surface,
-primary-on-surface (link text), surface-on-primary (button text — note
-components render button text with `text-surface`, which self-corrects on dark
-themes), accent usages, muted-on-surface borders/badges, and `:focus-visible`
+brand-on-surface (link text; same pair covers button text — note components
+render button text with `text-surface`, which self-corrects on dark themes),
+highlight usages (errors/sale), ink-on-subtle text and borders, and `:focus-visible`
 ring visibility. Adjust hex values where a pair fails. Dark themes (noir,
 ninja) additionally get a visual pass over light-surface assumptions (image
-cards on `muted`, skeleton loaders, shadows).
+cards on `subtle`, skeleton loaders, shadows).
 
 ## Theme selection & persistence
 
@@ -97,7 +110,7 @@ renders the env default.
 ## ThemeSwitcher (footer)
 
 - Compact row in the footer: "Theme" label + six swatch buttons (small circles
-  showing each theme's surface/primary/accent), active theme ring-marked,
+  showing each theme's surface/brand/highlight), active theme ring-marked,
   `aria-label` per theme; plain buttons → keyboard accessible.
 - Click → sets `data-theme` + writes localStorage.
 - Hidden entirely when `NEXT_PUBLIC_SHOW_THEME_SWITCHER=false`
