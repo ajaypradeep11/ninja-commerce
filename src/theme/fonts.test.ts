@@ -68,7 +68,7 @@ describe('fonts.ts ↔ themes.css sync', () => {
 
   it('regexes handle export/double-quote/digit/fallback forms (guard hardening)', () => {
     expect('export const s3 = Source_Sans_3({ variable: "--font-source-sans-3" })').toMatch(/variable:\s*['"](--font-[a-z0-9-]+)['"]/);
-    expect('const x = F(').toMatch(/^(?:export\s+)?const\s+(\w+)\s*=\s*\w+\(/m);
+    expect('export const x = F(').toMatch(/^(?:export\s+)?const\s+(\w+)\s*=\s*\w+\(/m);
     expect([...'--font-display: var(--font-source-sans-3, serif);'.matchAll(/var\((--font-[a-z0-9-]+)\s*[,)]/g)][0][1]).toBe('--font-source-sans-3');
   });
 });
