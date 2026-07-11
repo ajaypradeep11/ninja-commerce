@@ -28,7 +28,8 @@ import {
  * next/font requires these calls to be static and module-scope — they are
  * compiled away at build time, which is why this file is code, not JSON.
  * src/theme/fonts.test.ts fails the suite if this file and themes.css
- * drift (unloaded reference or unused loader).
+ * drift (unloaded reference or unused loader). Keep loaders as top-level
+ * `const` (export is fine); `variable:` as a quoted literal for sync-test guard.
  */
 const bricolage = Bricolage_Grotesque({ subsets: ['latin'], variable: '--font-bricolage' });
 const publicSans = Public_Sans({ subsets: ['latin'], variable: '--font-public-sans' });

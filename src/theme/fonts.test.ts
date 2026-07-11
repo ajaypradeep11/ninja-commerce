@@ -12,7 +12,7 @@ const themesCss = readFileSync(new URL('./themes.css', hereUrl), 'utf8');
 // Next's compiler, so this test parses SOURCE TEXT and never imports it.
 
 function declaredFontVars(): string[] {
-  return [...fontsSource.matchAll(/variable:\s*'(--font-[a-z-]+)'/g)].map(
+  return [...fontsSource.matchAll(/variable:\s*['"](--font-[a-z0-9-]+)['"]/g)].map(
     (m) => m[1],
   );
 }
@@ -20,7 +20,7 @@ function declaredFontVars(): string[] {
 function referencedFontVars(): string[] {
   return [
     ...new Set(
-      [...themesCss.matchAll(/var\((--font-[a-z-]+)\)/g)].map((m) => m[1]),
+      [...themesCss.matchAll(/var\((--font-[a-z0-9-]+)\s*[,)]/g)].map((m) => m[1]),
     ),
   ];
 }
@@ -53,10 +53,10 @@ describe('fonts.ts ↔ themes.css sync', () => {
     // Each loader is `const <name> = Family({...})`; THEME_FONTS must list
     // every declared const exactly once.
     const consts = [
-      ...fontsSource.matchAll(/^const\s+(\w+)\s*=\s*\w+\(/gm),
+      ...fontsSource.matchAll(/^(?:export\s+)?const\s+(\w+)\s*=\s*\w+\(/gm),
     ].map((m) => m[1]);
     const arrayMatch = fontsSource.match(
-      /THEME_FONTS\s*=\s*\[([^\]]*)\]/s,
+      /THEME_FONTS\s*(?::[^=]+)?=\s*\[([^\]]*)\]/s,
     );
     expect(arrayMatch, 'THEME_FONTS array literal not found').toBeTruthy();
     const listed = arrayMatch![1]
@@ -64,5 +64,11 @@ describe('fonts.ts ↔ themes.css sync', () => {
       .map((s) => s.trim())
       .filter(Boolean);
     expect([...listed].sort()).toEqual([...consts].sort());
+  });
+
+  it('regexes handle export/double-quote/digit/fallback forms (guard hardening)', () => {
+    expect('export const s3 = Source_Sans_3({ variable: "--font-source-sans-3" })').toMatch(/variable:\s*['"](--font-[a-z0-9-]+)['"]/);
+    expect('const x = F(').toMatch(/^(?:export\s+)?const\s+(\w+)\s*=\s*\w+\(/m);
+    expect([...'--font-display: var(--font-source-sans-3, serif);'.matchAll(/var\((--font-[a-z0-9-]+)\s*[,)]/g)][0][1]).toBe('--font-source-sans-3');
   });
 });
