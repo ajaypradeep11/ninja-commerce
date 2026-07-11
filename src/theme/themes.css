@@ -113,3 +113,37 @@
     transparent 24px 36px
   );
 }
+
+/* --- Font roles. Family variables (--font-sora etc.) are provided by
+       next/font in src/app/layout.tsx. Mono is IBM Plex Mono everywhere. --- */
+
+:root {
+  --font-display: var(--font-bricolage);
+  --font-sans: var(--font-public-sans);
+  --font-mono: var(--font-plex-mono);
+}
+
+[data-theme='noir'] {
+  --font-display: var(--font-cormorant);
+  --font-sans: var(--font-inter);
+}
+
+[data-theme='meadow'] {
+  --font-display: var(--font-fraunces);
+  --font-sans: var(--font-nunito-sans);
+}
+
+[data-theme='arcade'] {
+  --font-display: var(--font-space-grotesk);
+  --font-sans: var(--font-archivo);
+}
+
+[data-theme='atelier'] {
+  --font-display: var(--font-caslon);
+  --font-sans: var(--font-karla);
+}
+
+[data-theme='ninja'] {
+  --font-display: var(--font-sora);
+  --font-sans: var(--font-inter);
+}
