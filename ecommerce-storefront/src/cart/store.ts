@@ -8,7 +8,7 @@ export type CartLine = {
   stockQty: number;
 };
 
-const KEY = 'everloom.cart.v1';
+const KEY = 'localninja.cart.v1';
 const MAX_QTY = 99;
 const listeners = new Set<() => void>();
 let lines: CartLine[] = load();

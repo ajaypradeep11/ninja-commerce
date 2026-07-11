@@ -31,18 +31,18 @@ import {
  * drift (unloaded reference or unused loader). Keep loaders as top-level
  * `const` (export is fine); `variable:` as a quoted literal for sync-test guard.
  */
-const bricolage = Bricolage_Grotesque({ subsets: ['latin'], variable: '--font-bricolage' });
-const publicSans = Public_Sans({ subsets: ['latin'], variable: '--font-public-sans' });
+const bricolage = Bricolage_Grotesque({ subsets: ['latin'], variable: '--font-bricolage', preload: false });
+const publicSans = Public_Sans({ subsets: ['latin'], variable: '--font-public-sans', preload: false });
 const plexMono = IBM_Plex_Mono({ subsets: ['latin'], weight: ['400', '500'], variable: '--font-plex-mono' });
 const cormorant = Cormorant_Garamond({ subsets: ['latin'], weight: ['500', '600', '700'], variable: '--font-cormorant', preload: false });
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter', preload: false });
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const fraunces = Fraunces({ subsets: ['latin'], variable: '--font-fraunces', preload: false });
 const nunitoSans = Nunito_Sans({ subsets: ['latin'], variable: '--font-nunito-sans', preload: false });
 const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-space-grotesk', preload: false });
 const archivo = Archivo({ subsets: ['latin'], variable: '--font-archivo', preload: false });
 const caslon = Libre_Caslon_Text({ subsets: ['latin'], weight: ['400', '700'], variable: '--font-caslon', preload: false });
 const karla = Karla({ subsets: ['latin'], variable: '--font-karla', preload: false });
-const sora = Sora({ subsets: ['latin'], variable: '--font-sora', preload: false });
+const sora = Sora({ subsets: ['latin'], variable: '--font-sora' });
 
 export const THEME_FONTS = [
   bricolage,

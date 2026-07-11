@@ -45,11 +45,11 @@ test('subtotal and count', () => {
 
 test('persists to and restores from localStorage', () => {
   addLine(tee, 2);
-  expect(JSON.parse(localStorage.getItem('everloom.cart.v1')!).lines).toHaveLength(1);
+  expect(JSON.parse(localStorage.getItem('localninja.cart.v1')!).lines).toHaveLength(1);
 });
 
 test('corrupted JSON yields empty cart', () => {
-  localStorage.setItem('everloom.cart.v1', '{nope');
+  localStorage.setItem('localninja.cart.v1', '{nope');
   expect(getLines()).toEqual([]);
 });
 

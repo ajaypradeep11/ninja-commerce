@@ -11,7 +11,7 @@ export const THEME_IDS = [
 
 export type ThemeId = (typeof THEME_IDS)[number];
 
-export const DEFAULT_THEME: ThemeId = 'everloom';
+export const DEFAULT_THEME: ThemeId = 'ninja';
 
 export const THEME_STORAGE_KEY = 'storefront.theme.v1';
 

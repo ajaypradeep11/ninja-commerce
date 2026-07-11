@@ -27,6 +27,6 @@ if (
   process.env.NEXT_PUBLIC_FIREBASE_API_KEY === 'fake-api-key'
 ) {
   console.error(
-    'Everloom misconfiguration: placeholder Firebase config reached a production runtime. Set real NEXT_PUBLIC_FIREBASE_* env vars in the hosting platform.',
+    'NinjaCommerce misconfiguration: placeholder Firebase config reached a production runtime. Set real NEXT_PUBLIC_FIREBASE_* env vars in the hosting platform.',
   );
 }

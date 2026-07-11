@@ -1,5 +1,14 @@
 # Ecommerce Platform — Project Memory
 
+## NinjaCommerce Fork (LocalninjaCommerce clone) (2026-07-11)
+This clone (`~/Work/LOCALNINJA/localninja-commerce`, from `github.com/ajaypradeep11/ecommerce-generic`) is rebranded **NinjaCommerce** for localninja; user commits/pushes manually.
+- Brand: `src/lib/site.ts` name `NinjaCommerce` + `wordmark: { base: 'Ninja', accent: 'Commerce' }` — Header renders accent in `text-brand` (yellow), with logo `public/logo.png` (500×500, also `src/app/icon.png` favicon; old `favicon.ico` deleted)
+- Theme: `DEFAULT_THEME = 'ninja'` in `src/theme/registry.ts` (preset #0a0a0a/#ffd84d); font preloads swapped in `layout.tsx` (Sora/Inter/Plex Mono preload; Bricolage/Public Sans now `preload: false`)
+- Cart key renamed `localninja.cart.v1` (was `everloom.cart.v1`); firebase.ts misconfig message rebranded
+- Runs against the canonical stack's API/db/emulators (`~/Work/Ecommerce`): storefront `PORT=3005 npm run dev` in this clone's `ecommerce-storefront` (`.env.development` copied from canonical repo) — the canonical Everloom storefront must be stopped first (API CORS only allows 3000/3005/517x; 3000 taken by ninja-hr)
+- Tests: 171/171 unit green post-rebrand; browser QA of home page passed (ninja theme, two-tone wordmark, live catalog)
+- Obsidian note for this fork: `LocalninjaCommerce Project Memory.md` (canonical ecommerce note left untouched)
+
 ## About the User
 - Building a real business selling physical goods to US/Europe customers
 - Email: ceotwopeace@gmail.com

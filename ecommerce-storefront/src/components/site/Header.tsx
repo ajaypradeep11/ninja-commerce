@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { User } from 'lucide-react';
 import { SITE } from '@/lib/site';
@@ -14,8 +15,12 @@ export function Header() {
   return (
     <header className="bg-surface">
       <div className="mx-auto flex max-w-6xl items-center gap-6 px-4 py-4 sm:px-6">
-        <Link href="/" className="font-display text-xl text-ink">
-          {SITE.name}
+        <Link href="/" className="flex items-center gap-2 font-display text-xl text-ink">
+          <Image src="/logo.png" alt="" width={48} height={48} priority />
+          <span>
+            {SITE.wordmark.base}
+            <span className="text-brand">{SITE.wordmark.accent}</span>
+          </span>
         </Link>
 
         <nav aria-label="Main" className="hidden gap-6 text-sm md:flex">
