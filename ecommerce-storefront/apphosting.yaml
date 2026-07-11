@@ -19,7 +19,6 @@ env:
   - variable: NEXT_PUBLIC_USE_EMULATORS
     value: "false"
 
-  # TODO: point at the deployed ecommerce-api (Cloud Run) once it exists.
-  # Until then, SSR catalog pages cannot load products in production.
+  # Deployed ecommerce-api on Cloud Run (same project, us-east4)
   - variable: NEXT_PUBLIC_API_URL
-    value: https://api.invalid
+    value: https://ninja-commerce-api-1047378822080.us-east4.run.app
