@@ -36,7 +36,7 @@ describe('OrderStatusBadge', () => {
     expect(badge).toHaveClass('text-ink/40');
   });
 
-  it('renders REFUNDED as "Refunded" in madder', () => {
+  it('renders REFUNDED as "Refunded" in highlight', () => {
     render(<OrderStatusBadge status="REFUNDED" />);
     const badge = screen.getByText('Refunded');
     expect(badge).toHaveClass('text-highlight');

@@ -6,10 +6,10 @@ function makeProduct(overrides: Partial<ProductResponseDto> = {}): ProductRespon
   return {
     id: 'prod_1',
     name: 'Organic Cotton Tee',
-    slug: 'organic-surface-tee',
+    slug: 'organic-cotton-tee',
     description: 'A soft everyday tee.',
     priceCents: 2900,
-    images: ['https://picsum.photos/seed/organic-surface-tee-1/900/1125'],
+    images: ['https://picsum.photos/seed/organic-cotton-tee-1/900/1125'],
     stockQty: 40,
     active: true,
     categoryId: 'cat_1',
@@ -27,7 +27,7 @@ describe('ProductCard', () => {
 
     expect(screen.getByText('Organic Cotton Tee')).toBeInTheDocument();
     expect(screen.getByText('$29.00')).toBeInTheDocument();
-    expect(screen.getByRole('link')).toHaveAttribute('href', '/products/organic-surface-tee');
+    expect(screen.getByRole('link')).toHaveAttribute('href', '/products/organic-cotton-tee');
   });
 
   it('shows a LOW STOCK badge when stockQty is between 1 and 5', () => {
