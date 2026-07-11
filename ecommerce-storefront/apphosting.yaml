@@ -1,0 +1,25 @@
+# Firebase App Hosting backend config (project: ninja-commerce-1d830).
+# Node runtime is pinned via "engines.node" in package.json.
+
+runConfig:
+  cpu: 1
+  memoryMiB: 512
+  minInstances: 0
+  maxInstances: 4
+  concurrency: 80
+
+env:
+  # Firebase web app config (client SDK; these values are public by design)
+  - variable: NEXT_PUBLIC_FIREBASE_API_KEY
+    value: AIzaSyBlMgf95C3CXCTWo3aoKU17wczHcWrT5D4
+  - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    value: ninja-commerce-1d830.firebaseapp.com
+  - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    value: ninja-commerce-1d830
+  - variable: NEXT_PUBLIC_USE_EMULATORS
+    value: "false"
+
+  # TODO: point at the deployed ecommerce-api (Cloud Run) once it exists.
+  # Until then, SSR catalog pages cannot load products in production.
+  - variable: NEXT_PUBLIC_API_URL
+    value: https://api.invalid
