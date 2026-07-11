@@ -118,7 +118,7 @@
        src/theme/theme-css.test.ts reads the FIRST [data-theme='<id>'] block
        per id and expects the color declarations there.
        Family variables (--font-sora etc.) are provided by next/font in
-       src/app/layout.tsx. Mono is IBM Plex Mono everywhere. --- */
+       src/theme/fonts.ts. Mono is IBM Plex Mono everywhere. --- */
 
 :root {
   --font-display: var(--font-bricolage);
