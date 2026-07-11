@@ -7,6 +7,7 @@ import {
 import { SITE } from '@/lib/site';
 import '@/api/client';
 import './globals.css';
+import '@/theme/themes.css';
 import { Providers } from './providers';
 
 const display = Bricolage_Grotesque({

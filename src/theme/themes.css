@@ -1,0 +1,115 @@
+/*
+ * Theme definitions. One block per theme id in src/theme/registry.ts —
+ * kept in sync by src/theme/theme-css.test.ts, which also enforces
+ * WCAG AA contrast on the core pairs.
+ *
+ * Roles: surface (page bg) · ink (text) · brand (links/CTAs/focus) ·
+ * highlight (errors, sale, attention) · subtle (muted bg/borders).
+ *
+ * This file is imported AFTER globals.css (see src/app/layout.tsx), so its
+ * unlayered rules override the @theme defaults for the active data-theme.
+ */
+
+[data-theme='everloom'] {
+  --color-surface: #faf7f2;
+  --color-ink: #23201c;
+  --color-brand: #2f4a7a;
+  --color-highlight: #a64b35;
+  --color-subtle: #e7dfd2;
+  --radius: 0.625rem;
+}
+
+[data-theme='noir'] {
+  --color-surface: #12100d;
+  --color-ink: #ece7dd;
+  --color-brand: #c9a25f;
+  --color-highlight: #d1705a;
+  --color-subtle: #282420;
+  --radius: 0.25rem;
+}
+
+[data-theme='meadow'] {
+  --color-surface: #f7f5ec;
+  --color-ink: #1e2b20;
+  --color-brand: #3f6b4a;
+  --color-highlight: #a54a2c;
+  --color-subtle: #dde5d4;
+  --radius: 1rem;
+}
+
+[data-theme='arcade'] {
+  --color-surface: #f4f4f0;
+  --color-ink: #111111;
+  --color-brand: #2244ff;
+  --color-highlight: #cc0e63;
+  --color-subtle: #e2e2da;
+  --radius: 0rem;
+}
+
+[data-theme='atelier'] {
+  --color-surface: #ffffff;
+  --color-ink: #1a1a1a;
+  --color-brand: #2b2b2b;
+  --color-highlight: #c93a24;
+  --color-subtle: #ececec;
+  --radius: 0.125rem;
+}
+
+[data-theme='ninja'] {
+  --color-surface: #0a0a0a;
+  --color-ink: #f4f3ef;
+  --color-brand: #ffd84d;
+  --color-highlight: #e8be8e;
+  --color-subtle: #2a2a28;
+  --radius: 0.375rem;
+}
+
+/* --- Signature divider per theme (everloom's woven stripe is the default
+       .selvedge in globals.css) --- */
+
+[data-theme='noir'] .selvedge {
+  /* thin double gold hairline */
+  height: 7px;
+  background: linear-gradient(
+    to bottom,
+    var(--color-brand) 0 1px,
+    transparent 1px 6px,
+    var(--color-brand) 6px 7px
+  );
+}
+
+[data-theme='meadow'] .selvedge {
+  /* soft dashed leaf-green band */
+  height: 6px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--color-brand) 0 18px,
+    transparent 18px 30px
+  );
+}
+
+[data-theme='arcade'] .selvedge {
+  /* diagonal hazard stripes */
+  height: 8px;
+  background: repeating-linear-gradient(
+    45deg,
+    var(--color-ink) 0 14px,
+    var(--color-highlight) 14px 28px
+  );
+}
+
+[data-theme='atelier'] .selvedge {
+  /* single hairline */
+  height: 1px;
+  background: var(--color-ink);
+}
+
+[data-theme='ninja'] .selvedge {
+  /* dashed yellow blade stripe */
+  height: 4px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--color-brand) 0 24px,
+    transparent 24px 36px
+  );
+}
