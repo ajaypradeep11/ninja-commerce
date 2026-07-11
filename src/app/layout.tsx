@@ -22,20 +22,21 @@ import '@/theme/themes.css';
 import { Providers } from './providers';
 
 // One font per theme role per theme (see src/theme/themes.css). next/font
-// self-hosts and subsets these at build time; unused families cost nothing
-// at runtime beyond their @font-face declarations.
+// self-hosts and subsets these at build time. Only the default theme's
+// (everloom) three families preload; the rest are declared with
+// `preload: false` and load on demand when a non-default theme selects them.
 const bricolage = Bricolage_Grotesque({ subsets: ['latin'], variable: '--font-bricolage' });
 const publicSans = Public_Sans({ subsets: ['latin'], variable: '--font-public-sans' });
 const plexMono = IBM_Plex_Mono({ subsets: ['latin'], weight: ['400', '500'], variable: '--font-plex-mono' });
-const cormorant = Cormorant_Garamond({ subsets: ['latin'], weight: ['500', '600', '700'], variable: '--font-cormorant' });
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
-const fraunces = Fraunces({ subsets: ['latin'], variable: '--font-fraunces' });
-const nunitoSans = Nunito_Sans({ subsets: ['latin'], variable: '--font-nunito-sans' });
-const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-space-grotesk' });
-const archivo = Archivo({ subsets: ['latin'], variable: '--font-archivo' });
-const caslon = Libre_Caslon_Text({ subsets: ['latin'], weight: ['400', '700'], variable: '--font-caslon' });
-const karla = Karla({ subsets: ['latin'], variable: '--font-karla' });
-const sora = Sora({ subsets: ['latin'], variable: '--font-sora' });
+const cormorant = Cormorant_Garamond({ subsets: ['latin'], weight: ['500', '600', '700'], variable: '--font-cormorant', preload: false });
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter', preload: false });
+const fraunces = Fraunces({ subsets: ['latin'], variable: '--font-fraunces', preload: false });
+const nunitoSans = Nunito_Sans({ subsets: ['latin'], variable: '--font-nunito-sans', preload: false });
+const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-space-grotesk', preload: false });
+const archivo = Archivo({ subsets: ['latin'], variable: '--font-archivo', preload: false });
+const caslon = Libre_Caslon_Text({ subsets: ['latin'], weight: ['400', '700'], variable: '--font-caslon', preload: false });
+const karla = Karla({ subsets: ['latin'], variable: '--font-karla', preload: false });
+const sora = Sora({ subsets: ['latin'], variable: '--font-sora', preload: false });
 
 const fontVariables = [
   bricolage,
@@ -72,8 +73,10 @@ export default function RootLayout({
       suppressHydrationWarning
       className={fontVariables}
     >
-      <body className="bg-surface font-sans text-ink antialiased">
+      <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript() }} />
+      </head>
+      <body className="bg-surface font-sans text-ink antialiased">
         <Providers>{children}</Providers>
       </body>
     </html>

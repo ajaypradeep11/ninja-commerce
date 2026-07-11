@@ -34,6 +34,12 @@ describe('registry', () => {
     }
   });
 
+  it('every theme has a boolean dark flag', () => {
+    for (const t of THEMES) {
+      expect(typeof t.dark).toBe('boolean');
+    }
+  });
+
   it('exposes the storage key', () => {
     expect(THEME_STORAGE_KEY).toBe('storefront.theme.v1');
   });

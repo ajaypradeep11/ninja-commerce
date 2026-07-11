@@ -1,6 +1,6 @@
 import { THEME_IDS, THEME_STORAGE_KEY } from './registry';
 
-// Inlined into <body> before hydration so a stored theme applies pre-paint
+// Inlined into <head> before hydration so a stored theme applies pre-paint
 // (no flash of the default theme). Must stay dependency-free and ES5-safe.
 export function themeInitScript(): string {
   const ids = JSON.stringify(THEME_IDS);

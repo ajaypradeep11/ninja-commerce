@@ -79,7 +79,10 @@ re-theme automatically.
    }
    ```
 
-   Skip this and your theme inherits the default typography.
+   Skip this and your theme inherits the default typography. Forks that pin
+   `NEXT_PUBLIC_THEME` to a non-default theme should set `preload: true` on
+   their theme's font families in `src/app/layout.tsx` (and may set the
+   unused families to `preload: false` or remove them entirely).
 
 4. **Signature divider (optional).** Override `.selvedge` for your theme:
 
@@ -107,3 +110,12 @@ theme from the registry automatically.
 Delete the CSS block, the registry entry, and (if unused elsewhere) the
 font loads. Set `NEXT_PUBLIC_THEME` to your theme and
 `NEXT_PUBLIC_SHOW_THEME_SWITCHER=false`.
+
+`src/components/site/ThemeSwitcher.test.tsx` and `e2e/theming.spec.ts`
+reference specific themes (Everloom and Ninja) and assert the default
+theme — update both when removing themes or changing the default.
+
+Note that hiding the switcher (`NEXT_PUBLIC_SHOW_THEME_SWITCHER=false`)
+does not clear a returning visitor's already-stored theme choice
+(`storefront.theme.v1` in `localStorage`); it only stops new choices from
+being made.

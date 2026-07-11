@@ -19,15 +19,17 @@ export interface ThemeMeta {
   id: ThemeId;
   label: string;
   swatches: { surface: string; brand: string; highlight: string };
+  /** Whether the theme is visually dark — drives Sonner's light/dark toast styling. */
+  dark: boolean;
 }
 
 export const THEMES: readonly ThemeMeta[] = [
-  { id: 'everloom', label: 'Everloom', swatches: { surface: '#faf7f2', brand: '#2f4a7a', highlight: '#a64b35' } },
-  { id: 'noir', label: 'Noir', swatches: { surface: '#12100d', brand: '#c9a25f', highlight: '#d1705a' } },
-  { id: 'meadow', label: 'Meadow', swatches: { surface: '#f7f5ec', brand: '#3f6b4a', highlight: '#a54a2c' } },
-  { id: 'arcade', label: 'Arcade', swatches: { surface: '#f4f4f0', brand: '#2244ff', highlight: '#cc0e63' } },
-  { id: 'atelier', label: 'Atelier', swatches: { surface: '#ffffff', brand: '#2b2b2b', highlight: '#c93a24' } },
-  { id: 'ninja', label: 'Ninja', swatches: { surface: '#0a0a0a', brand: '#ffd84d', highlight: '#e8be8e' } },
+  { id: 'everloom', label: 'Everloom', swatches: { surface: '#faf7f2', brand: '#2f4a7a', highlight: '#a64b35' }, dark: false },
+  { id: 'noir', label: 'Noir', swatches: { surface: '#12100d', brand: '#c9a25f', highlight: '#d1705a' }, dark: true },
+  { id: 'meadow', label: 'Meadow', swatches: { surface: '#f7f5ec', brand: '#3f6b4a', highlight: '#a54a2c' }, dark: false },
+  { id: 'arcade', label: 'Arcade', swatches: { surface: '#f4f4f0', brand: '#2244ff', highlight: '#cc0e63' }, dark: false },
+  { id: 'atelier', label: 'Atelier', swatches: { surface: '#ffffff', brand: '#2b2b2b', highlight: '#c93a24' }, dark: false },
+  { id: 'ninja', label: 'Ninja', swatches: { surface: '#0a0a0a', brand: '#ffd84d', highlight: '#e8be8e' }, dark: true },
 ];
 
 export function resolveTheme(value: unknown): ThemeId {
