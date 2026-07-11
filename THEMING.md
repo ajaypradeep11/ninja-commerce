@@ -68,9 +68,11 @@ re-theme automatically.
    and an entry to `THEMES` (label + surface/brand/highlight swatches for the
    switcher). TypeScript and the sync test enforce that both stay aligned.
 
-3. **Fonts (optional).** Load families in `src/app/layout.tsx` via
-   `next/font` with a `--font-<family>` variable, then map the roles in
-   `themes.css`:
+3. **Fonts (optional).** Add your families in `src/theme/fonts.ts` — the
+   single font config. Import the loader from `next/font/google`, call it
+   with a `--font-<name>` variable (plus explicit `weight` for
+   non-variable fonts, and `preload: false` unless your default theme uses
+   it), and add it to `THEME_FONTS`. Then map the roles in `themes.css`:
 
    ```css
    [data-theme='ninja'] {
@@ -80,9 +82,10 @@ re-theme automatically.
    ```
 
    Skip this and your theme inherits the default typography. Forks that pin
-   `NEXT_PUBLIC_THEME` to a non-default theme should set `preload: true` on
-   their theme's font families in `src/app/layout.tsx` (and may set the
-   unused families to `preload: false` or remove them entirely).
+   `NEXT_PUBLIC_THEME` to a non-default theme should flip `preload: true`
+   on their theme's families in `src/theme/fonts.ts` (and may remove or
+   un-preload the ones they don't use). `npm test` fails if `themes.css`
+   references a font `fonts.ts` doesn't load, or a loaded font goes unused.
 
 4. **Signature divider (optional).** Override `.selvedge` for your theme:
 
