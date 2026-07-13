@@ -21,7 +21,7 @@ test.describe('browse', () => {
     await expect(
       page.getByRole('heading', {
         level: 1,
-        name: "Basics you'll wear out before they wear down.",
+        name: 'Your favorite anime, in a whole new light.',
       }),
     ).toBeVisible();
 
@@ -33,36 +33,36 @@ test.describe('browse', () => {
     );
   });
 
-  test('category filter shows tees with out-of-stock badge', async ({
+  test('category filter shows anime lamps with out-of-stock badge', async ({
     page,
   }) => {
-    await page.goto('/products?category=tees');
+    await page.goto('/products?category=anime-lamps');
 
-    await expect(productCards(page)).toHaveCount(4);
+    await expect(productCards(page)).toHaveCount(12);
 
-    const pocketTee = productCards(page).filter({
-      hasText: 'Pocket Tee — Madder',
+    const dragonBall = productCards(page).filter({
+      hasText: 'Dragon Ball LED Lamp',
     });
-    await expect(pocketTee).toBeVisible();
-    await expect(pocketTee.getByText('OUT OF STOCK')).toBeVisible();
+    await expect(dragonBall).toBeVisible();
+    await expect(dragonBall.getByText('OUT OF STOCK')).toBeVisible();
   });
 
   test('sort by price puts the cheapest item first', async ({ page }) => {
     await page.goto('/products?sort=price_asc');
 
-    await expect(productCards(page).first()).toContainText('Everyday Tote');
+    await expect(productCards(page).first()).toContainText(
+      'BT21 Halloween LED Lamp',
+    );
   });
 
-  test('full listing shows all products with no pagination control', async ({
-    page,
-  }) => {
+  test('full listing paginates the anime catalog', async ({ page }) => {
     await page.goto('/products');
 
-    await expect(visibleText(page, '11 PRODUCTS')).toBeVisible();
-    await expect(productCards(page)).toHaveCount(11);
+    await expect(visibleText(page, '20 PRODUCTS')).toBeVisible();
+    await expect(productCards(page)).toHaveCount(12);
     await expect(
       page.getByRole('navigation', { name: 'Pagination' }),
-    ).toHaveCount(0);
+    ).toBeVisible();
   });
 });
 
@@ -70,7 +70,7 @@ test.describe('cart', () => {
   test('add to cart clamps quantity and cart math updates on change/remove', async ({
     page,
   }) => {
-    await page.goto('/products/heavyweight-hoodie');
+    await page.goto('/products/guts-led-lamp');
 
     await expect(visibleText(page, 'Only 3 left')).toBeVisible();
 
@@ -84,7 +84,7 @@ test.describe('cart', () => {
 
     await page.goto('/cart');
 
-    await expect(visibleText(page, 'Heavyweight Hoodie')).toBeVisible();
+    await expect(visibleText(page, 'Guts LED Lamp')).toBeVisible();
     await expect(visibleText(page, '$237.00')).toHaveCount(2); // line total + subtotal
 
     await page.getByRole('button', { name: 'Decrease quantity' }).click();
@@ -92,7 +92,7 @@ test.describe('cart', () => {
     await expect(visibleText(page, '$158.00')).toHaveCount(2);
 
     await page
-      .getByRole('button', { name: 'Remove Heavyweight Hoodie' })
+      .getByRole('button', { name: 'Remove Guts LED Lamp' })
       .click();
 
     await expect(visibleText(page, 'Your cart is empty.')).toBeVisible();
