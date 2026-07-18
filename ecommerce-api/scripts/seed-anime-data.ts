@@ -209,6 +209,15 @@ const PRODUCTS: AnimeProduct[] = [
 ];
 
 async function main(): Promise<void> {
+  // This script wipes reviews, orders, products and categories. Never let it
+  // run against a production database.
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error(
+      'Refusing to run seed-anime-data in production: it deletes all reviews, ' +
+        'orders, products and categories.',
+    );
+  }
+
   // Old catalog rows are referenced by reviews/orders, so clear those first.
   await prisma.review.deleteMany();
   await prisma.orderItem.deleteMany();

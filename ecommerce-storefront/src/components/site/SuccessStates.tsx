@@ -95,6 +95,12 @@ function PaidView({ order }: { order: OrderResponseDto }) {
           <span className="font-mono text-xs tracking-wide text-ink/60 uppercase">Subtotal</span>
           <Price cents={order.subtotalCents} />
         </div>
+        {order.taxCents != null && (
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-xs tracking-wide text-ink/60 uppercase">Tax</span>
+            <Price cents={order.taxCents} />
+          </div>
+        )}
         <div className="flex items-center justify-between">
           <span className="font-mono text-xs tracking-wide text-ink/60 uppercase">Total</span>
           <Price cents={total} className="text-lg" />

@@ -1,5 +1,14 @@
 import { Transform, Type } from 'class-transformer';
-import { IsBoolean, IsIn, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
+import {
+  IsBoolean,
+  IsIn,
+  IsInt,
+  IsOptional,
+  IsString,
+  Max,
+  MaxLength,
+  Min,
+} from 'class-validator';
 
 export class ListProductsQuery {
   @IsOptional()
@@ -8,6 +17,7 @@ export class ListProductsQuery {
 
   @IsOptional()
   @IsString()
+  @MaxLength(200)
   q?: string;
 
   @IsOptional()

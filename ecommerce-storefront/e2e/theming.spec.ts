@@ -6,27 +6,30 @@ test('theme switcher applies, restyles, and persists across reload', async ({
 }) => {
   await page.goto('/');
   const html = page.locator('html');
-  await expect(html).toHaveAttribute('data-theme', 'everloom');
+  // Default theme is ninja (surface #0a0a0a).
+  await expect(html).toHaveAttribute('data-theme', 'ninja');
 
   const before = await page.evaluate(
     () => getComputedStyle(document.body).backgroundColor,
   );
+  expect(before).toBe('rgb(10, 10, 10)');
 
+  // Switch to a different (light) theme to prove switching restyles the page.
   await page
-    .getByRole('button', { name: 'Switch to Ninja theme' })
+    .getByRole('button', { name: 'Switch to Everloom theme' })
     .click();
 
-  await expect(html).toHaveAttribute('data-theme', 'ninja');
+  await expect(html).toHaveAttribute('data-theme', 'everloom');
   const after = await page.evaluate(
     () => getComputedStyle(document.body).backgroundColor,
   );
   expect(after).not.toBe(before);
-  // ninja surface is #0a0a0a
-  expect(after).toBe('rgb(10, 10, 10)');
+  // everloom surface is #faf7f2
+  expect(after).toBe('rgb(250, 247, 242)');
 
   await page.reload();
-  await expect(html).toHaveAttribute('data-theme', 'ninja');
+  await expect(html).toHaveAttribute('data-theme', 'everloom');
   expect(
     await page.evaluate(() => getComputedStyle(document.body).backgroundColor),
-  ).toBe('rgb(10, 10, 10)');
+  ).toBe('rgb(250, 247, 242)');
 });

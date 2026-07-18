@@ -96,6 +96,20 @@ describe('CheckoutButton', () => {
     await vi.waitFor(() => expect(assignMock).toHaveBeenCalledWith('https://checkout.stripe.com/session_123'));
   });
 
+  it('rejects a non-Stripe checkout URL instead of navigating to it', async () => {
+    useAuthMock.mockReturnValue({ user: { uid: 'u1' }, loading: false });
+    checkoutControllerCreateMock.mockResolvedValue({
+      data: { url: 'https://evil.example.com/phish', orderId: 'order_1' },
+    });
+    const user = userEvent.setup();
+    renderWithClient(<CheckoutButton lines={[makeLine()]} />);
+
+    await user.click(screen.getByRole('button', { name: 'Checkout' }));
+
+    await vi.waitFor(() => expect(toastErrorMock).toHaveBeenCalledWith('Checkout failed. Try again.'));
+    expect(assignMock).not.toHaveBeenCalled();
+  });
+
   it('toasts the exact API message and re-runs the refresh on a 409 conflict', async () => {
     useAuthMock.mockReturnValue({ user: { uid: 'u1' }, loading: false });
     checkoutControllerCreateMock.mockResolvedValue({

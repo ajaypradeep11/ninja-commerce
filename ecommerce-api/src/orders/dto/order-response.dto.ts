@@ -24,6 +24,8 @@ export class OrderResponseDto {
   shippingAddress!: unknown;
   subtotalCents!: number;
   @ApiProperty({ type: Number, nullable: true })
+  taxCents!: number | null;
+  @ApiProperty({ type: Number, nullable: true })
   totalCents!: number | null;
   @ApiProperty({ type: [OrderItemResponseDto] })
   items!: OrderItemResponseDto[];

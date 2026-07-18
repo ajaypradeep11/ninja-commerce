@@ -14,12 +14,28 @@ const listeners = new Set<() => void>();
 let lines: CartLine[] = load();
 const EMPTY: CartLine[] = [];
 
+function isValidLine(raw: unknown): raw is CartLine {
+  if (typeof raw !== 'object' || raw === null) return false;
+  const l = raw as Record<string, unknown>;
+  return (
+    typeof l.productId === 'string' &&
+    typeof l.slug === 'string' &&
+    typeof l.name === 'string' &&
+    (typeof l.image === 'string' || l.image === null) &&
+    Number.isInteger(l.priceCents) &&
+    (l.priceCents as number) >= 0 &&
+    Number.isInteger(l.quantity) &&
+    (l.quantity as number) >= 1 &&
+    (l.quantity as number) <= MAX_QTY
+  );
+}
+
 function load(): CartLine[] {
   if (typeof window === 'undefined') return [];
   try {
     const parsed: unknown = JSON.parse(window.localStorage.getItem(KEY) ?? '');
     if (typeof parsed === 'object' && parsed !== null && Array.isArray((parsed as { lines?: unknown }).lines)) {
-      return (parsed as { lines: CartLine[] }).lines;
+      return (parsed as { lines: unknown[] }).lines.filter(isValidLine);
     }
   } catch {
     /* corrupted or absent — start empty */

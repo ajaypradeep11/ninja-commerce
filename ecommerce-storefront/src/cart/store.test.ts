@@ -53,6 +53,25 @@ test('corrupted JSON yields empty cart', () => {
   expect(getLines()).toEqual([]);
 });
 
+test('drops invalid lines from localStorage, keeps valid ones', () => {
+  const valid = { productId: 'p1', slug: 'tee', name: 'Tee', priceCents: 2900, image: null, quantity: 2, stockQty: 40 };
+  const badQty = { ...valid, productId: 'p2', quantity: 0 };
+  const overQty = { ...valid, productId: 'p3', quantity: 200 };
+  const nanQty = { ...valid, productId: 'p4', quantity: NaN };
+  const negPrice = { ...valid, productId: 'p5', priceCents: -5 };
+  const nonIntPrice = { ...valid, productId: 'p6', priceCents: 12.5 };
+  const badName = { ...valid, productId: 'p7', name: 42 };
+  const badImage = { ...valid, productId: 'p8', image: 5 };
+  localStorage.setItem(
+    'localninja.cart.v1',
+    JSON.stringify({ lines: [valid, badQty, overQty, nanQty, negPrice, nonIntPrice, badName, badImage] }),
+  );
+  window.dispatchEvent(new StorageEvent('storage', { key: 'localninja.cart.v1' }));
+  const restored = getLines();
+  expect(restored).toHaveLength(1);
+  expect(restored[0].productId).toBe('p1');
+});
+
 test('subscribe notifies on mutation and unsubscribes', () => {
   const cb = vi.fn();
   const off = subscribe(cb);

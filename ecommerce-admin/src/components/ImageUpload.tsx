@@ -11,19 +11,54 @@ interface ImageUploadProps {
   onChange: (next: string[]) => void;
 }
 
+// Keep this allowlist in sync with the contentType matcher in storage.rules.
+// Maps an accepted browser content-type to the safe extension used in the key.
+const ALLOWED_IMAGE_TYPES: Record<string, string> = {
+  'image/png': 'png',
+  'image/jpeg': 'jpg',
+  'image/webp': 'webp',
+  'image/gif': 'gif',
+  'image/avif': 'avif',
+};
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+
 export function ImageUpload({ value, onChange }: ImageUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
 
   async function onFiles(files: FileList | null) {
     if (!files?.length) return;
+
+    // The <input accept="image/*"> is only a UI hint — enforce the same
+    // constraints as storage.rules here so we never attempt a rejected upload.
+    const valid: { file: File; ext: string }[] = [];
+    for (const file of Array.from(files)) {
+      const ext = ALLOWED_IMAGE_TYPES[file.type];
+      if (!ext) {
+        toast.error(`"${file.name}" is not a supported image type.`);
+        continue;
+      }
+      if (file.size >= MAX_IMAGE_BYTES) {
+        toast.error(`"${file.name}" is larger than 5MB.`);
+        continue;
+      }
+      valid.push({ file, ext });
+    }
+    if (!valid.length) {
+      if (inputRef.current) inputRef.current.value = '';
+      return;
+    }
+
     setUploading(true);
     try {
       const urls = await Promise.all(
-        Array.from(files).map(async (file) => {
+        valid.map(async ({ file, ext }) => {
+          // Never interpolate file.name (attacker-controlled, may contain "/"
+          // for path traversal). Build a single-segment key from a random id
+          // plus a safe extension derived from the validated content-type.
           const storageRef = ref(
             storage,
-            `products/${crypto.randomUUID()}-${file.name}`,
+            `products/${crypto.randomUUID()}.${ext}`,
           );
           await uploadBytes(storageRef, file);
           return getDownloadURL(storageRef);

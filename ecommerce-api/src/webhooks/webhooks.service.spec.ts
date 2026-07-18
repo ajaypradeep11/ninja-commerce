@@ -47,7 +47,8 @@ function completedEvent(
         id: 'cs_1',
         metadata: { orderId: 'o1' },
         payment_intent: 'pi_1',
-        amount_total: 5000,
+        amount_total: 5650,
+        total_details: { amount_tax: 650 },
         payment_status: 'paid',
         customer_details: billingDetails,
         collected_information: { shipping_details: shippingDetails },
@@ -105,7 +106,8 @@ describe('WebhooksService', () => {
       data: expect.objectContaining({
         status: 'PAID',
         stripePaymentIntentId: 'pi_1',
-        totalCents: 5000,
+        totalCents: 5650,
+        taxCents: 650,
         shippingAddress: shippingDetails,
       }),
     });

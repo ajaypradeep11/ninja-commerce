@@ -93,7 +93,11 @@ export const usersControllerGetMe = <ThrowOnError extends boolean = false>(
     UsersControllerGetMeResponses,
     unknown,
     ThrowOnError
-  >({ url: '/me', ...options });
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/me',
+    ...options,
+  });
 
 export const usersControllerUpdateAddresses = <
   ThrowOnError extends boolean = false,
@@ -109,6 +113,7 @@ export const usersControllerUpdateAddresses = <
     unknown,
     ThrowOnError
   >({
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/me/addresses',
     ...options,
     headers: {
@@ -300,6 +305,9 @@ export const productsControllerUpdate = <ThrowOnError extends boolean = false>(
     },
   });
 
+/**
+ * Create a Stripe Checkout session for the current cart
+ */
 export const checkoutControllerCreate = <ThrowOnError extends boolean = false>(
   options: Options<CheckoutControllerCreateData, ThrowOnError>,
 ): RequestResult<CheckoutControllerCreateResponses, unknown, ThrowOnError> =>
@@ -308,6 +316,7 @@ export const checkoutControllerCreate = <ThrowOnError extends boolean = false>(
     unknown,
     ThrowOnError
   >({
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/checkout',
     ...options,
     headers: {
@@ -415,6 +424,9 @@ export const reviewsControllerList = <ThrowOnError extends boolean = false>(
     ThrowOnError
   >({ url: '/products/{productId}/reviews', ...options });
 
+/**
+ * Create a review (purchase-gated, one per user per product)
+ */
 export const reviewsControllerCreate = <ThrowOnError extends boolean = false>(
   options: Options<ReviewsControllerCreateData, ThrowOnError>,
 ): RequestResult<ReviewsControllerCreateResponses, unknown, ThrowOnError> =>
@@ -423,6 +435,7 @@ export const reviewsControllerCreate = <ThrowOnError extends boolean = false>(
     unknown,
     ThrowOnError
   >({
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/products/{productId}/reviews',
     ...options,
     headers: {

@@ -105,6 +105,7 @@ export class WebhooksService {
             ? session.payment_intent
             : (session.payment_intent?.id ?? null),
         totalCents: session.amount_total ?? order.subtotalCents,
+        taxCents: session.total_details?.amount_tax ?? null,
         shippingAddress:
           shipping === null ? Prisma.JsonNull : (shipping as object),
       },

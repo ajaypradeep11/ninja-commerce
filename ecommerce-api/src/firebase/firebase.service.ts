@@ -10,6 +10,21 @@ export class FirebaseService implements OnModuleInit {
   constructor(private readonly config: ConfigService) {}
 
   onModuleInit(): void {
+    // Refuse to boot in production with the auth emulator configured:
+    // firebase-admin's verifyIdToken silently skips signature verification when
+    // FIREBASE_AUTH_EMULATOR_HOST is set, which would be a total auth bypass if
+    // that env var ever leaked into a production environment.
+    if (
+      process.env.NODE_ENV === 'production' &&
+      process.env.FIREBASE_AUTH_EMULATOR_HOST
+    ) {
+      throw new Error(
+        'Refusing to start: FIREBASE_AUTH_EMULATOR_HOST is set while NODE_ENV=production. ' +
+          'The auth emulator disables ID token signature verification, so this would bypass ' +
+          'all authentication. Unset FIREBASE_AUTH_EMULATOR_HOST in production.',
+      );
+    }
+
     // Token verification only needs the project id (public Google certs).
     // GOOGLE_APPLICATION_CREDENTIALS is only required for the grant-admin script.
     this.app =

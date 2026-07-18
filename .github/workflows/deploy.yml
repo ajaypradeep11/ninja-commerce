@@ -1,0 +1,117 @@
+name: deploy
+
+# On every push to master: run all unit tests, deploy the API to TEST, migrate
+# the test DB, smoke-check it, then (auto) do the same for PROD. The storefront
+# is deployed separately by Firebase App Hosting (two backends, test + prod),
+# which watches this same repo — see ecommerce-storefront/apphosting*.yaml.
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  id-token: write # required for Workload Identity Federation
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  REGION: us-east4
+  SERVICE: ninja-commerce-api
+  TEST_PROJECT: ninja-commerce-test
+  PROD_PROJECT: ninja-commerce-1d830
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: '**/package-lock.json'
+      - name: API unit tests
+        working-directory: ecommerce-api
+        run: npm ci && npm test
+      - name: Storefront unit tests
+        working-directory: ecommerce-storefront
+        run: npm ci && npm test
+      - name: Admin unit tests
+        working-directory: ecommerce-admin
+        run: npm ci && npm test
+
+  deploy-test:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.WIF_PROVIDER }}
+          service_account: ${{ vars.DEPLOY_SA_TEST }}
+      - uses: google-github-actions/setup-gcloud@v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # Migrate BEFORE deploying new code (additive migrations are safe for the
+      # briefly-old running instance; the new image then finds the schema ready).
+      - name: Migrate test database
+        working-directory: ecommerce-api
+        env:
+          DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
+        run: |
+          npm ci
+          npx prisma migrate deploy
+      - name: Deploy API to test Cloud Run
+        run: |
+          gcloud run deploy "$SERVICE" \
+            --source ecommerce-api \
+            --project "$TEST_PROJECT" \
+            --region "$REGION" \
+            --quiet
+      - name: Smoke test (test API)
+        run: |
+          URL=$(gcloud run services describe "$SERVICE" --project "$TEST_PROJECT" --region "$REGION" --format='value(status.url)')
+          echo "test API: $URL"
+          curl -fsS --retry 5 --retry-connrefused "$URL/products" > /dev/null
+          echo "✅ test API responding"
+
+  deploy-prod:
+    needs: deploy-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.WIF_PROVIDER }}
+          service_account: ${{ vars.DEPLOY_SA_PROD }}
+      - uses: google-github-actions/setup-gcloud@v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Migrate production database
+        working-directory: ecommerce-api
+        env:
+          DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
+        run: |
+          npm ci
+          npx prisma migrate deploy
+      - name: Deploy API to prod Cloud Run
+        run: |
+          gcloud run deploy "$SERVICE" \
+            --source ecommerce-api \
+            --project "$PROD_PROJECT" \
+            --region "$REGION" \
+            --quiet
+      - name: Smoke test (prod API)
+        run: |
+          URL=$(gcloud run services describe "$SERVICE" --project "$PROD_PROJECT" --region "$REGION" --format='value(status.url)')
+          echo "prod API: $URL"
+          curl -fsS --retry 5 --retry-connrefused "$URL/products" > /dev/null
+          echo "✅ prod API responding"

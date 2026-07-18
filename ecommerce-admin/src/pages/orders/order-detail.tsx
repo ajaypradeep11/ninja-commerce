@@ -86,6 +86,18 @@ export function OrderDetailPage() {
               </div>
             ))}
             <Separator />
+            {order.taxCents != null && (
+              <>
+                <div className="flex justify-between text-sm text-muted-foreground">
+                  <span>Subtotal</span>
+                  <span>{formatUsd(order.subtotalCents)}</span>
+                </div>
+                <div className="flex justify-between text-sm text-muted-foreground">
+                  <span>Tax</span>
+                  <span>{formatUsd(order.taxCents)}</span>
+                </div>
+              </>
+            )}
             <div className="flex justify-between text-sm font-medium">
               <span>Total</span>
               <span>{formatUsd(order.totalCents ?? order.subtotalCents)}</span>

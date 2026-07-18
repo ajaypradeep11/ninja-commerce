@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsIn, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
+import { IsIn, IsInt, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator';
 import { OrderStatus } from '@prisma/client';
 
 export class ListOrdersQuery {
@@ -9,6 +9,7 @@ export class ListOrdersQuery {
 
   @IsOptional()
   @IsString()
+  @MaxLength(200)
   email?: string;
 
   @IsOptional()

@@ -29,7 +29,7 @@ test.describe('browse', () => {
 
     await expect(page.locator('.marquee-track').first()).toBeVisible();
     await expect(page.locator('.marquee-track').first()).toContainText(
-      'EVERLOOM',
+      'NINJACOMMERCE',
     );
   });
 

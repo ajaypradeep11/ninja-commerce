@@ -6,7 +6,9 @@ services:
       POSTGRES_PASSWORD: ecommerce
       POSTGRES_DB: ecommerce
     ports:
-      - "5432:5432"
+      # Bind to loopback only — trivial ecommerce/ecommerce superuser creds must
+      # not be reachable from the LAN.
+      - "127.0.0.1:5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
 volumes:

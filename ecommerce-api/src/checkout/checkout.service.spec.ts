@@ -81,13 +81,19 @@ describe('CheckoutService', () => {
     expect(sessionArgs.mode).toBe('payment');
     expect(sessionArgs.allow_promotion_codes).toBe(true);
     expect(sessionArgs.metadata).toEqual({ orderId: 'o1' });
+    // Canada-only shipping and Stripe Tax compute provincial GST/HST/PST/QST.
+    expect(sessionArgs.automatic_tax).toEqual({ enabled: true });
+    expect(sessionArgs.shipping_address_collection.allowed_countries).toEqual([
+      'CA',
+    ]);
     expect(sessionArgs.line_items).toEqual([
       {
         quantity: 2,
         price_data: {
-          currency: 'usd',
+          currency: 'cad',
           unit_amount: 2500,
           product_data: { name: 'Tee' },
+          tax_behavior: 'exclusive',
         },
       },
     ]);

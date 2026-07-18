@@ -1,2 +1,10 @@
 node_modules/
 .DS_Store
+
+# Stack launcher (start-stack.sh) — local machine state & secrets.
+# Pattern-based so stray copies (stack.secrets.env.bak, stack.env.local) are also
+# ignored; the committed *.example templates are explicitly re-included.
+stack*.env
+!stack*.env.example
+.stack/
+.playwright-mcp/

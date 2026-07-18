@@ -71,6 +71,7 @@ model Order {
   stripePaymentIntentId String?     @unique
   shippingAddress       Json?
   subtotalCents         Int
+  taxCents              Int?
   totalCents            Int?
   items                 OrderItem[]
   createdAt             DateTime    @default(now())

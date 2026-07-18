@@ -2,5 +2,6 @@ node_modules
 dist
 test
 .env
+.env.*
 *.log
 docker-compose.yml

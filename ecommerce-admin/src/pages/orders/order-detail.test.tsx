@@ -14,7 +14,8 @@ vi.mock('@/api/hooks/orders', () => ({
       stripePaymentIntentId: 'pi_123',
       shippingAddress: { name: 'Demo Buyer', line1: '1 Main St' },
       subtotalCents: 5800,
-      totalCents: 5800,
+      taxCents: 754,
+      totalCents: 6554,
       items: [
         {
           id: 'i1',
@@ -81,5 +82,15 @@ describe('OrderDetailPage', () => {
     expect(screen.getByText('Organic Cotton Tee')).toBeInTheDocument();
     expect(screen.getByText('× 2')).toBeInTheDocument();
     expect(screen.getAllByText('$58.00').length).toBeGreaterThan(0);
+  });
+
+  it('itemizes tax between subtotal and total when taxCents is set', () => {
+    state.status = 'PAID';
+    renderPage();
+    expect(screen.getByText('Subtotal')).toBeInTheDocument();
+    expect(screen.getByText('Tax')).toBeInTheDocument();
+    expect(screen.getByText('$7.54')).toBeInTheDocument();
+    // total = subtotal 58.00 + tax 7.54
+    expect(screen.getByText('$65.54')).toBeInTheDocument();
   });
 });

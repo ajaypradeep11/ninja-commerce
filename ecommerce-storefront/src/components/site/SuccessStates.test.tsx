@@ -53,6 +53,7 @@ function makeOrder(overrides: Partial<OrderResponseDto> = {}): OrderResponseDto 
     stripePaymentIntentId: 'pi_test_1',
     shippingAddress: null,
     subtotalCents: 15800,
+    taxCents: null,
     totalCents: 16800,
     items: [makeItem()],
     createdAt: '2026-01-01T00:00:00.000Z',
@@ -105,6 +106,37 @@ describe('SuccessStates', () => {
 
       const totalRow = screen.getByText('Total').closest('div');
       expect(within(totalRow!).getByText(formatCents(20500))).toBeInTheDocument();
+    });
+
+    it('itemizes a Tax line between subtotal and total when taxCents is set', async () => {
+      searchParamsMock.set('session_id', 'cs_test_1');
+      useAuthMock.mockReturnValue({ user: { uid: 'u1' }, loading: false });
+      const order = makeOrder({
+        subtotalCents: 19000,
+        taxCents: 2470, // 13% HST on 190.00
+        totalCents: 21470,
+      });
+      pollForOrderMock.mockResolvedValue({ state: 'paid', order });
+
+      render(<SuccessStates />);
+
+      await screen.findByText('Thank you');
+      const taxRow = screen.getByText('Tax').closest('div');
+      expect(within(taxRow!).getByText(formatCents(2470))).toBeInTheDocument();
+      const totalRow = screen.getByText('Total').closest('div');
+      expect(within(totalRow!).getByText(formatCents(21470))).toBeInTheDocument();
+    });
+
+    it('hides the Tax line when taxCents is null', async () => {
+      searchParamsMock.set('session_id', 'cs_test_1');
+      useAuthMock.mockReturnValue({ user: { uid: 'u1' }, loading: false });
+      const order = makeOrder({ taxCents: null });
+      pollForOrderMock.mockResolvedValue({ state: 'paid', order });
+
+      render(<SuccessStates />);
+
+      await screen.findByText('Thank you');
+      expect(screen.queryByText('Tax')).not.toBeInTheDocument();
     });
 
     it('falls back to subtotalCents for the total when totalCents is null', async () => {

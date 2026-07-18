@@ -10,6 +10,17 @@ import type { CartLine } from '@/cart/store';
 import { Button } from '@/components/ui/button';
 import { applyCartRefresh } from './cart-refresh';
 
+const STRIPE_CHECKOUT_ORIGIN = 'https://checkout.stripe.com';
+
+function isStripeCheckoutUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === 'https:' && parsed.origin === STRIPE_CHECKOUT_ORIGIN;
+  } catch {
+    return false;
+  }
+}
+
 export function CheckoutButton({ lines }: { lines: CartLine[] }) {
   const { user } = useAuth();
   const router = useRouter();
@@ -22,6 +33,10 @@ export function CheckoutButton({ lines }: { lines: CartLine[] }) {
         }),
       ),
     onSuccess: (data) => {
+      if (!isStripeCheckoutUrl(data.url)) {
+        toast.error('Checkout failed. Try again.');
+        return;
+      }
       window.location.assign(data.url);
     },
     onError: (error) => {

@@ -154,6 +154,7 @@ export type OrderResponseDto = {
   shippingAddress: {
     [key: string]: unknown;
   } | null;
+  taxCents: number | null;
   totalCents: number | null;
   items: Array<OrderItemResponseDto>;
   id: string;

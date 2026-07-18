@@ -14,6 +14,18 @@ export type AddressDto = {
   country: string;
 };
 
+export type UserResponseDto = {
+  /**
+   * Firebase UID
+   */
+  id: string;
+  email: string;
+  role: 'CUSTOMER' | 'ADMIN';
+  addresses: Array<AddressDto>;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type UpdateAddressesDto = {
   addresses: Array<AddressDto>;
 };
@@ -112,6 +124,17 @@ export type CreateCheckoutDto = {
   items: Array<CheckoutItemDto>;
 };
 
+export type CheckoutSessionResponseDto = {
+  /**
+   * Stripe hosted checkout URL to redirect the customer to
+   */
+  url: string;
+  /**
+   * Local order id created in PENDING state
+   */
+  orderId: string;
+};
+
 export type OrderStatus =
   'PENDING' | 'PAID' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED' | 'REFUNDED';
 
@@ -131,6 +154,7 @@ export type OrderResponseDto = {
   shippingAddress: {
     [key: string]: unknown;
   } | null;
+  taxCents: number | null;
   totalCents: number | null;
   items: Array<OrderItemResponseDto>;
   id: string;
@@ -154,6 +178,21 @@ export type UpdateOrderStatusDto = {
 
 export type RefundResponseDto = {
   refundId: string;
+};
+
+export type ReviewResponseDto = {
+  id: string;
+  productId: string;
+  userId: string;
+  rating: number;
+  text: string;
+  createdAt: string;
+};
+
+export type ProductReviewsResponseDto = {
+  items: Array<ReviewResponseDto>;
+  averageRating: number | null;
+  count: number;
 };
 
 export type CreateReviewDto = {
@@ -192,8 +231,11 @@ export type UsersControllerGetMeData = {
 };
 
 export type UsersControllerGetMeResponses = {
-  200: unknown;
+  200: UserResponseDto;
 };
+
+export type UsersControllerGetMeResponse =
+  UsersControllerGetMeResponses[keyof UsersControllerGetMeResponses];
 
 export type UsersControllerUpdateAddressesData = {
   body: UpdateAddressesDto;
@@ -203,8 +245,11 @@ export type UsersControllerUpdateAddressesData = {
 };
 
 export type UsersControllerUpdateAddressesResponses = {
-  200: unknown;
+  200: UserResponseDto;
 };
+
+export type UsersControllerUpdateAddressesResponse =
+  UsersControllerUpdateAddressesResponses[keyof UsersControllerUpdateAddressesResponses];
 
 export type CategoriesControllerFindAllData = {
   body?: never;
@@ -389,8 +434,11 @@ export type CheckoutControllerCreateData = {
 };
 
 export type CheckoutControllerCreateResponses = {
-  201: unknown;
+  201: CheckoutSessionResponseDto;
 };
+
+export type CheckoutControllerCreateResponse =
+  CheckoutControllerCreateResponses[keyof CheckoutControllerCreateResponses];
 
 export type WebhooksControllerHandleStripeData = {
   body?: never;
@@ -498,8 +546,11 @@ export type ReviewsControllerListData = {
 };
 
 export type ReviewsControllerListResponses = {
-  200: unknown;
+  200: ProductReviewsResponseDto;
 };
+
+export type ReviewsControllerListResponse =
+  ReviewsControllerListResponses[keyof ReviewsControllerListResponses];
 
 export type ReviewsControllerCreateData = {
   body: CreateReviewDto;
@@ -511,8 +562,11 @@ export type ReviewsControllerCreateData = {
 };
 
 export type ReviewsControllerCreateResponses = {
-  201: unknown;
+  201: ReviewResponseDto;
 };
+
+export type ReviewsControllerCreateResponse =
+  ReviewsControllerCreateResponses[keyof ReviewsControllerCreateResponses];
 
 export type AdminControllerStatsData = {
   body?: never;

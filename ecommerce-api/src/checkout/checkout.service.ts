@@ -13,9 +13,10 @@ import { StripeService } from '../stripe/stripe.service';
 import { UsersService } from '../users/users.service';
 import { CreateCheckoutDto } from './dto/create-checkout.dto';
 
-const SHIPPING_COUNTRIES = [
-  'US', 'GB', 'DE', 'FR', 'NL', 'ES', 'IT', 'IE', 'AT', 'BE',
-] as const;
+// Canada-only shipping. Stripe Tax computes provincial GST/HST/PST/QST from the
+// address the customer enters on the hosted Checkout page.
+const SHIPPING_COUNTRIES = ['CA'] as const;
+const CURRENCY = 'cad';
 
 @Injectable()
 export class CheckoutService {
@@ -81,15 +82,18 @@ export class CheckoutService {
         mode: 'payment',
         customer_email: user.email,
         allow_promotion_codes: true,
+        automatic_tax: { enabled: true },
         shipping_address_collection: {
           allowed_countries: [...SHIPPING_COUNTRIES],
         },
         line_items: lines.map((l) => ({
           quantity: l.quantity,
           price_data: {
-            currency: 'usd',
+            currency: CURRENCY,
             unit_amount: l.product.priceCents,
             product_data: { name: l.product.name },
+            // Prices are tax-exclusive; Stripe Tax adds the provincial tax on top.
+            tax_behavior: 'exclusive',
           },
         })),
         metadata: { orderId: order.id },
