@@ -51,7 +51,7 @@ create_sa() {  # PROJECT
   if ! gcloud iam service-accounts describe "$SA" --project "$P" >/dev/null 2>&1; then
     gcloud iam service-accounts create "$SA_ID" --project "$P" --display-name "GitHub Actions deployer" --quiet
   fi
-  for ROLE in roles/run.admin roles/cloudbuild.builds.editor roles/artifactregistry.admin roles/storage.admin roles/iam.serviceAccountUser; do
+  for ROLE in roles/run.admin roles/cloudbuild.builds.editor roles/artifactregistry.admin roles/storage.admin roles/iam.serviceAccountUser roles/firebasehosting.admin; do
     gcloud projects add-iam-policy-binding "$P" --member "serviceAccount:$SA" --role "$ROLE" --condition=None --quiet >/dev/null
   done
   echo "   ✓ SA ready: $SA"

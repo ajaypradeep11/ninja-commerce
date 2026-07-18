@@ -8,3 +8,4 @@ stack*.env
 !stack*.env.example
 .stack/
 .playwright-mcp/
+.firebase/
