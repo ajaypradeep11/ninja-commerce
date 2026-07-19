@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { User } from 'lucide-react';
@@ -24,8 +25,14 @@ export function Header() {
           <span aria-hidden>{ANNOUNCEMENT_TEXT + SEP}</span>
         </div>
       </div>
-      {/* simplymdrn-style row: hamburger left, centered lockup, icons right */}
-      <div className="container-wide relative grid grid-cols-[1fr_auto_1fr] items-center py-4">
+      {/* simplymdrn-style row: hamburger left, centered lockup, icons right.
+          White bar: override the surface/ink tokens locally so text and the
+          dropdown go dark-on-white while brand yellow stays. */}
+      <div
+        className="bg-surface"
+        style={{ '--color-surface': '#ffffff', '--color-ink': '#23201c' } as CSSProperties}
+      >
+        <div className="container-wide relative grid grid-cols-[1fr_auto_1fr] items-center py-4">
         <div className="justify-self-start">
           <HeaderMenu />
         </div>
@@ -34,7 +41,7 @@ export function Header() {
           href="/"
           className="flex items-center gap-2 justify-self-center font-display text-3xl text-ink"
         >
-          <Image src="/logo-animated.svg" alt="" width={56} height={56} priority />
+          <Image src="/logo-animated.svg" alt="" width={64} height={64} priority />
           <span>
             {SITE.wordmark.base}
             <span className="text-brand">{SITE.wordmark.accent}</span>
@@ -49,6 +56,7 @@ export function Header() {
             <User aria-hidden className="size-5" />
           </Link>
           <CartBadge />
+        </div>
         </div>
       </div>
       <div className="selvedge" />
