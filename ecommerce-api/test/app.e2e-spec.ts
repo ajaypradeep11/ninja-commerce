@@ -10,10 +10,17 @@ const fakeFirebase = {
   onModuleInit: () => undefined,
   verifyIdToken: (token: string) => {
     if (token === 'admin-token') {
-      return Promise.resolve({ uid: 'admin-uid', email: 'admin@test.com', admin: true });
+      return Promise.resolve({
+        uid: 'admin-uid',
+        email: 'admin@test.com',
+        admin: true,
+      });
     }
     if (token === 'customer-token') {
-      return Promise.resolve({ uid: 'customer-uid', email: 'customer@test.com' });
+      return Promise.resolve({
+        uid: 'customer-uid',
+        email: 'customer@test.com',
+      });
     }
     return Promise.reject(new Error('invalid'));
   },
@@ -49,7 +56,9 @@ describe('Ecommerce API (e2e)', () => {
       .useValue(fakeStripe)
       .compile();
     app = moduleRef.createNestApplication({ rawBody: true });
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+    app.useGlobalPipes(
+      new ValidationPipe({ whitelist: true, transform: true }),
+    );
     await app.init();
     prisma = app.get(PrismaService);
     // clean slate
@@ -150,7 +159,9 @@ describe('Ecommerce API (e2e)', () => {
     const order = await prisma.order.findUnique({ where: { id: orderId } });
     expect(order?.status).toBe('PAID');
     expect(order?.shippingAddress).toEqual(shippingDetails);
-    const product = await prisma.product.findUnique({ where: { id: productId } });
+    const product = await prisma.product.findUnique({
+      where: { id: productId },
+    });
     expect(product?.stockQty).toBe(8);
 
     // idempotency: replaying the same event changes nothing
@@ -160,7 +171,9 @@ describe('Ecommerce API (e2e)', () => {
       .set('content-type', 'application/json')
       .send(event)
       .expect(201);
-    const productAfter = await prisma.product.findUnique({ where: { id: productId } });
+    const productAfter = await prisma.product.findUnique({
+      where: { id: productId },
+    });
     expect(productAfter?.stockQty).toBe(8);
   });
 

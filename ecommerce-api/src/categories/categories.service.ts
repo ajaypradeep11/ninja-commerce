@@ -14,7 +14,9 @@ function mapPrismaError(e: unknown, entity: string): never {
       throw new ConflictException(`${entity} with this slug already exists`);
     }
     if (e.code === 'P2003') {
-      throw new ConflictException(`${entity} is still referenced by other records`);
+      throw new ConflictException(
+        `${entity} is still referenced by other records`,
+      );
     }
     if (e.code === 'P2025') {
       throw new NotFoundException(`${entity} not found`);
@@ -41,7 +43,10 @@ export class CategoriesService {
 
   async update(id: string, dto: UpdateCategoryDto): Promise<Category> {
     try {
-      return await this.prisma.category.update({ where: { id }, data: { ...dto } });
+      return await this.prisma.category.update({
+        where: { id },
+        data: { ...dto },
+      });
     } catch (e) {
       mapPrismaError(e, 'Category');
     }

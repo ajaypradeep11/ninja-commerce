@@ -36,6 +36,9 @@ async function bootstrap() {
   // Bind host: defaults to 0.0.0.0 (required by Cloud Run). Local dev sets
   // HOST=127.0.0.1 to keep the API — which may be wired to the live prod DB —
   // off the LAN unless LAN exposure is explicitly opted into.
-  await app.listen(config.getOrThrow<number>('PORT'), process.env.HOST ?? '0.0.0.0');
+  await app.listen(
+    config.getOrThrow<number>('PORT'),
+    process.env.HOST ?? '0.0.0.0',
+  );
 }
 void bootstrap();

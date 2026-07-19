@@ -41,7 +41,10 @@ describe('ReviewsService', () => {
     expect(prisma.orderItem.findFirst).toHaveBeenCalledWith({
       where: {
         productId: 'p1',
-        order: { userId: 'u1', status: { in: ['PAID', 'SHIPPED', 'DELIVERED'] } },
+        order: {
+          userId: 'u1',
+          status: { in: ['PAID', 'SHIPPED', 'DELIVERED'] },
+        },
       },
     });
   });

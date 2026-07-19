@@ -131,7 +131,9 @@ describe('OrdersService', () => {
       status: 'PENDING',
       stripePaymentIntentId: null,
     });
-    await expect(service.refund('o1')).rejects.toBeInstanceOf(ConflictException);
+    await expect(service.refund('o1')).rejects.toBeInstanceOf(
+      ConflictException,
+    );
   });
 
   it('filters by email case-insensitively', async () => {
@@ -152,10 +154,15 @@ describe('OrdersService', () => {
 
     it('cancels an unpaid PENDING order: expires the session, marks CANCELLED, no refund', async () => {
       prisma.order.findUnique.mockResolvedValue({
-        id: 'o1', userId: 'owner', status: 'PENDING', stripeSessionId: 'cs_1',
+        id: 'o1',
+        userId: 'owner',
+        status: 'PENDING',
+        stripeSessionId: 'cs_1',
       });
       const res = await service.cancel('o1', owner);
-      expect(stripe.client.checkout.sessions.expire).toHaveBeenCalledWith('cs_1');
+      expect(stripe.client.checkout.sessions.expire).toHaveBeenCalledWith(
+        'cs_1',
+      );
       expect(prisma.order.updateMany).toHaveBeenCalledWith({
         where: { id: 'o1', status: 'PENDING' },
         data: { status: 'CANCELLED' },
@@ -166,15 +173,24 @@ describe('OrdersService', () => {
 
     it('cancels a PAID order by issuing a refund (status flips via webhook)', async () => {
       prisma.order.findUnique.mockResolvedValue({
-        id: 'o1', userId: 'owner', status: 'PAID', stripePaymentIntentId: 'pi_1',
+        id: 'o1',
+        userId: 'owner',
+        status: 'PAID',
+        stripePaymentIntentId: 'pi_1',
       });
       const res = await service.cancel('o1', owner);
-      expect(stripe.client.refunds.create).toHaveBeenCalledWith({ payment_intent: 'pi_1' });
+      expect(stripe.client.refunds.create).toHaveBeenCalledWith({
+        payment_intent: 'pi_1',
+      });
       expect(res).toEqual({ status: 'PAID', refundId: 're_1' });
     });
 
     it('forbids cancelling another customer’s order', async () => {
-      prisma.order.findUnique.mockResolvedValue({ id: 'o1', userId: 'someone-else', status: 'PAID' });
+      prisma.order.findUnique.mockResolvedValue({
+        id: 'o1',
+        userId: 'someone-else',
+        status: 'PAID',
+      });
       await expect(
         service.cancel('o1', { uid: 'intruder', email: '', admin: false }),
       ).rejects.toBeInstanceOf(ForbiddenException);
@@ -182,24 +198,49 @@ describe('OrdersService', () => {
 
     it('lets an admin cancel any order', async () => {
       prisma.order.findUnique.mockResolvedValue({
-        id: 'o1', userId: 'someone-else', status: 'PAID', stripePaymentIntentId: 'pi_9',
+        id: 'o1',
+        userId: 'someone-else',
+        status: 'PAID',
+        stripePaymentIntentId: 'pi_9',
       });
-      const res = await service.cancel('o1', { uid: 'admin', email: '', admin: true });
+      const res = await service.cancel('o1', {
+        uid: 'admin',
+        email: '',
+        admin: true,
+      });
       expect(res.refundId).toBe('re_1');
     });
 
     it('rejects cancelling a SHIPPED order', async () => {
-      prisma.order.findUnique.mockResolvedValue({ id: 'o1', userId: 'owner', status: 'SHIPPED' });
-      await expect(service.cancel('o1', owner)).rejects.toBeInstanceOf(ConflictException);
+      prisma.order.findUnique.mockResolvedValue({
+        id: 'o1',
+        userId: 'owner',
+        status: 'SHIPPED',
+      });
+      await expect(service.cancel('o1', owner)).rejects.toBeInstanceOf(
+        ConflictException,
+      );
     });
 
     it('refunds if a PENDING order raced to PAID (guarded update matched 0 rows)', async () => {
       prisma.order.findUnique
-        .mockResolvedValueOnce({ id: 'o1', userId: 'owner', status: 'PENDING', stripeSessionId: 'cs_1' })
-        .mockResolvedValueOnce({ id: 'o1', userId: 'owner', status: 'PAID', stripePaymentIntentId: 'pi_2' });
+        .mockResolvedValueOnce({
+          id: 'o1',
+          userId: 'owner',
+          status: 'PENDING',
+          stripeSessionId: 'cs_1',
+        })
+        .mockResolvedValueOnce({
+          id: 'o1',
+          userId: 'owner',
+          status: 'PAID',
+          stripePaymentIntentId: 'pi_2',
+        });
       prisma.order.updateMany.mockResolvedValue({ count: 0 });
       const res = await service.cancel('o1', owner);
-      expect(stripe.client.refunds.create).toHaveBeenCalledWith({ payment_intent: 'pi_2' });
+      expect(stripe.client.refunds.create).toHaveBeenCalledWith({
+        payment_intent: 'pi_2',
+      });
       expect(res).toEqual({ status: 'PAID', refundId: 're_1' });
     });
   });

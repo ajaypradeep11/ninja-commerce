@@ -12,13 +12,17 @@ describe('AdminGuard', () => {
 
   it('rejects non-admin users', () => {
     expect(() =>
-      guard.canActivate(ctxWithUser({ uid: 'u1', email: 'a@b.com', admin: false })),
+      guard.canActivate(
+        ctxWithUser({ uid: 'u1', email: 'a@b.com', admin: false }),
+      ),
     ).toThrow(ForbiddenException);
   });
 
   it('allows admins', () => {
     expect(
-      guard.canActivate(ctxWithUser({ uid: 'u1', email: 'a@b.com', admin: true })),
+      guard.canActivate(
+        ctxWithUser({ uid: 'u1', email: 'a@b.com', admin: true }),
+      ),
     ).toBe(true);
   });
 });

@@ -28,7 +28,7 @@ function order(overrides: Partial<Order> = {}): Order {
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
     ...overrides,
-  } as Order;
+  };
 }
 
 describe('MailService', () => {
@@ -76,7 +76,9 @@ describe('MailService', () => {
   it('swallows transport errors instead of throwing', async () => {
     sendMail.mockRejectedValue(new Error('smtp down'));
     const service = new MailService(configWith({ SMTP_HOST: 'smtp.test' }));
-    await expect(service.sendOrderStatusEmail(order())).resolves.toBeUndefined();
+    await expect(
+      service.sendOrderStatusEmail(order()),
+    ).resolves.toBeUndefined();
   });
 
   it('honors MAIL_FROM override', async () => {

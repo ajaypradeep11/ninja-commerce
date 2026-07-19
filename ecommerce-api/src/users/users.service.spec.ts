@@ -24,7 +24,12 @@ describe('UsersService', () => {
     prisma.user.upsert.mockResolvedValue({ id: 'u1' });
     prisma.user.update.mockResolvedValue({ id: 'u1', addresses: [] });
     const addresses = [
-      { line1: '1 Main St', city: 'Berlin', postalCode: '10115', country: 'DE' },
+      {
+        line1: '1 Main St',
+        city: 'Berlin',
+        postalCode: '10115',
+        country: 'DE',
+      },
     ];
     await service.updateAddresses('u1', 'a@b.com', addresses);
     expect(prisma.user.update).toHaveBeenCalledWith({

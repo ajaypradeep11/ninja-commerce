@@ -9,7 +9,11 @@ describe('ProductsController', () => {
   let controller: ProductsController;
 
   beforeEach(() => {
-    service = { findAll: jest.fn().mockResolvedValue({ items: [], total: 0, page: 1, pageSize: 12 }) };
+    service = {
+      findAll: jest
+        .fn()
+        .mockResolvedValue({ items: [], total: 0, page: 1, pageSize: 12 }),
+    };
     controller = new ProductsController(service as unknown as ProductsService);
   });
 
@@ -22,7 +26,9 @@ describe('ProductsController', () => {
   it('findAll throws ForbiddenException when all=true and non-admin user', () => {
     const query: ListProductsQuery = { all: true, page: 1, pageSize: 12 };
     const user: AuthUser = { uid: 'u1', email: 'a@b.com', admin: false };
-    expect(() => controller.findAll(query, { user })).toThrow(ForbiddenException);
+    expect(() => controller.findAll(query, { user })).toThrow(
+      ForbiddenException,
+    );
     expect(service.findAll).not.toHaveBeenCalled();
   });
 

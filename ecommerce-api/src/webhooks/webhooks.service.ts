@@ -91,8 +91,7 @@ export class WebhooksService {
 
     const shipping =
       session.collected_information?.shipping_details ??
-      (session as unknown as { shipping_details?: unknown })
-        .shipping_details ??
+      (session as unknown as { shipping_details?: unknown }).shipping_details ??
       session.customer_details ??
       null;
 
@@ -106,8 +105,7 @@ export class WebhooksService {
             : (session.payment_intent?.id ?? null),
         totalCents: session.amount_total ?? order.subtotalCents,
         taxCents: session.total_details?.amount_tax ?? null,
-        shippingAddress:
-          shipping === null ? Prisma.JsonNull : (shipping as object),
+        shippingAddress: shipping === null ? Prisma.JsonNull : shipping,
       },
     });
   }

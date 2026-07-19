@@ -1,5 +1,9 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { ApiBearerAuth, ApiCreatedResponse, ApiOperation } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOperation,
+} from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import type { AuthUser } from '../auth/auth.types';
 import { CurrentUser } from '../auth/current-user.decorator';
@@ -12,7 +16,9 @@ import { CheckoutSessionResponseDto } from './dto/checkout-response.dto';
 export class CheckoutController {
   constructor(private readonly checkout: CheckoutService) {}
 
-  @ApiOperation({ summary: 'Create a Stripe Checkout session for the current cart' })
+  @ApiOperation({
+    summary: 'Create a Stripe Checkout session for the current cart',
+  })
   @ApiCreatedResponse({ type: CheckoutSessionResponseDto })
   // Stricter than the global default: checkout creates orders + Stripe sessions.
   @Throttle({ default: { ttl: 60_000, limit: 10 } })

@@ -41,19 +41,29 @@ describe('CheckoutService', () => {
     );
   });
 
-  const tee = { id: 'p1', name: 'Tee', priceCents: 2500, stockQty: 10, active: true };
+  const tee = {
+    id: 'p1',
+    name: 'Tee',
+    priceCents: 2500,
+    stockQty: 10,
+    active: true,
+  };
 
   it('rejects unknown or inactive products', async () => {
     prisma.product.findMany.mockResolvedValue([]);
     await expect(
-      service.createSession(user, { items: [{ productId: 'p1', quantity: 1 }] }),
+      service.createSession(user, {
+        items: [{ productId: 'p1', quantity: 1 }],
+      }),
     ).rejects.toBeInstanceOf(NotFoundException);
   });
 
   it('rejects insufficient stock with a friendly message', async () => {
     prisma.product.findMany.mockResolvedValue([{ ...tee, stockQty: 2 }]);
     await expect(
-      service.createSession(user, { items: [{ productId: 'p1', quantity: 3 }] }),
+      service.createSession(user, {
+        items: [{ productId: 'p1', quantity: 3 }],
+      }),
     ).rejects.toThrow('Only 2 left of Tee');
   });
 
@@ -73,7 +83,9 @@ describe('CheckoutService', () => {
         email: 'a@b.com',
         subtotalCents: 5000,
         items: {
-          create: [{ productId: 'p1', name: 'Tee', priceCents: 2500, quantity: 2 }],
+          create: [
+            { productId: 'p1', name: 'Tee', priceCents: 2500, quantity: 2 },
+          ],
         },
       },
     });
@@ -101,14 +113,21 @@ describe('CheckoutService', () => {
       where: { id: 'o1' },
       data: { stripeSessionId: 'cs_1' },
     });
-    expect(result).toEqual({ url: 'https://stripe.test/session', orderId: 'o1' });
+    expect(result).toEqual({
+      url: 'https://stripe.test/session',
+      orderId: 'o1',
+    });
   });
 
   it('cancels the order and maps the failure to a 502 if Stripe session creation fails', async () => {
     prisma.product.findMany.mockResolvedValue([tee]);
-    stripe.client.checkout.sessions.create.mockRejectedValue(new Error('stripe down'));
+    stripe.client.checkout.sessions.create.mockRejectedValue(
+      new Error('stripe down'),
+    );
     await expect(
-      service.createSession(user, { items: [{ productId: 'p1', quantity: 1 }] }),
+      service.createSession(user, {
+        items: [{ productId: 'p1', quantity: 1 }],
+      }),
     ).rejects.toBeInstanceOf(BadGatewayException);
     expect(prisma.order.update).toHaveBeenCalledWith({
       where: { id: 'o1' },
@@ -130,7 +149,9 @@ describe('CheckoutService', () => {
   it('rejects insufficient stock with a 409 ConflictException (not swallowed by the Stripe failure mapping)', async () => {
     prisma.product.findMany.mockResolvedValue([{ ...tee, stockQty: 2 }]);
     await expect(
-      service.createSession(user, { items: [{ productId: 'p1', quantity: 3 }] }),
+      service.createSession(user, {
+        items: [{ productId: 'p1', quantity: 3 }],
+      }),
     ).rejects.toBeInstanceOf(ConflictException);
   });
 });

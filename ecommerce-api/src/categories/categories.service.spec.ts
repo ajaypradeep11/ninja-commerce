@@ -51,18 +51,22 @@ describe('CategoriesService', () => {
 
   it('create maps duplicate slug (P2002) to ConflictException', async () => {
     prisma.category.create.mockRejectedValue(prismaError('P2002'));
-    await expect(service.create({ name: 'T', slug: 'tees' })).rejects.toBeInstanceOf(
-      ConflictException,
-    );
+    await expect(
+      service.create({ name: 'T', slug: 'tees' }),
+    ).rejects.toBeInstanceOf(ConflictException);
   });
 
   it('remove maps FK violation (P2003) to ConflictException', async () => {
     prisma.category.delete.mockRejectedValue(prismaError('P2003'));
-    await expect(service.remove('c1')).rejects.toBeInstanceOf(ConflictException);
+    await expect(service.remove('c1')).rejects.toBeInstanceOf(
+      ConflictException,
+    );
   });
 
   it('remove maps missing row (P2025) to NotFoundException', async () => {
     prisma.category.delete.mockRejectedValue(prismaError('P2025'));
-    await expect(service.remove('c1')).rejects.toBeInstanceOf(NotFoundException);
+    await expect(service.remove('c1')).rejects.toBeInstanceOf(
+      NotFoundException,
+    );
   });
 });

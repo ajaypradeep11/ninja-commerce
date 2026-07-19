@@ -58,7 +58,11 @@ describe('FirebaseAuthGuard', () => {
 
   it('attaches user on @Public() routes when a valid token is present', async () => {
     reflector.getAllAndOverride.mockReturnValue(true);
-    firebase.verifyIdToken.mockResolvedValue({ uid: 'u1', email: 'a@b.com', admin: true });
+    firebase.verifyIdToken.mockResolvedValue({
+      uid: 'u1',
+      email: 'a@b.com',
+      admin: true,
+    });
     const ctx = ctxWith({ authorization: 'Bearer good' });
     await expect(guard.canActivate(ctx)).resolves.toBe(true);
     const req = ctx.switchToHttp().getRequest<{ user: unknown }>();

@@ -46,7 +46,9 @@ export class OrdersService {
     const { status, email, page = 1, pageSize = 20 } = query;
     const where: Prisma.OrderWhereInput = {
       ...(status ? { status } : {}),
-      ...(email ? { email: { contains: email, mode: 'insensitive' as const } } : {}),
+      ...(email
+        ? { email: { contains: email, mode: 'insensitive' as const } }
+        : {}),
     };
     const [items, total] = await Promise.all([
       this.prisma.order.findMany({

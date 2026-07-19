@@ -35,7 +35,9 @@ export class CheckoutService {
   ): Promise<{ url: string; orderId: string }> {
     const ids = dto.items.map((i) => i.productId);
     if (new Set(ids).size !== ids.length) {
-      throw new ConflictException('Duplicate products in cart — merge quantities');
+      throw new ConflictException(
+        'Duplicate products in cart — merge quantities',
+      );
     }
 
     const products = await this.prisma.product.findMany({
@@ -46,10 +48,14 @@ export class CheckoutService {
     const lines = dto.items.map((item) => {
       const product = byId.get(item.productId);
       if (!product) {
-        throw new NotFoundException(`Product ${item.productId} is not available`);
+        throw new NotFoundException(
+          `Product ${item.productId} is not available`,
+        );
       }
       if (product.stockQty < item.quantity) {
-        throw new ConflictException(`Only ${product.stockQty} left of ${product.name}`);
+        throw new ConflictException(
+          `Only ${product.stockQty} left of ${product.name}`,
+        );
       }
       return { product, quantity: item.quantity };
     });

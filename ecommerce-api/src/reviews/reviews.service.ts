@@ -62,7 +62,12 @@ export class ReviewsService {
     await this.users.ensureUser(user.uid, user.email);
     try {
       return await this.prisma.review.create({
-        data: { productId, userId: user.uid, rating: dto.rating, text: dto.text },
+        data: {
+          productId,
+          userId: user.uid,
+          rating: dto.rating,
+          text: dto.text,
+        },
       });
     } catch (e) {
       if (
