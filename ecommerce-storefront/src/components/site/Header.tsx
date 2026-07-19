@@ -32,7 +32,7 @@ export function Header() {
         className="bg-surface"
         style={{ '--color-surface': '#000000', '--color-ink': '#faf7f2' } as CSSProperties}
       >
-        <div className="container-wide relative grid grid-cols-[1fr_auto_1fr] items-center py-4">
+        <div className="container-wide relative grid grid-cols-[1fr_auto_1fr] items-center py-5">
         <div className="justify-self-start">
           <HeaderMenu />
         </div>
