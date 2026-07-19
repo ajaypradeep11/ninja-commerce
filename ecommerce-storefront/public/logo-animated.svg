@@ -34,9 +34,9 @@
       cy="400"
       r="314"
       fill="none"
-      stroke="#FFD84D"
+      stroke="#FFFFFF"
       stroke-width="18"
-      style="filter: drop-shadow(0 0 14px rgba(255, 216, 77, 0.55))"
+      style="filter: drop-shadow(0 0 14px rgba(255, 255, 255, 0.55))"
     />
     <!-- face on a transparent badge; no clip, so the bandana tails stick out -->
     <g transform="translate(12 -20)">
@@ -46,13 +46,13 @@
         <path
           d="M640 290 C700 270 758 288 782 316 C738 314 700 334 668 350 C656 328 648 308 640 290 Z"
           fill="#000"
-          stroke="#FFD84D"
+          stroke="#FFFFFF"
           stroke-width="18"
         />
         <path
           d="M646 366 C706 366 760 390 780 424 C736 413 698 428 674 444 C662 418 652 390 646 366 Z"
           fill="#000"
-          stroke="#FFD84D"
+          stroke="#FFFFFF"
           stroke-width="18"
         />
       </g>
