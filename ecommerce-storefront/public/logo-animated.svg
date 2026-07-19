@@ -47,9 +47,8 @@
       />
       <!-- head -->
       <circle cx="388" cy="420" r="300" fill="#000" />
-      <!-- eye band, outlined in badge yellow so its back edge reads
-           against the black head -->
-      <rect x="112" y="312" width="372" height="134" rx="67" fill="#E8BE8E" stroke="#FFD84D" stroke-width="12" />
+      <!-- eye band -->
+      <rect x="112" y="312" width="372" height="134" rx="67" fill="#E8BE8E" />
       <!-- eyes: .eyes glances side to side, each .eye blinks -->
       <g class="eyes">
         <g class="eye">
