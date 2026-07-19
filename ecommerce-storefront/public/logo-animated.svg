@@ -26,9 +26,9 @@
     }
   </style>
   <g>
-    <!-- thin yellow ring (~1px at header size) hugging the head; drawn
+    <!-- thin yellow ring (~1.25px at header size) hugging the head; drawn
          first so the bandana tails pass over it cleanly -->
-    <circle cx="400" cy="400" r="314" fill="none" stroke="#FFD84D" stroke-width="14" />
+    <circle cx="400" cy="400" r="314" fill="none" stroke="#FFD84D" stroke-width="18" />
     <!-- face on a transparent badge; no clip, so the bandana tails stick out -->
     <g transform="translate(12 -20)">
       <!-- bandana tails: outlined in the ring yellow so they read on dark
@@ -38,13 +38,13 @@
           d="M640 290 C700 270 758 288 782 316 C738 314 700 334 668 350 C656 328 648 308 640 290 Z"
           fill="#000"
           stroke="#FFD84D"
-          stroke-width="14"
+          stroke-width="18"
         />
         <path
           d="M646 366 C706 366 760 390 780 424 C736 413 698 428 674 444 C662 418 652 390 646 366 Z"
           fill="#000"
           stroke="#FFD84D"
-          stroke-width="14"
+          stroke-width="18"
         />
       </g>
       <!-- head -->
