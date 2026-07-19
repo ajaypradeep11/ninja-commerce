@@ -349,6 +349,183 @@
         ]
       }
     },
+    "/coupons/validate": {
+      "post": {
+        "operationId": "CouponsController_validate",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ValidateCouponDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CouponQuoteDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Coupons"
+        ]
+      }
+    },
+    "/coupons": {
+      "get": {
+        "operationId": "CouponsController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CouponResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Coupons"
+        ]
+      },
+      "post": {
+        "operationId": "CouponsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCouponDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CouponResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Coupons"
+        ]
+      }
+    },
+    "/coupons/{id}": {
+      "patch": {
+        "operationId": "CouponsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCouponDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CouponResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Coupons"
+        ]
+      },
+      "delete": {
+        "operationId": "CouponsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CouponResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Coupons"
+        ]
+      }
+    },
     "/products": {
       "get": {
         "operationId": "ProductsController_findAll",
@@ -1332,6 +1509,147 @@
           }
         }
       },
+      "ValidateCouponDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "subtotalCents": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "code",
+          "subtotalCents"
+        ]
+      },
+      "CouponQuoteDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "enum": [
+              "PERCENT",
+              "FIXED"
+            ],
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "value": {
+            "type": "number"
+          },
+          "discountCents": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "type",
+          "code",
+          "value",
+          "discountCents"
+        ]
+      },
+      "CouponResponseDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "enum": [
+              "PERCENT",
+              "FIXED"
+            ],
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "value": {
+            "type": "number"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "redemptionCount": {
+            "type": "number"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "id",
+          "code",
+          "value",
+          "active",
+          "redemptionCount",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "CreateCouponDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "enum": [
+              "PERCENT",
+              "FIXED"
+            ],
+            "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "pattern": "^[A-Z0-9][A-Z0-9-]{1,31}$"
+          },
+          "value": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 1000000
+          },
+          "active": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "type",
+          "code",
+          "value"
+        ]
+      },
+      "UpdateCouponDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "enum": [
+              "PERCENT",
+              "FIXED"
+            ],
+            "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "pattern": "^[A-Z0-9][A-Z0-9-]{1,31}$"
+          },
+          "value": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 1000000
+          },
+          "active": {
+            "type": "boolean"
+          }
+        }
+      },
       "ProductResponseDto": {
         "type": "object",
         "properties": {
@@ -1704,6 +2022,10 @@
             "items": {
               "$ref": "#/components/schemas/CheckoutItemDto"
             }
+          },
+          "couponCode": {
+            "type": "string",
+            "maxLength": 32
           }
         },
         "required": [
@@ -1791,6 +2113,14 @@
             "type": "object",
             "nullable": true
           },
+          "discountCents": {
+            "type": "number",
+            "nullable": true
+          },
+          "couponCode": {
+            "type": "string",
+            "nullable": true
+          },
           "taxCents": {
             "type": "number",
             "nullable": true
@@ -1831,6 +2161,8 @@
           "stripeSessionId",
           "stripePaymentIntentId",
           "shippingAddress",
+          "discountCents",
+          "couponCode",
           "taxCents",
           "totalCents",
           "items",

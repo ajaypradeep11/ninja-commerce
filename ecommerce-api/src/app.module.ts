@@ -11,6 +11,7 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { CategoriesModule } from './categories/categories.module';
 import { BrandsModule } from './brands/brands.module';
+import { CouponsModule } from './coupons/coupons.module';
 import { ProductsModule } from './products/products.module';
 import { StripeModule } from './stripe/stripe.module';
 import { CheckoutModule } from './checkout/checkout.module';
@@ -55,6 +56,7 @@ import { AdminModule } from './admin/admin.module';
     UsersModule,
     CategoriesModule,
     BrandsModule,
+    CouponsModule,
     ProductsModule,
     StripeModule,
     CheckoutModule,

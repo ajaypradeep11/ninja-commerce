@@ -24,6 +24,10 @@ export class OrderResponseDto {
   shippingAddress!: unknown;
   subtotalCents!: number;
   @ApiProperty({ type: Number, nullable: true })
+  discountCents!: number | null;
+  @ApiProperty({ type: String, nullable: true })
+  couponCode!: string | null;
+  @ApiProperty({ type: Number, nullable: true })
   taxCents!: number | null;
   @ApiProperty({ type: Number, nullable: true })
   totalCents!: number | null;

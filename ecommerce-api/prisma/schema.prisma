@@ -64,31 +64,66 @@ model Product {
 }
 
 model User {
-  id        String   @id // Firebase UID
-  email     String   @unique
-  role      Role     @default(CUSTOMER)
-  addresses Json     @default("[]")
-  orders    Order[]
-  reviews   Review[]
+  id          String             @id // Firebase UID
+  email       String             @unique
+  role        Role               @default(CUSTOMER)
+  addresses   Json               @default("[]")
+  orders      Order[]
+  reviews     Review[]
+  redemptions CouponRedemption[]
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+}
+
+enum DiscountType {
+  PERCENT
+  FIXED
+}
+
+model Coupon {
+  id          String             @id @default(cuid())
+  code        String             @unique // stored uppercase
+  type        DiscountType
+  value       Int // PERCENT: 1-100, FIXED: cents
+  active      Boolean            @default(true)
+  redemptions CouponRedemption[]
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+}
+
+// One row per successful redemption; the (couponId, userId) unique constraint
+// is the "once per customer" rule.
+model CouponRedemption {
+  id        String   @id @default(cuid())
+  coupon    Coupon   @relation(fields: [couponId], references: [id])
+  couponId  String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  order     Order    @relation(fields: [orderId], references: [id])
+  orderId   String   @unique
   createdAt DateTime @default(now())
-  updatedAt DateTime  @updatedAt
+
+  @@unique([couponId, userId])
 }
 
 model Order {
-  id                    String      @id @default(cuid())
-  user                  User        @relation(fields: [userId], references: [id])
+  id                    String            @id @default(cuid())
+  user                  User              @relation(fields: [userId], references: [id])
   userId                String
   email                 String
-  status                OrderStatus @default(PENDING)
-  stripeSessionId       String?     @unique
-  stripePaymentIntentId String?     @unique
+  status                OrderStatus       @default(PENDING)
+  stripeSessionId       String?           @unique
+  stripePaymentIntentId String?           @unique
   shippingAddress       Json?
   subtotalCents         Int
+  discountCents         Int?
+  couponCode            String?
   taxCents              Int?
   totalCents            Int?
   items                 OrderItem[]
-  createdAt             DateTime    @default(now())
-  updatedAt             DateTime    @updatedAt
+  redemption            CouponRedemption?
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
 
   @@index([userId])
   @@index([status])

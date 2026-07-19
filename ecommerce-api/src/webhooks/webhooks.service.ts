@@ -108,6 +108,33 @@ export class WebhooksService {
         shippingAddress: shipping === null ? Prisma.JsonNull : shipping,
       },
     });
+
+    // Record the coupon redemption ("once per customer"). Two racing sessions
+    // by the same user can both reach payment; the unique constraint makes the
+    // second insert a no-op rather than failing the paid order.
+    if (order.couponCode) {
+      const coupon = await tx.coupon.findUnique({
+        where: { code: order.couponCode },
+      });
+      if (coupon) {
+        try {
+          await tx.couponRedemption.create({
+            data: { couponId: coupon.id, userId: order.userId, orderId: order.id },
+          });
+        } catch (e) {
+          if (
+            e instanceof Prisma.PrismaClientKnownRequestError &&
+            e.code === 'P2002'
+          ) {
+            this.logger.warn(
+              `Coupon ${order.couponCode} already redeemed by ${order.userId} — order ${order.id} honored anyway`,
+            );
+          } else {
+            throw e;
+          }
+        }
+      }
+    }
   }
 
   private async onSessionExpired(

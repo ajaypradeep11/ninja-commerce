@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { AuthUser } from '../auth/auth.types';
+import { CouponsService } from '../coupons/coupons.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { StripeService } from '../stripe/stripe.service';
 import { UsersService } from '../users/users.service';
@@ -26,6 +27,7 @@ export class CheckoutService {
     private readonly prisma: PrismaService,
     private readonly stripe: StripeService,
     private readonly users: UsersService,
+    private readonly coupons: CouponsService,
     private readonly config: ConfigService,
   ) {}
 
@@ -66,11 +68,20 @@ export class CheckoutService {
       (sum, l) => sum + l.product.priceCents * l.quantity,
       0,
     );
+
+    // Re-quote the coupon server-side (existence, active, once-per-customer,
+    // discount math) — the cart's earlier /coupons/validate is advisory only.
+    const quote = dto.couponCode
+      ? await this.coupons.quoteForUser(user.uid, dto.couponCode, subtotalCents)
+      : null;
+
     const order = await this.prisma.order.create({
       data: {
         userId: user.uid,
         email: user.email,
         subtotalCents,
+        couponCode: quote?.coupon.code ?? null,
+        discountCents: quote?.discountCents ?? null,
         items: {
           create: lines.map((l) => ({
             productId: l.product.id,
@@ -84,10 +95,28 @@ export class CheckoutService {
 
     const frontendUrl = this.config.getOrThrow<string>('FRONTEND_URL');
     try {
+      // Our own coupon system replaces Stripe promotion codes (the two are
+      // mutually exclusive on a session). The discount is an ad-hoc one-off
+      // Stripe coupon for the exact amount we quoted.
+      const discounts = quote
+        ? [
+            {
+              coupon: (
+                await this.stripe.client.coupons.create({
+                  amount_off: quote.discountCents,
+                  currency: CURRENCY,
+                  duration: 'once' as const,
+                  name: quote.coupon.code,
+                })
+              ).id,
+            },
+          ]
+        : undefined;
+
       const session = await this.stripe.client.checkout.sessions.create({
         mode: 'payment',
         customer_email: user.email,
-        allow_promotion_codes: true,
+        discounts,
         automatic_tax: { enabled: true },
         shipping_address_collection: {
           allowed_countries: [...SHIPPING_COUNTRIES],
