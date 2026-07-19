@@ -59,7 +59,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const heading = activeCategory ? activeCategory.name : q ? `Results for "${q}"` : 'Shop all';
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+    <div className="container-wide py-12">
       <div className="space-y-2">
         <h1 className="font-display text-3xl text-ink sm:text-4xl">{heading}</h1>
         <p className="font-mono text-xs tracking-wide text-ink/60">{products.total} PRODUCTS</p>
@@ -84,7 +84,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
           </Link>
         </div>
       ) : (
-        <div className="mt-10 grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-4">
+        <div className="mt-10 grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-4 xl:grid-cols-5">
           {products.items.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}

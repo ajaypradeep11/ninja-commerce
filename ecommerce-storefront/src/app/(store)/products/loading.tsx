@@ -2,7 +2,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 export default function ProductsLoading() {
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+    <div className="container-wide py-12">
       <div className="space-y-2">
         <Skeleton className="h-9 w-48" />
         <Skeleton className="h-3 w-24" />
@@ -17,7 +17,7 @@ export default function ProductsLoading() {
         <Skeleton className="h-9 w-48" />
       </div>
 
-      <div className="mt-10 grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-4">
+      <div className="mt-10 grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-4 xl:grid-cols-5">
         {Array.from({ length: 12 }).map((_, i) => (
           <div key={i} className="space-y-3">
             <Skeleton className="aspect-3/4 w-full" />
