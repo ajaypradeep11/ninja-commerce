@@ -109,6 +109,16 @@ export default function OrderDetailPage() {
           </span>
           <Price cents={order.subtotalCents} />
         </div>
+        {order.discountCents != null && order.discountCents > 0 && (
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-xs tracking-wide text-ink/60 uppercase">
+              Coupon {order.couponCode}
+            </span>
+            <span>
+              −<Price cents={order.discountCents} className="inline" />
+            </span>
+          </div>
+        )}
         {order.taxCents != null && (
           <div className="flex items-center justify-between">
             <span className="font-mono text-xs tracking-wide text-ink/60 uppercase">

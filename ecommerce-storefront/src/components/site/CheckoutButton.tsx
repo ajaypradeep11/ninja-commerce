@@ -21,7 +21,13 @@ function isStripeCheckoutUrl(url: string): boolean {
   }
 }
 
-export function CheckoutButton({ lines }: { lines: CartLine[] }) {
+export function CheckoutButton({
+  lines,
+  couponCode,
+}: {
+  lines: CartLine[];
+  couponCode?: string;
+}) {
   const { user } = useAuth();
   const router = useRouter();
 
@@ -29,7 +35,10 @@ export function CheckoutButton({ lines }: { lines: CartLine[] }) {
     mutationFn: () =>
       unwrap(
         checkoutControllerCreate({
-          body: { items: lines.map((l) => ({ productId: l.productId, quantity: l.quantity })) },
+          body: {
+            items: lines.map((l) => ({ productId: l.productId, quantity: l.quantity })),
+            ...(couponCode ? { couponCode } : {}),
+          },
         }),
       ),
     onSuccess: (data) => {
