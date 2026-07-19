@@ -30,7 +30,7 @@ export default async function HomePage() {
   return (
     <>
       <section className="bg-subtle">
-        <div className="container-wide grid gap-12 py-16 md:grid-cols-2 md:items-center md:py-24">
+        <div className="container-wide grid max-w-[150rem] gap-12 py-16 md:grid-cols-2 md:items-center md:py-24">
           <div>
             <h1 className="font-display text-4xl leading-tight text-ink sm:text-5xl">
               Your favorite anime, in a whole new light.
@@ -67,13 +67,14 @@ export default async function HomePage() {
       </section>
       <div className="selvedge" />
 
+      {/* Short Casetify-style category chips — a slim strip, not tall tiles */}
       <section className="container-wide py-16">
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <div className="flex flex-wrap gap-4">
           {categories.map((category) => (
             <Link
               key={category.id}
               href={`/products?category=${category.slug}`}
-              className="flex aspect-square items-center justify-center rounded-xl bg-subtle p-4 text-center font-display text-lg text-ink transition-colors hover:bg-subtle/70"
+              className="flex h-20 min-w-56 items-center justify-center rounded-xl bg-subtle px-8 text-center font-display text-lg text-ink transition-colors hover:bg-subtle/70"
             >
               {category.name}
             </Link>

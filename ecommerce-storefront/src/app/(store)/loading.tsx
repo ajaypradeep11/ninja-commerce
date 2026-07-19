@@ -4,7 +4,7 @@ export default function HomeLoading() {
   return (
     <>
       <section className="bg-subtle">
-        <div className="container-wide grid gap-12 py-16 md:grid-cols-2 md:items-center md:py-24">
+        <div className="container-wide grid max-w-[150rem] gap-12 py-16 md:grid-cols-2 md:items-center md:py-24">
           <div className="space-y-4">
             <Skeleton className="h-10 w-full max-w-sm" />
             <Skeleton className="h-10 w-2/3 max-w-xs" />
@@ -17,9 +17,9 @@ export default function HomeLoading() {
       <div className="selvedge" />
 
       <section className="container-wide py-16">
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <div className="flex flex-wrap gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} className="aspect-square" />
+            <Skeleton key={i} className="h-20 w-56 rounded-xl" />
           ))}
         </div>
       </section>

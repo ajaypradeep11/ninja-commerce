@@ -20,7 +20,7 @@ export function ProductCard({ product }: { product: ProductResponseDto }) {
             src={images[0]}
             alt={name}
             fill
-            sizes="(max-width: 768px) 50vw, (max-width: 1280px) 25vw, 20vw"
+            sizes="(max-width: 768px) 50vw, (max-width: 1280px) 25vw, (max-width: 1536px) 20vw, 17vw"
             className="object-cover motion-safe:transition-transform motion-safe:duration-300 motion-safe:group-hover:scale-105"
           />
         )}

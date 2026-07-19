@@ -56,6 +56,22 @@ Casetify keeps the equivalents narrow too.
   Confirm wide surfaces fill to ~1600px, narrow surfaces unchanged, and nothing regresses at
   ~1280px and mobile widths.
 
+## Revision (same day): ultrawide 3440×1440 pass
+
+After reviewing casetify.com (listing + PDP) and simplymdrn.ca at 3440×1440 with the user:
+
+- `.container-wide` no longer sets a max-width — catalog/chrome surfaces are **fluid
+  full-width** (Casetify listing style), with a padding step up to 3rem at ≥1920px. Because
+  the class sets no max-width, a `max-w-*` utility on the same element can cap individual
+  surfaces.
+- **Product detail page** (and its loading state) adds `max-w-[150rem]` (2400px, matching
+  Casetify's PDP) so gallery images don't grow absurdly tall. `RelatedProducts` lost its own
+  redundant inner container (parent provides it) and matches the listing grid steps.
+- Product grids gain `2xl:grid-cols-6`; `ProductCard` sizes gains a `17vw` step.
+- Home **category tiles → short Casetify-style chips**: `h-20 min-w-56` rounded chips in a
+  wrapping flex row, replacing the tall `aspect-square` grid (which showed two giant
+  half-row squares at ultrawide). Home hero inner grid also capped at `max-w-[150rem]`.
+
 ## Out of scope
 
 Full-bleed hero/carousel, centered-logo header, bento collection tiles, admin app, any

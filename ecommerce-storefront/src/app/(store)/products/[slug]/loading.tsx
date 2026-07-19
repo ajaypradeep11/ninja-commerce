@@ -2,7 +2,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 export default function ProductLoading() {
   return (
-    <div className="container-wide py-12">
+    <div className="container-wide max-w-[150rem] py-12">
       <div className="grid gap-10 md:grid-cols-2 md:items-start">
         <div>
           <Skeleton className="aspect-3/4 w-full" />
