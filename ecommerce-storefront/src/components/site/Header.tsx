@@ -4,12 +4,7 @@ import { User } from 'lucide-react';
 import { SITE } from '@/lib/site';
 import { SearchBox } from './SearchBox';
 import { CartBadge } from './CartBadge';
-
-const NAV = [
-  { href: '/products', label: 'Shop' },
-  { href: '/about', label: 'About' },
-  { href: '/faq', label: 'FAQ' },
-];
+import { HeaderMenu } from './HeaderMenu';
 
 // Non-breaking spaces so the gaps between messages survive HTML
 // whitespace collapsing inside the marquee.
@@ -29,8 +24,16 @@ export function Header() {
           <span aria-hidden>{ANNOUNCEMENT_TEXT + SEP}</span>
         </div>
       </div>
-      <div className="container-wide flex items-center gap-6 py-4">
-        <Link href="/" className="flex items-center gap-2 font-display text-xl text-ink">
+      {/* simplymdrn-style row: hamburger left, centered lockup, icons right */}
+      <div className="container-wide relative grid grid-cols-[1fr_auto_1fr] items-center py-4">
+        <div className="justify-self-start">
+          <HeaderMenu />
+        </div>
+
+        <Link
+          href="/"
+          className="flex items-center gap-2 justify-self-center font-display text-xl text-ink"
+        >
           <Image src="/logo-animated.svg" alt="" width={56} height={56} priority />
           <span>
             {SITE.wordmark.base}
@@ -38,15 +41,7 @@ export function Header() {
           </span>
         </Link>
 
-        <nav aria-label="Main" className="hidden gap-6 text-sm md:flex">
-          {NAV.map((item) => (
-            <Link key={item.href} href={item.href} className="text-ink hover:text-brand">
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-
-        <div className="ml-auto flex items-center gap-4">
+        <div className="flex items-center gap-4 justify-self-end">
           <div className="hidden sm:block">
             <SearchBox />
           </div>
