@@ -30,6 +30,15 @@ import { AdminModule } from './admin/admin.module';
         FRONTEND_URL: Joi.string().uri().required(),
         CORS_ORIGINS: Joi.string().required(),
         FIREBASE_PROJECT_ID: Joi.string().required(),
+        // Transactional email (order status notifications). All optional:
+        // with SMTP_HOST unset the API logs emails instead of sending them.
+        SMTP_HOST: Joi.string().allow('').optional(),
+        SMTP_PORT: Joi.number().default(587),
+        SMTP_USER: Joi.string().allow('').optional(),
+        SMTP_PASS: Joi.string().allow('').optional(),
+        MAIL_FROM: Joi.string().default(
+          'LocalNinja Support <support@localninja.ca>',
+        ),
       }),
     }),
     // Global default rate limit: 100 requests / 60s per client IP.

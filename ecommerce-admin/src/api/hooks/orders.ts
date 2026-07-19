@@ -5,6 +5,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import {
+  ordersControllerCancel,
   ordersControllerFindAll,
   ordersControllerFindOne,
   ordersControllerRefund,
@@ -64,6 +65,15 @@ export function useRefundOrder() {
   return useMutation({
     mutationFn: (id: string) =>
       unwrap(ordersControllerRefund({ path: { id } })),
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ['orders'] }),
+  });
+}
+
+export function useCancelOrder() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) =>
+      unwrap(ordersControllerCancel({ path: { id } })),
     onSuccess: () => void qc.invalidateQueries({ queryKey: ['orders'] }),
   });
 }

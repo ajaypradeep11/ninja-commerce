@@ -23,6 +23,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { formatUsd } from '@/lib/money';
+import { BulkUploadDialog } from './bulk-upload-dialog';
 
 const ALL_CATEGORIES = '__all__';
 
@@ -47,9 +48,14 @@ export function ProductsPage() {
     <div>
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Products</h1>
-        <Button asChild>
-          <Link to="/products/new">New product</Link>
-        </Button>
+        <div className="flex items-center gap-2">
+          <BulkUploadDialog
+            categoryNames={(categories ?? []).map((c) => c.name)}
+          />
+          <Button asChild>
+            <Link to="/products/new">New product</Link>
+          </Button>
+        </div>
       </div>
 
       <div className="mb-4 flex flex-wrap items-center gap-3">

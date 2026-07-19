@@ -33,6 +33,7 @@ vi.mock('@/api/hooks/orders', () => ({
   }),
   useUpdateOrderStatus: () => ({ mutate: vi.fn(), isPending: false }),
   useRefundOrder: () => ({ mutate: vi.fn(), isPending: false }),
+  useCancelOrder: () => ({ mutate: vi.fn(), isPending: false }),
 }));
 
 import { OrderDetailPage } from './order-detail';

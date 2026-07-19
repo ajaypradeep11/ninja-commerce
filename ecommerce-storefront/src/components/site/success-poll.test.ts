@@ -11,6 +11,7 @@ function makeOrder(overrides: Partial<OrderResponseDto> = {}): OrderResponseDto 
     stripePaymentIntentId: null,
     shippingAddress: null,
     subtotalCents: 5000,
+    taxCents: null,
     totalCents: 5000,
     items: [],
     createdAt: '2026-01-01T00:00:00.000Z',

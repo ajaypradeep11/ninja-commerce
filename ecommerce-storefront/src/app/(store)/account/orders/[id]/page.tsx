@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useOrder } from '@/api/hooks/account';
 import { ApiError } from '@/api/unwrap';
+import { CancelOrderButton } from '@/components/site/CancelOrderButton';
 import { OrderStatusBadge } from '@/components/site/OrderStatusBadge';
 import { Price } from '@/components/site/Price';
 import { Button } from '@/components/ui/button';
@@ -78,7 +79,10 @@ export default function OrderDetailPage() {
             {formatDate(order.createdAt)}
           </p>
         </div>
-        <OrderStatusBadge status={order.status} />
+        <div className="flex items-center gap-3">
+          <CancelOrderButton orderId={order.id} status={order.status} />
+          <OrderStatusBadge status={order.status} />
+        </div>
       </div>
 
       <div className="mt-8 divide-y divide-ink/10 border-y border-ink/10">

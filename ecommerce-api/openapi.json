@@ -387,6 +387,42 @@
         ]
       }
     },
+    "/products/bulk": {
+      "post": {
+        "operationId": "ProductsController_bulkCreate",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkUploadProductsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkUploadResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Products"
+        ]
+      }
+    },
     "/products/{id}/stock": {
       "patch": {
         "operationId": "ProductsController_adjustStock",
@@ -776,6 +812,36 @@
             "bearer": []
           }
         ],
+        "tags": [
+          "Orders"
+        ]
+      }
+    },
+    "/orders/{id}/cancel": {
+      "post": {
+        "operationId": "OrdersController_cancel",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderCancelResponseDto"
+                }
+              }
+            }
+          }
+        },
         "tags": [
           "Orders"
         ]
@@ -1250,6 +1316,83 @@
           "updatedAt"
         ]
       },
+      "BulkProductItemDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "priceCents": {
+            "type": "number",
+            "minimum": 0
+          },
+          "stockQty": {
+            "type": "number",
+            "minimum": 0
+          },
+          "categoryName": {
+            "type": "string"
+          },
+          "active": {
+            "type": "boolean"
+          }
+        }
+      },
+      "BulkUploadProductsDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "minItems": 1,
+            "maxItems": 2000,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BulkProductItemDto"
+            }
+          }
+        },
+        "required": [
+          "items"
+        ]
+      },
+      "BulkRowError": {
+        "type": "object",
+        "properties": {
+          "row": {
+            "type": "number",
+            "description": "1-based index of the failed row"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "row",
+          "message"
+        ]
+      },
+      "BulkUploadResponseDto": {
+        "type": "object",
+        "properties": {
+          "created": {
+            "type": "number",
+            "description": "Number of products created"
+          },
+          "errors": {
+            "description": "Rows that were skipped",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BulkRowError"
+            }
+          }
+        },
+        "required": [
+          "created",
+          "errors"
+        ]
+      },
       "AdjustStockDto": {
         "type": "object",
         "properties": {
@@ -1511,6 +1654,31 @@
         },
         "required": [
           "refundId"
+        ]
+      },
+      "OrderCancelResponseDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "enum": [
+              "PENDING",
+              "PAID",
+              "SHIPPED",
+              "DELIVERED",
+              "CANCELLED",
+              "REFUNDED"
+            ],
+            "type": "string",
+            "description": "Status after cancelling. CANCELLED for an unpaid order; PAID for a paid order whose refund is in flight (flips to REFUNDED via webhook)."
+          },
+          "refundId": {
+            "type": "string",
+            "nullable": true,
+            "description": "Stripe refund id when a paid order was refunded"
+          }
+        },
+        "required": [
+          "status"
         ]
       },
       "ReviewResponseDto": {

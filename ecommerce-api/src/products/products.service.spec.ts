@@ -137,4 +137,67 @@ describe('ProductsService', () => {
       await expect(service.findByIdAdmin('nope')).rejects.toThrow(NotFoundException);
     });
   });
+
+  describe('bulkCreate', () => {
+    // Fresh mock capturing created rows; category "Anime Lamps" exists as cat1.
+    function makeService(existingSlugs: string[] = []) {
+      const created: { data: { slug: string; name: string; categoryId?: string } }[] = [];
+      const p = {
+        category: { findMany: jest.fn().mockResolvedValue([{ id: 'cat1', name: 'Anime Lamps' }]) },
+        product: {
+          findMany: jest.fn().mockResolvedValue(existingSlugs.map((slug) => ({ slug }))),
+          create: jest.fn((args: { data: { category?: { connect?: { id: string } } } }) => {
+            created.push(args as never);
+            return args;
+          }),
+        },
+        $transaction: jest.fn((ops: unknown[]) => Promise.all(ops)),
+      };
+      const svc = new ProductsService(p as unknown as PrismaService);
+      return { svc, created, p };
+    }
+
+    it('creates valid rows and resolves category by name (case-insensitive)', async () => {
+      const { svc, created } = makeService();
+      const res = await svc.bulkCreate([
+        { name: 'Naruto Lamp', priceCents: 3999, stockQty: 5, categoryName: 'anime lamps' },
+        { name: 'Goku Lamp', description: 'saiyan', priceCents: 4999, stockQty: 2, categoryName: 'Anime Lamps', active: false },
+      ]);
+      expect(res).toEqual({ created: 2, errors: [] });
+      expect(created.map((c) => c.data.slug)).toEqual(['naruto-lamp', 'goku-lamp']);
+      expect((created[0].data as any).category).toEqual({ connect: { id: 'cat1' } });
+      expect((created[1].data as any).active).toBe(false);
+    });
+
+    it('skips a row with an unknown category but imports the rest', async () => {
+      const { svc, created } = makeService();
+      const res = await svc.bulkCreate([
+        { name: 'Good', priceCents: 1000, stockQty: 1, categoryName: 'Anime Lamps' },
+        { name: 'Bad', priceCents: 1000, stockQty: 1, categoryName: 'Nope' },
+      ]);
+      expect(res.created).toBe(1);
+      expect(created).toHaveLength(1);
+      expect(res.errors).toEqual([{ row: 2, message: 'unknown category "Nope" for "Bad"' }]);
+    });
+
+    it('reports rows with an empty name or bad price/stock', async () => {
+      const { svc } = makeService();
+      const res = await svc.bulkCreate([
+        { name: '  ', priceCents: 1000, stockQty: 1, categoryName: 'Anime Lamps' },
+        { name: 'X', priceCents: -5, stockQty: 1, categoryName: 'Anime Lamps' },
+        { name: 'Y', priceCents: 100, stockQty: 1.5, categoryName: 'Anime Lamps' },
+      ]);
+      expect(res.created).toBe(0);
+      expect(res.errors.map((e) => e.row)).toEqual([1, 2, 3]);
+    });
+
+    it('auto-suffixes duplicate slugs (within batch and vs existing)', async () => {
+      const { svc, created } = makeService(['naruto-lamp']);
+      await svc.bulkCreate([
+        { name: 'Naruto Lamp', priceCents: 100, stockQty: 1, categoryName: 'Anime Lamps' },
+        { name: 'Naruto Lamp', priceCents: 100, stockQty: 1, categoryName: 'Anime Lamps' },
+      ]);
+      expect(created.map((c) => c.data.slug)).toEqual(['naruto-lamp-2', 'naruto-lamp-3']);
+    });
+  });
 });

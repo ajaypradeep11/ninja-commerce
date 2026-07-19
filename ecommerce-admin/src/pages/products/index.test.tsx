@@ -37,6 +37,7 @@ vi.mock('@/api/hooks/products', () => ({
     error: null,
     isPlaceholderData: false,
   }),
+  useBulkCreateProducts: () => ({ mutateAsync: vi.fn(), isPending: false }),
 }));
 vi.mock('@/api/hooks/categories', () => ({
   useCategories: () => ({ data: [], isLoading: false, error: null }),

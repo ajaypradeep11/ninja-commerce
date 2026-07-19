@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
+  ordersControllerCancel,
   ordersControllerFindMine,
   ordersControllerFindOne,
   usersControllerGetMe,
@@ -38,5 +39,15 @@ export function useOrder(id: string) {
     queryKey: ['orders', id],
     queryFn: () => unwrap(ordersControllerFindOne({ path: { id } })),
     enabled: !!id,
+  });
+}
+
+export function useCancelOrder(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => unwrap(ordersControllerCancel({ path: { id } })),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['orders'] });
+    },
   });
 }

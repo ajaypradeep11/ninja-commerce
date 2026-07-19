@@ -5,12 +5,14 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import {
+  productsControllerBulkCreate,
   productsControllerCreate,
   productsControllerFindAll,
   productsControllerFindByIdAdmin,
   productsControllerUpdate,
 } from '../generated/sdk.gen';
 import type {
+  BulkUploadProductsDto,
   CreateProductDto,
   UpdateProductDto,
 } from '../generated/types.gen';
@@ -55,6 +57,15 @@ export function useCreateProduct() {
   return useMutation({
     mutationFn: (body: CreateProductDto) =>
       unwrap(productsControllerCreate({ body })),
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ['products'] }),
+  });
+}
+
+export function useBulkCreateProducts() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: BulkUploadProductsDto) =>
+      unwrap(productsControllerBulkCreate({ body })),
     onSuccess: () => void qc.invalidateQueries({ queryKey: ['products'] }),
   });
 }

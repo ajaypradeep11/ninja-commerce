@@ -5,9 +5,31 @@ import {
 } from '@nestjs/common';
 import { Category, Prisma, Product } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { BulkProductItemDto } from './dto/bulk-upload-products.dto';
 import { CreateProductDto } from './dto/create-product.dto';
 import { ListProductsQuery } from './dto/list-products.query';
 import { UpdateProductDto } from './dto/update-product.dto';
+
+// kebab-case slug from a product name; falls back to 'product' if empty.
+function slugify(name: string): string {
+  return (
+    name
+      .toLowerCase()
+      .normalize('NFKD')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '') || 'product'
+  );
+}
+
+// A slug not already in `used`, suffixing -2, -3… on collision. Mutates `used`.
+function uniqueSlug(name: string, used: Set<string>): string {
+  const base = slugify(name);
+  let slug = base;
+  let n = 2;
+  while (used.has(slug)) slug = `${base}-${n++}`;
+  used.add(slug);
+  return slug;
+}
 
 export type ProductWithRating = Product & {
   category?: Category;
@@ -120,6 +142,67 @@ export class ProductsService {
     } catch (e) {
       mapPrismaError(e, 'Product');
     }
+  }
+
+  // Bulk-create products from parsed CSV rows. Valid rows are created in one
+  // transaction; invalid rows (empty name, bad price/stock, unknown category)
+  // are skipped and reported so the caller can fix and re-upload just those.
+  async bulkCreate(
+    items: BulkProductItemDto[],
+  ): Promise<{ created: number; errors: { row: number; message: string }[] }> {
+    const categories = await this.prisma.category.findMany();
+    const catByName = new Map(
+      categories.map((c) => [c.name.trim().toLowerCase(), c.id]),
+    );
+    const existing = await this.prisma.product.findMany({
+      select: { slug: true },
+    });
+    const usedSlugs = new Set(existing.map((p) => p.slug));
+
+    const toCreate: Prisma.ProductCreateInput[] = [];
+    const errors: { row: number; message: string }[] = [];
+
+    items.forEach((item, i) => {
+      const row = i + 1;
+      const name = (item.name ?? '').trim();
+      if (!name) {
+        errors.push({ row, message: 'name is required' });
+        return;
+      }
+      if (!Number.isInteger(item.priceCents) || (item.priceCents ?? -1) < 0) {
+        errors.push({ row, message: `invalid price for "${name}"` });
+        return;
+      }
+      if (!Number.isInteger(item.stockQty) || (item.stockQty ?? -1) < 0) {
+        errors.push({ row, message: `invalid stock for "${name}"` });
+        return;
+      }
+      const categoryId = catByName.get((item.categoryName ?? '').trim().toLowerCase());
+      if (!categoryId) {
+        errors.push({
+          row,
+          message: `unknown category "${item.categoryName ?? ''}" for "${name}"`,
+        });
+        return;
+      }
+      toCreate.push({
+        name,
+        slug: uniqueSlug(name, usedSlugs),
+        description: (item.description ?? '').trim(),
+        priceCents: item.priceCents!,
+        stockQty: item.stockQty!,
+        images: [],
+        active: item.active ?? true,
+        category: { connect: { id: categoryId } },
+      });
+    });
+
+    if (toCreate.length > 0) {
+      await this.prisma.$transaction(
+        toCreate.map((data) => this.prisma.product.create({ data })),
+      );
+    }
+    return { created: toCreate.length, errors };
   }
 
   async update(id: string, dto: UpdateProductDto): Promise<Product> {

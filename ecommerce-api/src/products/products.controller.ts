@@ -22,6 +22,8 @@ import { AdminGuard } from '../auth/admin.guard';
 import type { AuthUser } from '../auth/auth.types';
 import { Public } from '../auth/public.decorator';
 import { AdjustStockDto } from './dto/adjust-stock.dto';
+import { BulkUploadProductsDto } from './dto/bulk-upload-products.dto';
+import { BulkUploadResponseDto } from './dto/bulk-upload-response.dto';
 import { CreateProductDto } from './dto/create-product.dto';
 import { ListProductsQuery } from './dto/list-products.query';
 import {
@@ -84,6 +86,16 @@ export class ProductsController {
   @ApiCreatedResponse({ type: ProductBaseResponseDto })
   create(@Body() dto: CreateProductDto): Promise<Product> {
     return this.products.create(dto);
+  }
+
+  @UseGuards(AdminGuard)
+  @Post('bulk')
+  @ApiBearerAuth()
+  @ApiCreatedResponse({ type: BulkUploadResponseDto })
+  bulkCreate(
+    @Body() dto: BulkUploadProductsDto,
+  ): Promise<BulkUploadResponseDto> {
+    return this.products.bulkCreate(dto.items);
   }
 
   @UseGuards(AdminGuard)

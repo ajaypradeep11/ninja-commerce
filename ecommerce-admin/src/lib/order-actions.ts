@@ -9,6 +9,7 @@ export type OrderStatus =
 export interface OrderActions {
   nextStatus: 'SHIPPED' | 'DELIVERED' | null;
   canRefund: boolean;
+  canCancel: boolean;
 }
 
 export function availableOrderActions(status: OrderStatus): OrderActions {
@@ -16,5 +17,7 @@ export function availableOrderActions(status: OrderStatus): OrderActions {
     status === 'PAID' ? 'SHIPPED' : status === 'SHIPPED' ? 'DELIVERED' : null;
   const canRefund =
     status === 'PAID' || status === 'SHIPPED' || status === 'DELIVERED';
-  return { nextStatus, canRefund };
+  // Cancellable only before shipping (paid cancel issues a refund).
+  const canCancel = status === 'PENDING' || status === 'PAID';
+  return { nextStatus, canRefund, canCancel };
 }

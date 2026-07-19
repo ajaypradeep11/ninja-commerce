@@ -23,6 +23,8 @@ import type {
   CategoriesControllerUpdateResponses,
   CheckoutControllerCreateData,
   CheckoutControllerCreateResponses,
+  OrdersControllerCancelData,
+  OrdersControllerCancelResponses,
   OrdersControllerFindAllData,
   OrdersControllerFindAllResponses,
   OrdersControllerFindMineData,
@@ -35,6 +37,8 @@ import type {
   OrdersControllerUpdateStatusResponses,
   ProductsControllerAdjustStockData,
   ProductsControllerAdjustStockResponses,
+  ProductsControllerBulkCreateData,
+  ProductsControllerBulkCreateResponses,
   ProductsControllerCreateData,
   ProductsControllerCreateResponses,
   ProductsControllerDeactivateData,
@@ -246,6 +250,29 @@ export const productsControllerFindBySlug = <
     ThrowOnError
   >({ url: '/products/{slug}', ...options });
 
+export const productsControllerBulkCreate = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<ProductsControllerBulkCreateData, ThrowOnError>,
+): RequestResult<
+  ProductsControllerBulkCreateResponses,
+  unknown,
+  ThrowOnError
+> =>
+  (options.client ?? client).post<
+    ProductsControllerBulkCreateResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/products/bulk',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
 export const productsControllerAdjustStock = <
   ThrowOnError extends boolean = false,
 >(
@@ -414,6 +441,15 @@ export const ordersControllerRefund = <ThrowOnError extends boolean = false>(
     url: '/orders/{id}/refund',
     ...options,
   });
+
+export const ordersControllerCancel = <ThrowOnError extends boolean = false>(
+  options: Options<OrdersControllerCancelData, ThrowOnError>,
+): RequestResult<OrdersControllerCancelResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<
+    OrdersControllerCancelResponses,
+    unknown,
+    ThrowOnError
+  >({ url: '/orders/{id}/cancel', ...options });
 
 export const reviewsControllerList = <ThrowOnError extends boolean = false>(
   options: Options<ReviewsControllerListData, ThrowOnError>,

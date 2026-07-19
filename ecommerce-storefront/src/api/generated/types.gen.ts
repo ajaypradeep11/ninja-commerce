@@ -100,6 +100,38 @@ export type ProductBaseResponseDto = {
   updatedAt: string;
 };
 
+export type BulkProductItemDto = {
+  name?: string;
+  description?: string;
+  priceCents?: number;
+  stockQty?: number;
+  categoryName?: string;
+  active?: boolean;
+};
+
+export type BulkUploadProductsDto = {
+  items: Array<BulkProductItemDto>;
+};
+
+export type BulkRowError = {
+  /**
+   * 1-based index of the failed row
+   */
+  row: number;
+  message: string;
+};
+
+export type BulkUploadResponseDto = {
+  /**
+   * Number of products created
+   */
+  created: number;
+  /**
+   * Rows that were skipped
+   */
+  errors: Array<BulkRowError>;
+};
+
 export type AdjustStockDto = {
   delta: number;
 };
@@ -178,6 +210,18 @@ export type UpdateOrderStatusDto = {
 
 export type RefundResponseDto = {
   refundId: string;
+};
+
+export type OrderCancelResponseDto = {
+  /**
+   * Status after cancelling. CANCELLED for an unpaid order; PAID for a paid order whose refund is in flight (flips to REFUNDED via webhook).
+   */
+  status:
+    'PENDING' | 'PAID' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED' | 'REFUNDED';
+  /**
+   * Stripe refund id when a paid order was refunded
+   */
+  refundId?: string | null;
 };
 
 export type ReviewResponseDto = {
@@ -378,6 +422,20 @@ export type ProductsControllerFindBySlugResponses = {
 export type ProductsControllerFindBySlugResponse =
   ProductsControllerFindBySlugResponses[keyof ProductsControllerFindBySlugResponses];
 
+export type ProductsControllerBulkCreateData = {
+  body: BulkUploadProductsDto;
+  path?: never;
+  query?: never;
+  url: '/products/bulk';
+};
+
+export type ProductsControllerBulkCreateResponses = {
+  201: BulkUploadResponseDto;
+};
+
+export type ProductsControllerBulkCreateResponse =
+  ProductsControllerBulkCreateResponses[keyof ProductsControllerBulkCreateResponses];
+
 export type ProductsControllerAdjustStockData = {
   body: AdjustStockDto;
   path: {
@@ -535,6 +593,22 @@ export type OrdersControllerRefundResponses = {
 
 export type OrdersControllerRefundResponse =
   OrdersControllerRefundResponses[keyof OrdersControllerRefundResponses];
+
+export type OrdersControllerCancelData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/orders/{id}/cancel';
+};
+
+export type OrdersControllerCancelResponses = {
+  200: OrderCancelResponseDto;
+};
+
+export type OrdersControllerCancelResponse =
+  OrdersControllerCancelResponses[keyof OrdersControllerCancelResponses];
 
 export type ReviewsControllerListData = {
   body?: never;

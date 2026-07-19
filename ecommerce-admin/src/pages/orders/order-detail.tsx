@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useParams } from 'react-router';
 import { toast } from 'sonner';
 import {
+  useCancelOrder,
   useOrder,
   useRefundOrder,
   useUpdateOrderStatus,
@@ -47,6 +48,7 @@ export function OrderDetailPage() {
   );
   const updateStatus = useUpdateOrderStatus();
   const refund = useRefundOrder();
+  const cancel = useCancelOrder();
 
   if (isLoading) return <div className="text-muted-foreground">Loading…</div>;
   if (error != null || !order) {
@@ -54,7 +56,7 @@ export function OrderDetailPage() {
   }
 
   const status = order.status as OrderStatus;
-  const { nextStatus, canRefund } = availableOrderActions(status);
+  const { nextStatus, canRefund, canCancel } = availableOrderActions(status);
   const refundPending = refundRequested && status !== 'REFUNDED';
   const address = order.shippingAddress as Record<string, string> | null;
 
@@ -147,6 +149,40 @@ export function OrderDetailPage() {
             >
               {nextStatus === 'SHIPPED' ? 'Mark shipped' : 'Mark delivered'}
             </Button>
+          )}
+          {canCancel && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline" disabled={refundPending || cancel.isPending}>
+                  Cancel order
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Cancel this order?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    {status === 'PAID'
+                      ? 'The customer is refunded in Stripe; the order flips to REFUNDED via webhook.'
+                      : 'The unpaid order is cancelled and its checkout session expired.'}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Keep order</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() =>
+                      cancel.mutate(order.id, {
+                        onSuccess: (res) => {
+                          if (res.refundId) setRefundRequested(true);
+                        },
+                        onError: errorToast,
+                      })
+                    }
+                  >
+                    Cancel order
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           )}
           {canRefund && (
             <AlertDialog>
