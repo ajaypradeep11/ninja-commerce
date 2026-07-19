@@ -29,7 +29,7 @@ export async function Header() {
     <header className="bg-surface">
       {/* Scrolling announcement bar (the "running bar", moved up from the footer) */}
       <div className="overflow-hidden bg-brand py-1.5">
-        <div className="marquee-track font-mono text-xs tracking-wide text-surface">
+        <div className="marquee-track marquee-lazy font-mono text-xs tracking-wide text-surface">
           <span>{ANNOUNCEMENT_TEXT + SEP}</span>
           <span aria-hidden>{ANNOUNCEMENT_TEXT + SEP}</span>
         </div>

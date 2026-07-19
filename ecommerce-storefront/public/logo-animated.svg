@@ -7,7 +7,7 @@
     .eye {
       transform-box: fill-box;
       transform-origin: center;
-      animation: blink 4.6s ease-in-out infinite;
+      animation: blink 3s ease-in-out infinite;
     }
     .eyes {
       animation: glance 9s ease-in-out infinite;
