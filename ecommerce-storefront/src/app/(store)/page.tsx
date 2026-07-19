@@ -1,10 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import {
-  brandsControllerFindAll,
-  categoriesControllerFindAll,
-  productsControllerFindAll,
-} from '@/api/generated';
+import { brandsControllerFindAll, productsControllerFindAll } from '@/api/generated';
 import { unwrap } from '@/api/unwrap';
 import { serverFetchOptions } from '@/api/server';
 import { SITE } from '@/lib/site';
@@ -19,16 +15,26 @@ const COLLAGE_POSITION = [
   'top-20 right-2 sm:right-4',
 ];
 
+// Product-type tiles: static for now (these aren't DB categories yet), linking
+// into the shop search. Emoji is the resting face; the name reveals on hover.
+const PRODUCT_TYPES = [
+  { label: 'Lamps', emoji: '💡', q: 'lamp' },
+  { label: 'Lightbox', emoji: '🖼️', q: 'lightbox' },
+  { label: 'Clothing', emoji: '👕', q: 'clothing' },
+  { label: 'Beanie', emoji: '🧢', q: 'beanie' },
+  { label: 'Socks', emoji: '🧦', q: 'socks' },
+  { label: 'Keystraps', emoji: '🔑', q: 'keystrap' },
+];
+
 export default async function HomePage() {
-  const [categories, brands, products] = await Promise.all([
-    unwrap(categoriesControllerFindAll({ ...serverFetchOptions })),
+  const [brands, products] = await Promise.all([
     // Tolerate a missing /brands endpoint (e.g. the storefront rebuilds before
-    // the freshly-pushed API version is live) — degrade to no brand chips
+    // the freshly-pushed API version is live) — degrade to no brand marquee
     // instead of failing the whole build, same as the Header does.
     unwrap(brandsControllerFindAll({ ...serverFetchOptions })).catch(() => []),
     unwrap(
       productsControllerFindAll({
-        query: { pageSize: 8, sort: 'newest' },
+        query: { pageSize: 24, sort: 'newest' },
         ...serverFetchOptions,
       }),
     ),
@@ -80,50 +86,79 @@ export default async function HomePage() {
       </section>
       <div className="selvedge" />
 
-      {/* Short Casetify-style category chips — a slim strip, not tall tiles */}
-      <section className="container-wide py-16">
-        <div className="flex flex-wrap gap-4">
-          {categories.map((category) => (
+      {/* Anime brands: clickable chips drifting right-to-left. Repeated a few
+          times per half so the loop stays seamless on wide screens. */}
+      {brands.length > 0 && (
+        <section className="overflow-hidden py-10">
+          <div className="marquee-track marquee-slow">
+            {[0, 1].map((half) => (
+              <div key={half} aria-hidden={half === 1} className="flex gap-4 pr-4">
+                {Array.from({ length: 4 }).flatMap((_, rep) =>
+                  brands.map((brand) => (
+                    <Link
+                      key={`${rep}-${brand.id}`}
+                      href={`/products?brand=${brand.slug}`}
+                      tabIndex={half === 1 ? -1 : undefined}
+                      className="flex h-14 shrink-0 items-center justify-center rounded-xl border border-ink/15 px-8 font-display text-base whitespace-nowrap text-ink transition-colors hover:border-brand hover:text-brand"
+                    >
+                      {brand.name}
+                    </Link>
+                  )),
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Six product-type boxes: emoji at rest, name on hover */}
+      <section className="container-wide py-10">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-6">
+          {PRODUCT_TYPES.map((type) => (
             <Link
-              key={category.id}
-              href={`/products?category=${category.slug}`}
-              className="flex h-20 min-w-56 items-center justify-center rounded-xl bg-subtle px-8 text-center font-display text-lg text-ink transition-colors hover:bg-subtle/70"
+              key={type.label}
+              href={`/products?q=${type.q}`}
+              aria-label={type.label}
+              className="group relative flex aspect-square items-center justify-center rounded-xl bg-subtle transition-colors hover:bg-subtle/70"
             >
-              {category.name}
+              <span
+                aria-hidden
+                className="text-6xl transition-opacity duration-200 group-hover:opacity-0"
+              >
+                {type.emoji}
+              </span>
+              <span
+                aria-hidden
+                className="absolute inset-0 flex items-center justify-center font-display text-2xl text-ink opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+              >
+                {type.label}
+              </span>
             </Link>
           ))}
         </div>
-
-        {brands.length > 0 && (
-          <>
-            <p className="mt-10 font-mono text-xs tracking-wide text-ink/60">ANIME</p>
-            <div className="mt-4 flex flex-wrap gap-4">
-              {brands.map((brand) => (
-                <Link
-                  key={brand.id}
-                  href={`/products?brand=${brand.slug}`}
-                  className="flex h-14 min-w-44 items-center justify-center rounded-xl border border-ink/15 px-6 text-center font-display text-base text-ink transition-colors hover:border-brand hover:text-brand"
-                >
-                  {brand.name}
-                </Link>
-              ))}
-            </div>
-          </>
-        )}
       </section>
 
-      {/* White "island": scope a light theme so the products section reads as
-          dark-on-white against the dark site theme. */}
-      <section data-theme="atelier" className="bg-surface text-ink">
-        <div className="container-wide py-16">
-          <p className="font-mono text-xs tracking-wide text-ink/60">
-            NEW ARRIVALS
-          </p>
-          <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-4">
-            {products.items.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+      {/* All products: a slow 5-across crawl, same mechanic as the eBay rail */}
+      <section className="overflow-hidden py-16">
+        <div className="container-wide flex items-baseline justify-between">
+          <p className="font-mono text-xs tracking-wide text-ink/60">ALL PRODUCTS</p>
+          <Link href="/products" className="text-sm text-brand hover:underline">
+            Shop all
+          </Link>
+        </div>
+        <div className="marquee-track marquee-crawl mt-6">
+          {[0, 1].map((half) => (
+            <div key={half} aria-hidden={half === 1} className="flex gap-4 pr-4">
+              {products.items.map((product) => (
+                <div
+                  key={`${half}-${product.id}`}
+                  className="w-[calc((100vw-6rem)/5)] min-w-52 shrink-0 whitespace-normal"
+                >
+                  <ProductCard product={product} />
+                </div>
+              ))}
+            </div>
+          ))}
         </div>
       </section>
 

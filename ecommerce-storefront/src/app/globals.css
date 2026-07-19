@@ -69,6 +69,10 @@
 .marquee-slow {
   animation-duration: 80s;
 }
+/* Slowest variant for long rails (e.g. the all-products crawl). */
+.marquee-crawl {
+  animation-duration: 320s;
+}
 @media (prefers-reduced-motion: reduce) {
   .marquee-track {
     animation-play-state: paused;
