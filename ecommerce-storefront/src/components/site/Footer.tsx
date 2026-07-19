@@ -4,8 +4,6 @@ import { SITE } from '@/lib/site';
 import { PaymentBadges } from './PaymentBadges';
 import { UspStrip } from './UspStrip';
 
-const MARQUEE_TEXT = Array.from({ length: 8 }, () => `${SITE.name.toUpperCase()} ✳`).join(' ');
-
 const COLUMNS = [
   {
     heading: 'Shop',
@@ -83,13 +81,6 @@ export function Footer() {
         <a href={`mailto:${SITE.contactEmail}`} className="text-ink hover:text-brand">
           {SITE.contactEmail}
         </a>
-      </div>
-
-      <div className="overflow-hidden border-t border-ink/10 py-6">
-        <div className="marquee-track font-display text-3xl text-ink/80 sm:text-4xl">
-          <span>{MARQUEE_TEXT}&nbsp;</span>
-          <span aria-hidden>{MARQUEE_TEXT}&nbsp;</span>
-        </div>
       </div>
 
       <div className="border-t border-ink/10 py-5">

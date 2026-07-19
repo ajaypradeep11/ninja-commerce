@@ -11,9 +11,21 @@ const NAV = [
   { href: '/faq', label: 'FAQ' },
 ];
 
+const ANNOUNCEMENT_TEXT = Array.from(
+  { length: 6 },
+  () => SITE.announcements.map((a) => a.toUpperCase()).join(' ✳ '),
+).join(' ✳ ');
+
 export function Header() {
   return (
     <header className="bg-surface">
+      {/* Scrolling announcement bar (the "running bar", moved up from the footer) */}
+      <div className="overflow-hidden bg-brand py-1.5">
+        <div className="marquee-track font-mono text-xs tracking-wide text-surface">
+          <span>{ANNOUNCEMENT_TEXT}&nbsp;✳&nbsp;</span>
+          <span aria-hidden>{ANNOUNCEMENT_TEXT}&nbsp;✳&nbsp;</span>
+        </div>
+      </div>
       <div className="container-wide flex items-center gap-6 py-4">
         <Link href="/" className="flex items-center gap-2 font-display text-xl text-ink">
           <Image src="/logo-animated.svg" alt="" width={56} height={56} priority />

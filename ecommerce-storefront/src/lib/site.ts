@@ -7,6 +7,8 @@ export const SITE = {
   description:
     'LocalNinja brings anime-inspired LED lamps to your setup, shelf, and gaming space.',
   contactEmail: 'hello@localninja.ca',
+  // Scrolling announcement bar above the header.
+  announcements: ['Free shipping above $55 CAD', 'Same day delivery for Ottawa*'],
   usps: [
     { icon: 'clock', text: 'Ships in 48 hours' },
     { icon: 'undo', text: 'Free returns for 30 days' },
