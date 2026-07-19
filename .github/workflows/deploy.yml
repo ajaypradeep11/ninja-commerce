@@ -80,7 +80,7 @@ jobs:
           echo "test API: $URL"
           curl -fsS --retry 5 --retry-connrefused "$URL/products" > /dev/null
           echo "✅ test API responding"
-      - name: Build + deploy admin (test) → Firebase Hosting
+      - name: Build + deploy admin (test) → Firebase Hosting + Storage rules
         working-directory: ecommerce-admin
         env:
           # Public Firebase web config + Cloud Run URL — baked into the SPA at build.
@@ -93,7 +93,7 @@ jobs:
         run: |
           npm ci
           npm run build
-          npx firebase-tools deploy --only hosting --project "$TEST_PROJECT" --non-interactive
+          npx firebase-tools@15.22.4 deploy --only hosting,storage --project "$TEST_PROJECT" --non-interactive
 
   deploy-prod:
     needs: deploy-test
@@ -129,7 +129,7 @@ jobs:
           echo "prod API: $URL"
           curl -fsS --retry 5 --retry-connrefused "$URL/products" > /dev/null
           echo "✅ prod API responding"
-      - name: Build + deploy admin (prod) → Firebase Hosting
+      - name: Build + deploy admin (prod) → Firebase Hosting + Storage rules
         working-directory: ecommerce-admin
         env:
           VITE_API_URL: https://ninja-commerce-api-1047378822080.us-east4.run.app
@@ -141,4 +141,4 @@ jobs:
         run: |
           npm ci
           npm run build
-          npx firebase-tools deploy --only hosting --project "$PROD_PROJECT" --non-interactive
+          npx firebase-tools@15.22.4 deploy --only hosting,storage --project "$PROD_PROJECT" --non-interactive

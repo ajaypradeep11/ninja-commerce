@@ -58,8 +58,9 @@ centralized in `src/lib/site.ts` (edit there, not scattered across components).
 
 **Admin** (`ecommerce-admin/src/`): pages under `src/pages/{dashboard,categories,products,orders}`, data
 fetching via TanStack Query hooks in `src/api/hooks` wrapping the generated client, forms via
-React Hook Form + zod. Product images upload directly to Firebase Storage from the browser (`storage.rules` is
-currently wide open for authed users — must be locked down before any real deploy).
+React Hook Form + zod. Product images upload directly to Firebase Storage from the browser (`storage.rules`
+allows public reads of `/products/*` and gates writes on the `admin` custom claim plus size/content-type
+checks; everything else is denied).
 
 **Deployment target**: storefront → Firebase App Hosting; admin → not deployed yet (dev-only, Phase 2 scope);
 API → Cloud Run (Dockerfile-based). See `memory_about_project.md` for the current live deployment (project

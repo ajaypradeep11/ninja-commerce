@@ -41,7 +41,7 @@ set -a; . ./stack.secrets.test.env; set +a
 echo "🔧 CI/CD setup — repo=$REPO  test=$TEST_PROJECT  prod=$PROD_PROJECT"
 
 # ── 1. Enable required APIs on both projects ────────────────────────────────
-APIS="run.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com iamcredentials.googleapis.com sts.googleapis.com iam.googleapis.com"
+APIS="run.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com firebaserules.googleapis.com iamcredentials.googleapis.com sts.googleapis.com iam.googleapis.com"
 for P in "$TEST_PROJECT" "$PROD_PROJECT"; do
   echo "▶️  enabling APIs on $P"
   gcloud services enable $APIS --project "$P" --quiet
@@ -53,7 +53,7 @@ create_sa() {  # PROJECT
   if ! gcloud iam service-accounts describe "$SA" --project "$P" >/dev/null 2>&1; then
     gcloud iam service-accounts create "$SA_ID" --project "$P" --display-name "GitHub Actions deployer" --quiet
   fi
-  for ROLE in roles/run.admin roles/cloudbuild.builds.editor roles/artifactregistry.admin roles/storage.admin roles/iam.serviceAccountUser roles/firebasehosting.admin; do
+  for ROLE in roles/run.admin roles/cloudbuild.builds.editor roles/artifactregistry.admin roles/storage.admin roles/iam.serviceAccountUser roles/firebasehosting.admin roles/firebaserules.admin; do
     gcloud projects add-iam-policy-binding "$P" --member "serviceAccount:$SA" --role "$ROLE" --condition=None --quiet >/dev/null
   done
   echo "   ✓ SA ready: $SA"
@@ -88,13 +88,28 @@ done
 
 # ── 5. Create the TEST Cloud Run service with its env (first deploy) ─────────
 echo "▶️  creating test Cloud Run service (first deploy — builds via Cloud Build)"
+# Secrets go through a 0600 temp env-vars file rather than the command line so
+# they never appear in `ps` output or shell history expansions.
+ENV_FILE=$(mktemp)
+chmod 600 "$ENV_FILE"
+trap 'rm -f "$ENV_FILE"' EXIT
+yaml_escape() { printf '%s' "$1" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g'; }
+cat > "$ENV_FILE" <<ENVEOF
+DATABASE_URL: "$(yaml_escape "$DATABASE_URL")"
+STRIPE_SECRET_KEY: "$(yaml_escape "$STRIPE_SECRET_KEY")"
+STRIPE_WEBHOOK_SECRET: "$(yaml_escape "$STRIPE_WEBHOOK_SECRET")"
+FIREBASE_PROJECT_ID: "$(yaml_escape "$TEST_PROJECT")"
+FRONTEND_URL: "$(yaml_escape "$TEST_FRONTEND_URL")"
+CORS_ORIGINS: "$(yaml_escape "$CORS_TEST")"
+ENVEOF
 gcloud run deploy "$SERVICE" \
   --source ecommerce-api \
   --project "$TEST_PROJECT" \
   --region "$REGION" \
   --allow-unauthenticated \
   --quiet \
-  --set-env-vars "^|^DATABASE_URL=${DATABASE_URL}|STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}|STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}|FIREBASE_PROJECT_ID=${TEST_PROJECT}|FRONTEND_URL=${TEST_FRONTEND_URL}|CORS_ORIGINS=${CORS_TEST}"
+  --env-vars-file "$ENV_FILE"
+rm -f "$ENV_FILE"
 
 TEST_URL=$(gcloud run services describe "$SERVICE" --project "$TEST_PROJECT" --region "$REGION" --format='value(status.url)')
 

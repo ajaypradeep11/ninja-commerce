@@ -28,7 +28,9 @@ const connectSrc = [
   "'self'",
   apiOrigin,
   'https://*.googleapis.com',
-  'https://*.run.app',
+  // Wildcard Cloud Run fallback ONLY when the build has no NEXT_PUBLIC_API_URL
+  // to pin; a real build always sets it, narrowing connect-src to that origin.
+  apiOrigin ? '' : 'https://*.run.app',
   'https://identitytoolkit.googleapis.com',
   'https://securetoken.googleapis.com',
   isDev ? 'ws: http://localhost:*' : '',
@@ -38,7 +40,9 @@ const connectSrc = [
 
 const CSP = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+  // 'unsafe-eval' is only needed by dev-mode tooling (react-refresh); the
+  // production runtime works without it.
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''}`,
   "style-src 'self' 'unsafe-inline'",
   // Product images are admin-supplied URLs on arbitrary hosts (pasted in the
   // admin form or uploaded to Firebase Storage), so any https origin may serve
