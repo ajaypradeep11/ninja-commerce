@@ -31,6 +31,16 @@ import type {
   CategoriesControllerUpdateResponses,
   CheckoutControllerCreateData,
   CheckoutControllerCreateResponses,
+  CouponsControllerCreateData,
+  CouponsControllerCreateResponses,
+  CouponsControllerFindAllData,
+  CouponsControllerFindAllResponses,
+  CouponsControllerRemoveData,
+  CouponsControllerRemoveResponses,
+  CouponsControllerUpdateData,
+  CouponsControllerUpdateResponses,
+  CouponsControllerValidateData,
+  CouponsControllerValidateResponses,
   OrdersControllerCancelData,
   OrdersControllerCancelResponses,
   OrdersControllerFindAllData,
@@ -247,6 +257,83 @@ export const brandsControllerUpdate = <ThrowOnError extends boolean = false>(
   >({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/brands/{id}',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const couponsControllerValidate = <ThrowOnError extends boolean = false>(
+  options: Options<CouponsControllerValidateData, ThrowOnError>,
+): RequestResult<CouponsControllerValidateResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<
+    CouponsControllerValidateResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/coupons/validate',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const couponsControllerFindAll = <ThrowOnError extends boolean = false>(
+  options?: Options<CouponsControllerFindAllData, ThrowOnError>,
+): RequestResult<CouponsControllerFindAllResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<
+    CouponsControllerFindAllResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/coupons',
+    ...options,
+  });
+
+export const couponsControllerCreate = <ThrowOnError extends boolean = false>(
+  options: Options<CouponsControllerCreateData, ThrowOnError>,
+): RequestResult<CouponsControllerCreateResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<
+    CouponsControllerCreateResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/coupons',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const couponsControllerRemove = <ThrowOnError extends boolean = false>(
+  options: Options<CouponsControllerRemoveData, ThrowOnError>,
+): RequestResult<CouponsControllerRemoveResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).delete<
+    CouponsControllerRemoveResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/coupons/{id}',
+    ...options,
+  });
+
+export const couponsControllerUpdate = <ThrowOnError extends boolean = false>(
+  options: Options<CouponsControllerUpdateData, ThrowOnError>,
+): RequestResult<CouponsControllerUpdateResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).patch<
+    CouponsControllerUpdateResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/coupons/{id}',
     ...options,
     headers: {
       'Content-Type': 'application/json',

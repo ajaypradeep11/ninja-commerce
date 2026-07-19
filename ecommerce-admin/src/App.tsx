@@ -6,6 +6,7 @@ import { RequireAdmin } from '@/auth/RequireAdmin';
 import { AppShell } from '@/components/layout/AppShell';
 import { DashboardPage } from '@/pages/dashboard';
 import { BrandsPage } from '@/pages/brands';
+import { CouponsPage } from '@/pages/coupons';
 import { CategoriesPage } from '@/pages/categories';
 import { LoginPage } from '@/pages/login';
 import { OrdersPage } from '@/pages/orders';
@@ -37,6 +38,7 @@ export default function App() {
               <Route path="products/:id" element={<ProductFormPage />} />
               <Route path="categories" element={<CategoriesPage />} />
               <Route path="brands" element={<BrandsPage />} />
+              <Route path="coupons" element={<CouponsPage />} />
               <Route path="orders" element={<OrdersPage />} />
               <Route path="orders/:id" element={<OrderDetailPage />} />
             </Route>

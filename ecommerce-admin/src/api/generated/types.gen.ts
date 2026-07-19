@@ -72,6 +72,43 @@ export type UpdateBrandDto = {
   sortOrder?: number;
 };
 
+export type ValidateCouponDto = {
+  code: string;
+  subtotalCents: number;
+};
+
+export type CouponQuoteDto = {
+  type: 'PERCENT' | 'FIXED';
+  code: string;
+  value: number;
+  discountCents: number;
+};
+
+export type CouponResponseDto = {
+  type: 'PERCENT' | 'FIXED';
+  id: string;
+  code: string;
+  value: number;
+  active: boolean;
+  redemptionCount: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type CreateCouponDto = {
+  type: 'PERCENT' | 'FIXED';
+  code: string;
+  value: number;
+  active?: boolean;
+};
+
+export type UpdateCouponDto = {
+  type?: 'PERCENT' | 'FIXED';
+  code?: string;
+  value?: number;
+  active?: boolean;
+};
+
 export type ProductResponseDto = {
   brandId: string | null;
   averageRating: number | null;
@@ -180,6 +217,7 @@ export type CheckoutItemDto = {
 
 export type CreateCheckoutDto = {
   items: Array<CheckoutItemDto>;
+  couponCode?: string;
 };
 
 export type CheckoutSessionResponseDto = {
@@ -212,6 +250,8 @@ export type OrderResponseDto = {
   shippingAddress: {
     [key: string]: unknown;
   } | null;
+  discountCents: number | null;
+  couponCode: string | null;
   taxCents: number | null;
   totalCents: number | null;
   items: Array<OrderItemResponseDto>;
@@ -440,6 +480,80 @@ export type BrandsControllerUpdateResponses = {
 
 export type BrandsControllerUpdateResponse =
   BrandsControllerUpdateResponses[keyof BrandsControllerUpdateResponses];
+
+export type CouponsControllerValidateData = {
+  body: ValidateCouponDto;
+  path?: never;
+  query?: never;
+  url: '/coupons/validate';
+};
+
+export type CouponsControllerValidateResponses = {
+  200: CouponQuoteDto;
+};
+
+export type CouponsControllerValidateResponse =
+  CouponsControllerValidateResponses[keyof CouponsControllerValidateResponses];
+
+export type CouponsControllerFindAllData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/coupons';
+};
+
+export type CouponsControllerFindAllResponses = {
+  200: Array<CouponResponseDto>;
+};
+
+export type CouponsControllerFindAllResponse =
+  CouponsControllerFindAllResponses[keyof CouponsControllerFindAllResponses];
+
+export type CouponsControllerCreateData = {
+  body: CreateCouponDto;
+  path?: never;
+  query?: never;
+  url: '/coupons';
+};
+
+export type CouponsControllerCreateResponses = {
+  201: CouponResponseDto;
+};
+
+export type CouponsControllerCreateResponse =
+  CouponsControllerCreateResponses[keyof CouponsControllerCreateResponses];
+
+export type CouponsControllerRemoveData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/coupons/{id}';
+};
+
+export type CouponsControllerRemoveResponses = {
+  200: CouponResponseDto;
+};
+
+export type CouponsControllerRemoveResponse =
+  CouponsControllerRemoveResponses[keyof CouponsControllerRemoveResponses];
+
+export type CouponsControllerUpdateData = {
+  body: UpdateCouponDto;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/coupons/{id}';
+};
+
+export type CouponsControllerUpdateResponses = {
+  200: CouponResponseDto;
+};
+
+export type CouponsControllerUpdateResponse =
+  CouponsControllerUpdateResponses[keyof CouponsControllerUpdateResponses];
 
 export type ProductsControllerFindAllData = {
   body?: never;
