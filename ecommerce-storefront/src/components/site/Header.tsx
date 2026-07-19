@@ -2,6 +2,9 @@ import type { CSSProperties } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { User } from 'lucide-react';
+import { brandsControllerFindAll } from '@/api/generated';
+import { serverFetchOptions } from '@/api/server';
+import { unwrap } from '@/api/unwrap';
 import { SITE } from '@/lib/site';
 import { SearchBox } from './SearchBox';
 import { CartBadge } from './CartBadge';
@@ -15,7 +18,13 @@ const ANNOUNCEMENT_TEXT = Array.from(
   () => SITE.announcements.map((a) => a.toUpperCase()).join(SEP),
 ).join(SEP);
 
-export function Header() {
+export async function Header() {
+  // Brands feed the hamburger menu's "Anime" group; a failed fetch (e.g. API
+  // down during build) degrades to an empty group rather than a crash.
+  const brands = await unwrap(
+    brandsControllerFindAll({ ...serverFetchOptions }),
+  ).catch(() => []);
+
   return (
     <header className="bg-surface">
       {/* Scrolling announcement bar (the "running bar", moved up from the footer) */}
@@ -34,7 +43,7 @@ export function Header() {
       >
         <div className="container-wide relative grid grid-cols-[1fr_auto_1fr] items-center py-5">
         <div className="justify-self-start">
-          <HeaderMenu />
+          <HeaderMenu brands={brands} />
         </div>
 
         <Link

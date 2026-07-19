@@ -1,6 +1,10 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { categoriesControllerFindAll, productsControllerFindAll } from '@/api/generated';
+import {
+  brandsControllerFindAll,
+  categoriesControllerFindAll,
+  productsControllerFindAll,
+} from '@/api/generated';
 import { unwrap } from '@/api/unwrap';
 import { serverFetchOptions } from '@/api/server';
 import { SITE } from '@/lib/site';
@@ -16,8 +20,9 @@ const COLLAGE_POSITION = [
 ];
 
 export default async function HomePage() {
-  const [categories, products] = await Promise.all([
+  const [categories, brands, products] = await Promise.all([
     unwrap(categoriesControllerFindAll({ ...serverFetchOptions })),
+    unwrap(brandsControllerFindAll({ ...serverFetchOptions })),
     unwrap(
       productsControllerFindAll({
         query: { pageSize: 8, sort: 'newest' },
@@ -81,6 +86,23 @@ export default async function HomePage() {
             </Link>
           ))}
         </div>
+
+        {brands.length > 0 && (
+          <>
+            <p className="mt-10 font-mono text-xs tracking-wide text-ink/60">ANIME</p>
+            <div className="mt-4 flex flex-wrap gap-4">
+              {brands.map((brand) => (
+                <Link
+                  key={brand.id}
+                  href={`/products?brand=${brand.slug}`}
+                  className="flex h-14 min-w-44 items-center justify-center rounded-xl border border-ink/15 px-6 text-center font-display text-base text-ink transition-colors hover:border-brand hover:text-brand"
+                >
+                  {brand.name}
+                </Link>
+              ))}
+            </div>
+          </>
+        )}
       </section>
 
       {/* White "island": scope a light theme so the products section reads as

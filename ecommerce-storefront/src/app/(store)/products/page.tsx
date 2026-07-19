@@ -1,6 +1,10 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { categoriesControllerFindAll, productsControllerFindAll } from '@/api/generated';
+import {
+  brandsControllerFindAll,
+  categoriesControllerFindAll,
+  productsControllerFindAll,
+} from '@/api/generated';
 import { unwrap } from '@/api/unwrap';
 import { serverFetchOptions } from '@/api/server';
 import { ProductCard } from '@/components/site/ProductCard';
@@ -34,15 +38,17 @@ interface ProductsPageProps {
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
   const params = await searchParams;
   const categorySlug = first(params.category);
+  const brandSlug = first(params.brand);
   const q = first(params.q);
   const sort = parseSort(params.sort);
   const page = parsePage(params.page);
 
-  const [categories, products] = await Promise.all([
+  const [categories, brands, products] = await Promise.all([
     unwrap(categoriesControllerFindAll({ ...serverFetchOptions })),
+    unwrap(brandsControllerFindAll({ ...serverFetchOptions })),
     unwrap(
       productsControllerFindAll({
-        query: { category: categorySlug, q, sort, page },
+        query: { category: categorySlug, brand: brandSlug, q, sort, page },
         ...serverFetchOptions,
       }),
     ),
@@ -51,12 +57,21 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const activeCategory = categorySlug
     ? categories.find((category) => category.slug === categorySlug)
     : undefined;
+  const activeBrand = brandSlug
+    ? brands.find((brand) => brand.slug === brandSlug)
+    : undefined;
 
-  if (categorySlug && !activeCategory) {
+  if ((categorySlug && !activeCategory) || (brandSlug && !activeBrand)) {
     notFound();
   }
 
-  const heading = activeCategory ? activeCategory.name : q ? `Results for "${q}"` : 'Shop all';
+  const heading = activeCategory
+    ? activeCategory.name
+    : activeBrand
+      ? activeBrand.name
+      : q
+        ? `Results for "${q}"`
+        : 'Shop all';
 
   return (
     <>
@@ -69,7 +84,9 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
         <div className="mt-8">
           <ListingControls
             categories={categories}
+            brands={brands}
             activeCategory={activeCategory?.slug}
+            activeBrand={activeBrand?.slug}
             sort={sort}
             q={q}
           />

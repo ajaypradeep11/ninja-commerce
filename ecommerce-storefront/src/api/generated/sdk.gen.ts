@@ -13,6 +13,14 @@ import type {
   AdminControllerStatsResponses,
   AppControllerHealthData,
   AppControllerHealthResponses,
+  BrandsControllerCreateData,
+  BrandsControllerCreateResponses,
+  BrandsControllerFindAllData,
+  BrandsControllerFindAllResponses,
+  BrandsControllerRemoveData,
+  BrandsControllerRemoveResponses,
+  BrandsControllerUpdateData,
+  BrandsControllerUpdateResponses,
   CategoriesControllerCreateData,
   CategoriesControllerCreateResponses,
   CategoriesControllerFindAllData,
@@ -183,6 +191,62 @@ export const categoriesControllerUpdate = <
   >({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/categories/{id}',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const brandsControllerFindAll = <ThrowOnError extends boolean = false>(
+  options?: Options<BrandsControllerFindAllData, ThrowOnError>,
+): RequestResult<BrandsControllerFindAllResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<
+    BrandsControllerFindAllResponses,
+    unknown,
+    ThrowOnError
+  >({ url: '/brands', ...options });
+
+export const brandsControllerCreate = <ThrowOnError extends boolean = false>(
+  options: Options<BrandsControllerCreateData, ThrowOnError>,
+): RequestResult<BrandsControllerCreateResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).post<
+    BrandsControllerCreateResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/brands',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const brandsControllerRemove = <ThrowOnError extends boolean = false>(
+  options: Options<BrandsControllerRemoveData, ThrowOnError>,
+): RequestResult<BrandsControllerRemoveResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).delete<
+    BrandsControllerRemoveResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/brands/{id}',
+    ...options,
+  });
+
+export const brandsControllerUpdate = <ThrowOnError extends boolean = false>(
+  options: Options<BrandsControllerUpdateData, ThrowOnError>,
+): RequestResult<BrandsControllerUpdateResponses, unknown, ThrowOnError> =>
+  (options.client ?? client).patch<
+    BrandsControllerUpdateResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/brands/{id}',
     ...options,
     headers: {
       'Content-Type': 'application/json',
