@@ -30,7 +30,7 @@ export default async function HomePage() {
   return (
     <>
       <section className="bg-subtle">
-        <div className="mx-auto grid max-w-6xl gap-12 px-4 py-16 sm:px-6 md:grid-cols-2 md:items-center md:py-24">
+        <div className="container-wide grid gap-12 py-16 md:grid-cols-2 md:items-center md:py-24">
           <div>
             <h1 className="font-display text-4xl leading-tight text-ink sm:text-5xl">
               Your favorite anime, in a whole new light.
@@ -40,14 +40,14 @@ export default async function HomePage() {
               <Link href="/products">Shop anime lamps</Link>
             </Button>
           </div>
-          <div className="relative h-72 sm:h-96">
+          <div className="relative h-72 sm:h-96 lg:h-[30rem]">
             {collage.map(
               (product, i) =>
                 product.images[0] && (
                   <div
                     key={product.id}
                     className={cn(
-                      'absolute aspect-3/4 w-36 overflow-hidden rounded-xl border border-surface shadow-lg sm:w-48',
+                      'absolute aspect-3/4 w-36 overflow-hidden rounded-xl border border-surface shadow-lg sm:w-48 lg:w-60',
                       COLLAGE_POSITION[i],
                     )}
                     style={{ zIndex: i }}
@@ -56,7 +56,7 @@ export default async function HomePage() {
                       src={product.images[0]}
                       alt={product.name}
                       fill
-                      sizes="(max-width: 640px) 144px, 192px"
+                      sizes="(max-width: 640px) 144px, (max-width: 1024px) 192px, 240px"
                       className="object-cover"
                     />
                   </div>
@@ -67,7 +67,7 @@ export default async function HomePage() {
       </section>
       <div className="selvedge" />
 
-      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+      <section className="container-wide py-16">
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
           {categories.map((category) => (
             <Link
@@ -84,7 +84,7 @@ export default async function HomePage() {
       {/* White "island": scope a light theme so the products section reads as
           dark-on-white against the dark site theme. */}
       <section data-theme="atelier" className="bg-surface text-ink">
-        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+        <div className="container-wide py-16">
           <p className="font-mono text-xs tracking-wide text-ink/60">
             NEW ARRIVALS
           </p>
