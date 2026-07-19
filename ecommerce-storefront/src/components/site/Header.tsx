@@ -11,10 +11,13 @@ const NAV = [
   { href: '/faq', label: 'FAQ' },
 ];
 
+// Non-breaking spaces so the gaps between messages survive HTML
+// whitespace collapsing inside the marquee.
+const SEP = ' '.repeat(8) + '✳' + ' '.repeat(8);
 const ANNOUNCEMENT_TEXT = Array.from(
   { length: 6 },
-  () => SITE.announcements.map((a) => a.toUpperCase()).join(' ✳ '),
-).join(' ✳ ');
+  () => SITE.announcements.map((a) => a.toUpperCase()).join(SEP),
+).join(SEP);
 
 export function Header() {
   return (
@@ -22,8 +25,8 @@ export function Header() {
       {/* Scrolling announcement bar (the "running bar", moved up from the footer) */}
       <div className="overflow-hidden bg-brand py-1.5">
         <div className="marquee-track font-mono text-xs tracking-wide text-surface">
-          <span>{ANNOUNCEMENT_TEXT}&nbsp;✳&nbsp;</span>
-          <span aria-hidden>{ANNOUNCEMENT_TEXT}&nbsp;✳&nbsp;</span>
+          <span>{ANNOUNCEMENT_TEXT + SEP}</span>
+          <span aria-hidden>{ANNOUNCEMENT_TEXT + SEP}</span>
         </div>
       </div>
       <div className="container-wide flex items-center gap-6 py-4">
