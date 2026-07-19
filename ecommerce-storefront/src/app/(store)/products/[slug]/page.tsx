@@ -71,7 +71,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const relatedProducts = await getRelatedProducts(product);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+    <div className="container-wide py-12">
       <div className="grid gap-10 md:grid-cols-2 md:items-start">
         <Gallery images={product.images} alt={product.name} />
 
