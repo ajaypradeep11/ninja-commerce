@@ -22,6 +22,7 @@
     "seed:emulator": "ts-node scripts/seed-emulator-admin.ts",
     "seed:demo": "ts-node scripts/seed-demo-data.ts",
     "seed:anime": "ts-node scripts/seed-anime-data.ts",
+    "seed:brands": "ts-node scripts/seed-brands.ts",
     "openapi:emit": "nest build && node dist/src/emit-openapi.js",
     "postinstall": "prisma generate"
   },
