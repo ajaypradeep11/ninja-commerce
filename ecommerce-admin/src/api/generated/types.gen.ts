@@ -51,9 +51,32 @@ export type UpdateCategoryDto = {
   sortOrder?: number;
 };
 
+export type BrandResponseDto = {
+  id: string;
+  name: string;
+  slug: string;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type CreateBrandDto = {
+  name: string;
+  slug: string;
+  sortOrder?: number;
+};
+
+export type UpdateBrandDto = {
+  name?: string;
+  slug?: string;
+  sortOrder?: number;
+};
+
 export type ProductResponseDto = {
+  brandId: string | null;
   averageRating: number | null;
   category?: CategoryResponseDto;
+  brand?: BrandResponseDto | null;
   reviewCount: number;
   id: string;
   name: string;
@@ -83,10 +106,12 @@ export type CreateProductDto = {
   images: Array<string>;
   stockQty: number;
   categoryId: string;
+  brandId?: string | null;
   active?: boolean;
 };
 
 export type ProductBaseResponseDto = {
+  brandId: string | null;
   id: string;
   name: string;
   slug: string;
@@ -144,6 +169,7 @@ export type UpdateProductDto = {
   images?: Array<string>;
   stockQty?: number;
   categoryId?: string;
+  brandId?: string | null;
   active?: boolean;
 };
 
@@ -355,6 +381,66 @@ export type CategoriesControllerUpdateResponses = {
 export type CategoriesControllerUpdateResponse =
   CategoriesControllerUpdateResponses[keyof CategoriesControllerUpdateResponses];
 
+export type BrandsControllerFindAllData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/brands';
+};
+
+export type BrandsControllerFindAllResponses = {
+  200: Array<BrandResponseDto>;
+};
+
+export type BrandsControllerFindAllResponse =
+  BrandsControllerFindAllResponses[keyof BrandsControllerFindAllResponses];
+
+export type BrandsControllerCreateData = {
+  body: CreateBrandDto;
+  path?: never;
+  query?: never;
+  url: '/brands';
+};
+
+export type BrandsControllerCreateResponses = {
+  201: BrandResponseDto;
+};
+
+export type BrandsControllerCreateResponse =
+  BrandsControllerCreateResponses[keyof BrandsControllerCreateResponses];
+
+export type BrandsControllerRemoveData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/brands/{id}';
+};
+
+export type BrandsControllerRemoveResponses = {
+  200: BrandResponseDto;
+};
+
+export type BrandsControllerRemoveResponse =
+  BrandsControllerRemoveResponses[keyof BrandsControllerRemoveResponses];
+
+export type BrandsControllerUpdateData = {
+  body: UpdateBrandDto;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/brands/{id}';
+};
+
+export type BrandsControllerUpdateResponses = {
+  200: BrandResponseDto;
+};
+
+export type BrandsControllerUpdateResponse =
+  BrandsControllerUpdateResponses[keyof BrandsControllerUpdateResponses];
+
 export type ProductsControllerFindAllData = {
   body?: never;
   path?: never;
@@ -364,6 +450,7 @@ export type ProductsControllerFindAllData = {
     pageSize?: number;
     page?: number;
     q?: string;
+    brand?: string;
     category?: string;
   };
   url: '/products';

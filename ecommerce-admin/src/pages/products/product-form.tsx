@@ -9,6 +9,7 @@ import {
   useProduct,
   useUpdateProduct,
 } from '@/api/hooks/products';
+import { useBrands } from '@/api/hooks/brands';
 import { useCategories } from '@/api/hooks/categories';
 import type { ApiError } from '@/api/unwrap';
 import MDEditor from '@uiw/react-md-editor';
@@ -45,6 +46,8 @@ const formSchema = z.object({
     .string()
     .refine((v) => dollarsToCents(v) !== null, 'Enter a valid price'),
   categoryId: z.string().min(1, 'Pick a category'),
+  // 'none' sentinel — Radix Select items cannot have empty-string values.
+  brandId: z.string(),
   stockQty: z.coerce.number<number>().int().min(0),
   active: z.boolean(),
   images: z.array(z.string()),
@@ -58,6 +61,7 @@ const EMPTY: FormValues = {
   description: '',
   price: '',
   categoryId: '',
+  brandId: 'none',
   stockQty: 0,
   active: true,
   images: [],
@@ -69,6 +73,7 @@ export function ProductFormPage() {
   const navigate = useNavigate();
 
   const { data: categories } = useCategories();
+  const { data: brands } = useBrands();
   const { data: existing, isLoading } = useProduct(id ?? '');
   const create = useCreateProduct();
   const update = useUpdateProduct();
@@ -98,6 +103,7 @@ export function ProductFormPage() {
           description: existing.description,
           price: centsToDollars(existing.priceCents),
           categoryId: existing.categoryId,
+          brandId: existing.brandId ?? 'none',
           stockQty: existing.stockQty,
           active: existing.active,
           images: existing.images,
@@ -119,6 +125,7 @@ export function ProductFormPage() {
       description: values.description,
       priceCents: dollarsToCents(values.price)!,
       categoryId: values.categoryId,
+      brandId: values.brandId === 'none' ? null : values.brandId,
       stockQty: values.stockQty,
       active: values.active,
       images: values.images,
@@ -256,6 +263,31 @@ export function ProductFormPage() {
                     {(categories ?? []).map((c) => (
                       <SelectItem key={c.id} value={c.id}>
                         {c.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="brandId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Brand</FormLabel>
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <FormControl>
+                    <SelectTrigger aria-label="Brand">
+                      <SelectValue placeholder="None" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="none">None</SelectItem>
+                    {(brands ?? []).map((b) => (
+                      <SelectItem key={b.id} value={b.id}>
+                        {b.name}
                       </SelectItem>
                     ))}
                   </SelectContent>

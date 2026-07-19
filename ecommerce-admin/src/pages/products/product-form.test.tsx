@@ -36,6 +36,14 @@ vi.mock('@/api/hooks/categories', () => ({
     error: null,
   }),
 }));
+const stableBrands = [{ id: 'b1', name: 'Naruto', slug: 'naruto', sortOrder: 0 }];
+vi.mock('@/api/hooks/brands', () => ({
+  useBrands: () => ({
+    data: stableBrands,
+    isLoading: false,
+    error: null,
+  }),
+}));
 vi.mock('@/components/ImageUpload', () => ({
   ImageUpload: () => <div data-testid="image-upload" />,
 }));
