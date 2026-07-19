@@ -12,6 +12,7 @@ import {
 import { useCategories } from '@/api/hooks/categories';
 import type { ApiError } from '@/api/unwrap';
 import { ImageUpload } from '@/components/ImageUpload';
+import { Markdown } from '@/components/Markdown';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -190,8 +191,22 @@ export function ProductFormPage() {
               <FormItem>
                 <FormLabel>Description</FormLabel>
                 <FormControl>
-                  <Textarea rows={4} {...field} />
+                  <Textarea rows={6} {...field} />
                 </FormControl>
+                <p className="text-xs text-muted-foreground">
+                  Supports Markdown — <code>**bold**</code>, <code>*italic*</code>
+                  , <code>- lists</code>, <code>## headings</code>,{' '}
+                  <code>[links](url)</code>. Line breaks are preserved. The
+                  storefront renders this exactly as previewed below.
+                </p>
+                {field.value?.trim() ? (
+                  <div className="rounded-md border bg-muted/30 p-3">
+                    <p className="mb-1 text-xs font-medium text-muted-foreground">
+                      Preview
+                    </p>
+                    <Markdown className="text-sm">{field.value}</Markdown>
+                  </div>
+                ) : null}
                 <FormMessage />
               </FormItem>
             )}
