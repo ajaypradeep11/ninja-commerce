@@ -11,6 +11,7 @@ import { ApiError, unwrap } from '@/api/unwrap';
 import { serverFetchOptions } from '@/api/server';
 import { AddToCart } from '@/components/site/AddToCart';
 import { Gallery } from '@/components/site/Gallery';
+import { Markdown } from '@/components/site/Markdown';
 import { Price } from '@/components/site/Price';
 import { RatingStars } from '@/components/site/RatingStars';
 import { RelatedProducts } from '@/components/site/RelatedProducts';
@@ -106,7 +107,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <StockLine stockQty={product.stockQty} />
           </div>
 
-          <p className="mt-6 text-ink/70">{product.description}</p>
+          <Markdown className="mt-6 text-ink/70">
+            {product.description}
+          </Markdown>
 
           <div className="mt-8">
             <AddToCart product={product} />
@@ -116,11 +119,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <AccordionItem value="details">
               <AccordionTrigger>Details</AccordionTrigger>
               <AccordionContent>
-                <p>{product.description}</p>
-                <p className="mt-2">
-                  100% GOTS-certified organic cotton. Machine wash cold, hang
-                  dry.
-                </p>
+                <Markdown className="text-ink/70">
+                  {product.description}
+                </Markdown>
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="shipping">
