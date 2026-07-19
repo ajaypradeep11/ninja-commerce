@@ -1,73 +1,46 @@
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { GripVertical, Link, Loader2, Trash2, Upload } from 'lucide-react';
+import { GripVertical, Loader2, Trash2, Upload } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { storage } from '@/auth/firebase';
 import { SortableList } from '@/components/SortableList';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { optimizeProductImage } from '@/lib/optimize-product-image';
 
 interface ImageUploadProps {
   value: string[];
   onChange: (next: string[]) => void;
 }
 
-// Keep this allowlist in sync with the contentType matcher in storage.rules.
-// Maps an accepted browser content-type to the safe extension used in the key.
-const ALLOWED_IMAGE_TYPES: Record<string, string> = {
-  'image/png': 'png',
-  'image/jpeg': 'jpg',
-  'image/webp': 'webp',
-  'image/gif': 'gif',
-  'image/avif': 'avif',
-};
-const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+const ALLOWED_IMAGE_TYPES = new Set([
+  'image/png',
+  'image/jpeg',
+  'image/webp',
+  'image/gif',
+  'image/avif',
+]);
+const MAX_SOURCE_IMAGE_BYTES = 15 * 1024 * 1024;
 
 export function ImageUpload({ value, onChange }: ImageUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
-  const [urlDraft, setUrlDraft] = useState('');
-
-  function addUrl() {
-    const raw = urlDraft.trim();
-    if (!raw) return;
-    let parsed: URL;
-    try {
-      parsed = new URL(raw);
-    } catch {
-      toast.error('That is not a valid URL.');
-      return;
-    }
-    // Only web URLs — the string is rendered as an <img src> everywhere.
-    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') {
-      toast.error('Image URLs must start with http:// or https://');
-      return;
-    }
-    if (value.includes(raw)) {
-      toast.error('That image URL is already in the list.');
-      return;
-    }
-    onChange([...value, raw]);
-    setUrlDraft('');
-  }
 
   async function onFiles(files: FileList | null) {
     if (!files?.length) return;
 
-    // The <input accept="image/*"> is only a UI hint — enforce the same
-    // constraints as storage.rules here so we never attempt a rejected upload.
-    const valid: { file: File; ext: string }[] = [];
+    // The <input accept="image/*"> is only a UI hint. Validate source types
+    // here; storage.rules separately validates the optimized WebP output.
+    const valid: File[] = [];
     for (const file of Array.from(files)) {
-      const ext = ALLOWED_IMAGE_TYPES[file.type];
-      if (!ext) {
+      if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
         toast.error(`"${file.name}" is not a supported image type.`);
         continue;
       }
-      if (file.size >= MAX_IMAGE_BYTES) {
-        toast.error(`"${file.name}" is larger than 5MB.`);
+      if (file.size >= MAX_SOURCE_IMAGE_BYTES) {
+        toast.error(`"${file.name}" is 15MB or larger.`);
         continue;
       }
-      valid.push({ file, ext });
+      valid.push(file);
     }
     if (!valid.length) {
       if (inputRef.current) inputRef.current.value = '';
@@ -76,22 +49,28 @@ export function ImageUpload({ value, onChange }: ImageUploadProps) {
 
     setUploading(true);
     try {
-      const urls = await Promise.all(
-        valid.map(async ({ file, ext }) => {
-          // Never interpolate file.name (attacker-controlled, may contain "/"
-          // for path traversal). Build a single-segment key from a random id
-          // plus a safe extension derived from the validated content-type.
+      const urls: string[] = [];
+      // Process sequentially to avoid holding several decoded 15MB images in
+      // memory at once when an admin selects multiple files.
+      for (const file of valid) {
+        try {
+          const optimized = await optimizeProductImage(file);
           const storageRef = ref(
             storage,
-            `products/${crypto.randomUUID()}.${ext}`,
+            `products/${crypto.randomUUID()}.webp`,
           );
-          await uploadBytes(storageRef, file);
-          return getDownloadURL(storageRef);
-        }),
-      );
-      onChange([...value, ...urls]);
-    } catch {
-      toast.error('Image upload failed.');
+          await uploadBytes(storageRef, optimized, {
+            contentType: 'image/webp',
+            cacheControl: 'public,max-age=31536000,immutable',
+          });
+          urls.push(await getDownloadURL(storageRef));
+        } catch (error) {
+          const reason =
+            error instanceof Error ? error.message : 'Image upload failed.';
+          toast.error(`Could not upload "${file.name}": ${reason}`);
+        }
+      }
+      if (urls.length) onChange([...value, ...urls]);
     } finally {
       setUploading(false);
       if (inputRef.current) inputRef.current.value = '';
@@ -157,30 +136,10 @@ export function ImageUpload({ value, onChange }: ImageUploadProps) {
         )}
         Upload images
       </Button>
-      <div className="flex gap-2">
-        <Input
-          type="url"
-          placeholder="Paste image URL (https://…)"
-          value={urlDraft}
-          onChange={(e) => setUrlDraft(e.target.value)}
-          onKeyDown={(e) => {
-            // Enter adds the URL instead of submitting the product form.
-            if (e.key === 'Enter') {
-              e.preventDefault();
-              addUrl();
-            }
-          }}
-        />
-        <Button
-          type="button"
-          variant="outline"
-          disabled={!urlDraft.trim()}
-          onClick={addUrl}
-        >
-          <Link className="mr-2 h-4 w-4" />
-          Add URL
-        </Button>
-      </div>
+      <p className="text-xs text-muted-foreground">
+        PNG, JPEG, WebP, GIF, or AVIF up to 15MB. Images are resized and
+        converted to WebP before upload.
+      </p>
     </div>
   );
 }
