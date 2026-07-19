@@ -26,11 +26,11 @@ export function Header() {
         </div>
       </div>
       {/* simplymdrn-style row: hamburger left, centered lockup, icons right.
-          White bar: override the surface/ink tokens locally so text and the
-          dropdown go dark-on-white while brand yellow stays. */}
+          Pure-black bar: override the surface/ink tokens locally so text and
+          the dropdown go light-on-black while brand yellow stays. */}
       <div
         className="bg-surface"
-        style={{ '--color-surface': '#ffffff', '--color-ink': '#23201c' } as CSSProperties}
+        style={{ '--color-surface': '#000000', '--color-ink': '#faf7f2' } as CSSProperties}
       >
         <div className="container-wide relative grid grid-cols-[1fr_auto_1fr] items-center py-4">
         <div className="justify-self-start">
