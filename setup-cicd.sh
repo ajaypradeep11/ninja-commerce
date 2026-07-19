@@ -29,7 +29,9 @@ SA_ID="gha-deployer"
 POOL_HOST_PROJECT="$PROD_PROJECT"
 POOL_HOST_NUMBER="$PROD_NUMBER"
 
-CORS_TEST="${CORS_TEST:-http://localhost:3005,http://localhost:5174}"  # add the test hosted.app origin after the App Hosting backend exists
+# Test-env browser origins allowed to call the test API.
+CORS_TEST="${CORS_TEST:-https://test.shop.localninja.ca,https://test.admin.shop.localninja.ca,https://ninja-commerce-test.web.app,https://ninja-commerce-test--ninja-commerce-test.us-east4.hosted.app,http://localhost:3005,http://localhost:5174}"
+TEST_FRONTEND_URL="${TEST_FRONTEND_URL:-https://test.shop.localninja.ca}"
 
 # ── Load test service env from the secrets file ─────────────────────────────
 [ -f stack.secrets.test.env ] || { echo "❌ stack.secrets.test.env missing"; exit 1; }
@@ -92,7 +94,7 @@ gcloud run deploy "$SERVICE" \
   --region "$REGION" \
   --allow-unauthenticated \
   --quiet \
-  --set-env-vars "^|^DATABASE_URL=${DATABASE_URL}|STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}|STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}|FIREBASE_PROJECT_ID=${TEST_PROJECT}|FRONTEND_URL=http://localhost:3005|CORS_ORIGINS=${CORS_TEST}"
+  --set-env-vars "^|^DATABASE_URL=${DATABASE_URL}|STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}|STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}|FIREBASE_PROJECT_ID=${TEST_PROJECT}|FRONTEND_URL=${TEST_FRONTEND_URL}|CORS_ORIGINS=${CORS_TEST}"
 
 TEST_URL=$(gcloud run services describe "$SERVICE" --project "$TEST_PROJECT" --region "$REGION" --format='value(status.url)')
 

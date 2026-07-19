@@ -85,7 +85,7 @@ describe('ProductFormPage (create)', () => {
     const user = userEvent.setup();
     renderNew();
     await user.type(screen.getByLabelText('Name'), 'Tee');
-    await user.type(screen.getByLabelText('Description'), 'Nice tee');
+    await user.type(screen.getByPlaceholderText(/describe the product/i), 'Nice tee');
     await user.type(screen.getByLabelText('Price (USD)'), '29.99');
     await user.type(screen.getByLabelText('Stock'), '10');
     await user.click(screen.getByRole('combobox', { name: 'Category' }));
@@ -107,7 +107,7 @@ describe('ProductFormPage (create)', () => {
     const user = userEvent.setup();
     renderNew();
     await user.type(screen.getByLabelText('Name'), 'Tee');
-    await user.type(screen.getByLabelText('Description'), 'Nice tee');
+    await user.type(screen.getByPlaceholderText(/describe the product/i), 'Nice tee');
     await user.type(screen.getByLabelText('Price (USD)'), '1.999');
     await user.type(screen.getByLabelText('Stock'), '10');
     await user.click(screen.getByRole('combobox', { name: 'Category' }));

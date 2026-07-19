@@ -11,8 +11,9 @@ import {
 } from '@/api/hooks/products';
 import { useCategories } from '@/api/hooks/categories';
 import type { ApiError } from '@/api/unwrap';
+import MDEditor from '@uiw/react-md-editor';
+import '@uiw/react-md-editor/markdown-editor.css';
 import { ImageUpload } from '@/components/ImageUpload';
-import { Markdown } from '@/components/Markdown';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -31,7 +32,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Textarea } from '@/components/ui/textarea';
 import { centsToDollars, dollarsToCents } from '@/lib/money';
 import { slugify } from '@/lib/slugify';
 
@@ -191,22 +191,23 @@ export function ProductFormPage() {
               <FormItem>
                 <FormLabel>Description</FormLabel>
                 <FormControl>
-                  <Textarea rows={6} {...field} />
+                  <div data-color-mode="light">
+                    <MDEditor
+                      value={field.value}
+                      onChange={(v) => field.onChange(v ?? '')}
+                      height={280}
+                      preview="live"
+                      textareaProps={{
+                        placeholder:
+                          'Describe the product. Use the toolbar for bold, italic, headings, lists, links…',
+                      }}
+                    />
+                  </div>
                 </FormControl>
                 <p className="text-xs text-muted-foreground">
-                  Supports Markdown — <code>**bold**</code>, <code>*italic*</code>
-                  , <code>- lists</code>, <code>## headings</code>,{' '}
-                  <code>[links](url)</code>. Line breaks are preserved. The
-                  storefront renders this exactly as previewed below.
+                  Formatting toolbar with live preview — the storefront renders
+                  this Markdown.
                 </p>
-                {field.value?.trim() ? (
-                  <div className="rounded-md border bg-muted/30 p-3">
-                    <p className="mb-1 text-xs font-medium text-muted-foreground">
-                      Preview
-                    </p>
-                    <Markdown className="text-sm">{field.value}</Markdown>
-                  </div>
-                ) : null}
                 <FormMessage />
               </FormItem>
             )}
