@@ -47,7 +47,7 @@ export default async function HomePage() {
                   <div
                     key={product.id}
                     className={cn(
-                      'absolute aspect-3/4 w-36 overflow-hidden border border-surface sm:w-48',
+                      'absolute aspect-3/4 w-36 overflow-hidden rounded-xl border border-surface shadow-lg sm:w-48',
                       COLLAGE_POSITION[i],
                     )}
                     style={{ zIndex: i }}
@@ -73,7 +73,7 @@ export default async function HomePage() {
             <Link
               key={category.id}
               href={`/products?category=${category.slug}`}
-              className="flex aspect-square items-center justify-center bg-subtle p-4 text-center font-display text-lg text-ink transition-colors hover:bg-subtle/70"
+              className="flex aspect-square items-center justify-center rounded-xl bg-subtle p-4 text-center font-display text-lg text-ink transition-colors hover:bg-subtle/70"
             >
               {category.name}
             </Link>
@@ -81,12 +81,18 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-        <p className="font-mono text-xs tracking-wide text-ink/60">NEW ARRIVALS</p>
-        <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-4">
-          {products.items.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
+      {/* White "island": scope a light theme so the products section reads as
+          dark-on-white against the dark site theme. */}
+      <section data-theme="atelier" className="bg-surface text-ink">
+        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+          <p className="font-mono text-xs tracking-wide text-ink/60">
+            NEW ARRIVALS
+          </p>
+          <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-4">
+            {products.items.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
         </div>
       </section>
     </>

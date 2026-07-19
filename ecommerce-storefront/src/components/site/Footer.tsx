@@ -1,56 +1,83 @@
+import { ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import { SITE } from '@/lib/site';
+import { PaymentBadges } from './PaymentBadges';
 import { ThemeSwitcher } from './ThemeSwitcher';
 import { UspStrip } from './UspStrip';
 
 const MARQUEE_TEXT = Array.from({ length: 8 }, () => `${SITE.name.toUpperCase()} ✳`).join(' ');
+
+const COLUMNS = [
+  {
+    heading: 'Shop',
+    links: [{ href: '/products', label: 'All products' }],
+  },
+  {
+    heading: 'Help',
+    links: [
+      { href: '/faq', label: 'FAQ' },
+      { href: '/shipping-returns', label: 'Shipping & returns' },
+      { href: '/contact', label: 'Contact' },
+    ],
+  },
+  {
+    heading: 'About',
+    links: [{ href: '/about', label: `About ${SITE.name}` }],
+  },
+];
 
 export function Footer() {
   return (
     <footer className="bg-subtle">
       <UspStrip />
 
+      {/* Accepted payment + satisfaction guarantee band */}
+      <div className="border-t border-ink/10">
+        <div className="mx-auto grid max-w-6xl gap-8 px-4 py-8 sm:grid-cols-2 sm:px-6">
+          <div>
+            <h3 className="font-mono text-xs tracking-widest text-ink/60 uppercase">
+              Accepted payment
+            </h3>
+            <PaymentBadges className="mt-3" />
+          </div>
+          <div className="sm:border-l sm:border-ink/10 sm:pl-8">
+            <h3 className="flex items-center gap-2 font-mono text-xs tracking-widest text-ink/60 uppercase">
+              <ShieldCheck aria-hidden className="size-4 text-brand" />
+              100% satisfaction guaranteed
+            </h3>
+            <p className="mt-3 max-w-md text-sm text-ink/70">
+              30-day returns — a full refund to your original payment method, no
+              store credit.{' '}
+              <Link
+                href="/shipping-returns"
+                className="text-ink underline underline-offset-4 hover:text-brand"
+              >
+                See shipping &amp; returns
+              </Link>
+              .
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Link columns */}
       <div className="mx-auto grid max-w-6xl grid-cols-2 gap-8 border-t border-ink/10 px-4 py-10 sm:grid-cols-3 sm:px-6">
-        <div>
-          <h3 className="font-mono text-xs tracking-wide text-ink/60 uppercase">Shop</h3>
-          <ul className="mt-3 space-y-2 text-sm">
-            <li>
-              <Link href="/products" className="text-ink hover:text-brand">
-                All products
-              </Link>
-            </li>
-          </ul>
-        </div>
-        <div>
-          <h3 className="font-mono text-xs tracking-wide text-ink/60 uppercase">Help</h3>
-          <ul className="mt-3 space-y-2 text-sm">
-            <li>
-              <Link href="/faq" className="text-ink hover:text-brand">
-                FAQ
-              </Link>
-            </li>
-            <li>
-              <Link href="/shipping-returns" className="text-ink hover:text-brand">
-                Shipping &amp; returns
-              </Link>
-            </li>
-            <li>
-              <Link href="/contact" className="text-ink hover:text-brand">
-                Contact
-              </Link>
-            </li>
-          </ul>
-        </div>
-        <div>
-          <h3 className="font-mono text-xs tracking-wide text-ink/60 uppercase">About</h3>
-          <ul className="mt-3 space-y-2 text-sm">
-            <li>
-              <Link href="/about" className="text-ink hover:text-brand">
-                About {SITE.name}
-              </Link>
-            </li>
-          </ul>
-        </div>
+        {COLUMNS.map((col) => (
+          <div key={col.heading}>
+            <h3 className="font-mono text-xs tracking-wide text-ink/60 uppercase">
+              {col.heading}
+            </h3>
+            <ul className="mt-3 space-y-2 text-sm">
+              {col.links.map((l) => (
+                <li key={l.href}>
+                  <Link href={l.href} className="text-ink hover:text-brand">
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </div>
 
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 pb-8 text-sm sm:px-6">
@@ -65,6 +92,12 @@ export function Footer() {
           <span>{MARQUEE_TEXT}&nbsp;</span>
           <span aria-hidden>{MARQUEE_TEXT}&nbsp;</span>
         </div>
+      </div>
+
+      <div className="border-t border-ink/10 py-5">
+        <p className="mx-auto max-w-6xl px-4 text-xs text-ink/50 sm:px-6">
+          © 2026 {SITE.name}. All rights reserved.
+        </p>
       </div>
     </footer>
   );
