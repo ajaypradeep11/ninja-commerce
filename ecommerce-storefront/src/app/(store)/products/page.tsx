@@ -59,45 +59,53 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const heading = activeCategory ? activeCategory.name : q ? `Results for "${q}"` : 'Shop all';
 
   return (
-    <div className="container-wide py-12">
-      <div className="space-y-2">
-        <h1 className="font-display text-3xl text-ink sm:text-4xl">{heading}</h1>
-        <p className="font-mono text-xs tracking-wide text-ink/60">{products.total} PRODUCTS</p>
+    <>
+      <div className="container-wide pt-12 pb-10">
+        <div className="space-y-2">
+          <h1 className="font-display text-3xl text-ink sm:text-4xl">{heading}</h1>
+          <p className="font-mono text-xs tracking-wide text-ink/60">{products.total} PRODUCTS</p>
+        </div>
+
+        <div className="mt-8">
+          <ListingControls
+            categories={categories}
+            activeCategory={activeCategory?.slug}
+            sort={sort}
+            q={q}
+          />
+        </div>
       </div>
 
-      <div className="mt-8">
-        <ListingControls
-          categories={categories}
-          activeCategory={activeCategory?.slug}
-          sort={sort}
-          q={q}
-        />
-      </div>
+      {/* White "island": scope a light theme so the product grid reads as
+          dark-on-white against the dark site theme (matches the home page). */}
+      <section data-theme="atelier" className="bg-surface text-ink">
+        <div className="container-wide py-12">
+          {products.items.length === 0 ? (
+            <div className="py-8 text-center">
+              <p className="text-ink/70">
+                No products match. Try clearing the search or picking another category.
+              </p>
+              <Link href="/products" className="mt-4 inline-block text-brand hover:underline">
+                Clear filters
+              </Link>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+              {products.items.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          )}
 
-      {products.items.length === 0 ? (
-        <div className="mt-16 text-center">
-          <p className="text-ink/70">
-            No products match. Try clearing the search or picking another category.
-          </p>
-          <Link href="/products" className="mt-4 inline-block text-brand hover:underline">
-            Clear filters
-          </Link>
+          <Pagination
+            page={products.page}
+            total={products.total}
+            pageSize={products.pageSize}
+            basePath="/products"
+            searchParams={params}
+          />
         </div>
-      ) : (
-        <div className="mt-10 grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-          {products.items.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      )}
-
-      <Pagination
-        page={products.page}
-        total={products.total}
-        pageSize={products.pageSize}
-        basePath="/products"
-        searchParams={params}
-      />
-    </div>
+      </section>
+    </>
   );
 }
