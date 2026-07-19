@@ -1,11 +1,11 @@
 export const SITE = {
-  name: 'NinjaCommerce',
+  name: 'LocalNinja',
   // Two-tone wordmark: `accent` renders in the brand color (yellow on the
   // ninja theme) wherever the logo lockup appears (Header, auth pages).
-  wordmark: { base: 'Ninja', accent: 'Commerce' },
+  wordmark: { base: 'Local', accent: 'Ninja' },
   tagline: 'Collectible LED lamps featuring the characters and worlds you love.',
   description:
-    'NinjaCommerce brings anime-inspired LED lamps to your setup, shelf, and gaming space.',
+    'LocalNinja brings anime-inspired LED lamps to your setup, shelf, and gaming space.',
   contactEmail: 'hello@localninja.ca',
   usps: [
     { icon: 'clock', text: 'Ships in 48 hours' },

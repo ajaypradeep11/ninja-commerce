@@ -16,7 +16,7 @@ export function Header() {
     <header className="bg-surface">
       <div className="container-wide flex items-center gap-6 py-4">
         <Link href="/" className="flex items-center gap-2 font-display text-xl text-ink">
-          <Image src="/logo.png" alt="" width={48} height={48} priority />
+          <Image src="/logo-animated.svg" alt="" width={72} height={72} priority />
           <span>
             {SITE.wordmark.base}
             <span className="text-brand">{SITE.wordmark.accent}</span>

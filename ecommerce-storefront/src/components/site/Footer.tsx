@@ -2,7 +2,6 @@ import { ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import { SITE } from '@/lib/site';
 import { PaymentBadges } from './PaymentBadges';
-import { ThemeSwitcher } from './ThemeSwitcher';
 import { UspStrip } from './UspStrip';
 
 const MARQUEE_TEXT = Array.from({ length: 8 }, () => `${SITE.name.toUpperCase()} ✳`).join(' ');
@@ -84,7 +83,6 @@ export function Footer() {
         <a href={`mailto:${SITE.contactEmail}`} className="text-ink hover:text-brand">
           {SITE.contactEmail}
         </a>
-        <ThemeSwitcher />
       </div>
 
       <div className="overflow-hidden border-t border-ink/10 py-6">

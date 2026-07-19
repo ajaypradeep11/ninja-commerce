@@ -14,7 +14,7 @@ import { THEMES, resolveTheme } from "@/theme/registry"
 // Sonner has no notion of our theme registry, so we derive light/dark from
 // the live data-theme attribute rather than next-themes (which this project
 // doesn't otherwise use). A MutationObserver keeps it in sync with runtime
-// theme switches (see ThemeSwitcher).
+// theme switches.
 function subscribe(callback: () => void) {
   const observer = new MutationObserver(callback)
   observer.observe(document.documentElement, {
