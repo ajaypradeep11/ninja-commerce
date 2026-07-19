@@ -9,7 +9,7 @@ const ICONS: Record<string, LucideIcon> = {
 
 export function UspStrip() {
   return (
-    <ul className="mx-auto grid max-w-6xl grid-cols-1 gap-6 px-4 py-8 text-sm sm:grid-cols-3 sm:px-6">
+    <ul className="container-wide grid grid-cols-1 gap-6 py-8 text-sm sm:grid-cols-3">
       {SITE.usps.map((usp) => {
         const Icon = ICONS[usp.icon];
         return (

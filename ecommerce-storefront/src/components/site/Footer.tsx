@@ -33,7 +33,7 @@ export function Footer() {
 
       {/* Accepted payment + satisfaction guarantee band */}
       <div className="border-t border-ink/10">
-        <div className="mx-auto grid max-w-6xl gap-8 px-4 py-8 sm:grid-cols-2 sm:px-6">
+        <div className="container-wide grid gap-8 py-8 sm:grid-cols-2">
           <div>
             <h3 className="font-mono text-xs tracking-widest text-ink/60 uppercase">
               Accepted payment
@@ -61,7 +61,7 @@ export function Footer() {
       </div>
 
       {/* Link columns */}
-      <div className="mx-auto grid max-w-6xl grid-cols-2 gap-8 border-t border-ink/10 px-4 py-10 sm:grid-cols-3 sm:px-6">
+      <div className="container-wide grid grid-cols-2 gap-8 border-t border-ink/10 py-10 sm:grid-cols-3">
         {COLUMNS.map((col) => (
           <div key={col.heading}>
             <h3 className="font-mono text-xs tracking-wide text-ink/60 uppercase">
@@ -80,7 +80,7 @@ export function Footer() {
         ))}
       </div>
 
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 pb-8 text-sm sm:px-6">
+      <div className="container-wide flex flex-wrap items-center justify-between gap-4 pb-8 text-sm">
         <a href={`mailto:${SITE.contactEmail}`} className="text-ink hover:text-brand">
           {SITE.contactEmail}
         </a>
@@ -95,7 +95,7 @@ export function Footer() {
       </div>
 
       <div className="border-t border-ink/10 py-5">
-        <p className="mx-auto max-w-6xl px-4 text-xs text-ink/50 sm:px-6">
+        <p className="container-wide text-xs text-ink/50">
           © 2026 {SITE.name}. All rights reserved.
         </p>
       </div>

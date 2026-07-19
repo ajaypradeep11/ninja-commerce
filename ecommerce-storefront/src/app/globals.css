@@ -24,6 +24,24 @@
   );
 }
 
+/* Wide commerce container (Casetify-style): catalog/chrome surfaces span
+   up to 1600px; reading and form surfaces keep their own narrower widths. */
+.container-wide {
+  max-width: 100rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+@media (min-width: 640px) {
+  .container-wide {
+    padding-inline: 1.5rem;
+  }
+}
+@media (min-width: 1024px) {
+  .container-wide {
+    padding-inline: 2.5rem;
+  }
+}
+
 :focus-visible {
   outline: 2px solid var(--color-brand);
   outline-offset: 2px;
