@@ -31,7 +31,9 @@ export default async function HomePage() {
     ),
   ]);
 
-  const collage = products.items.slice(0, 3);
+  // Only products that actually have an image can appear in the hero collage;
+  // otherwise the collage column renders as a large empty block.
+  const collage = products.items.filter((p) => p.images[0]).slice(0, 3);
 
   return (
     <>
@@ -46,6 +48,7 @@ export default async function HomePage() {
               <Link href="/products">Shop anime lamps</Link>
             </Button>
           </div>
+          {collage.length > 0 && (
           <div className="relative h-72 sm:h-96 lg:h-[30rem]">
             {collage.map(
               (product, i) =>
@@ -69,6 +72,7 @@ export default async function HomePage() {
                 ),
             )}
           </div>
+          )}
         </div>
       </section>
       <div className="selvedge" />

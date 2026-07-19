@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
 import type { BrandResponseDto } from '@/api/generated';
+import { SearchBox } from './SearchBox';
 
 const NAV = [
   { href: '/products', label: 'Shop' },
@@ -44,6 +45,11 @@ export function HeaderMenu({ brands }: { brands: BrandResponseDto[] }) {
           className="absolute inset-x-0 top-full z-40 border-b border-ink/10 bg-surface"
         >
           <div className="container-wide py-4">
+            {/* The header's inline search is hidden below sm, so the menu is
+                the only search entry point on phones. */}
+            <div className="mb-4 sm:hidden [&_input]:max-w-none">
+              <SearchBox />
+            </div>
             <ul className="flex flex-col gap-1">
               {NAV.map((item) => (
                 <li key={item.href}>

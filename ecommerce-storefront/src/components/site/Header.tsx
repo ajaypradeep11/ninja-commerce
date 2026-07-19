@@ -46,11 +46,20 @@ export async function Header() {
           <HeaderMenu brands={brands} />
         </div>
 
+        {/* Shrink the lockup on phones: at full size it collapses the 1fr side
+            columns and buries the menu button under the logo. */}
         <Link
           href="/"
-          className="flex items-center gap-2 justify-self-center font-display text-3xl text-ink"
+          className="flex items-center gap-2 justify-self-center font-display text-xl text-ink sm:text-3xl"
         >
-          <Image src="/logo-animated.svg" alt="" width={64} height={64} priority />
+          <Image
+            src="/logo-animated.svg"
+            alt=""
+            width={64}
+            height={64}
+            priority
+            className="size-10 sm:size-16"
+          />
           <span>
             {SITE.wordmark.base}
             <span className="text-brand">{SITE.wordmark.accent}</span>
