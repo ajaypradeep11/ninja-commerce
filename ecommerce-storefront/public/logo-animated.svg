@@ -29,13 +29,14 @@
     <clipPath id="badge">
       <circle cx="400" cy="400" r="400" />
     </clipPath>
+    <filter id="glow">
+      <feDropShadow dx="0" dy="0" stdDeviation="13" flood-color="#FFD84D" flood-opacity="0.95" />
+    </filter>
   </defs>
   <g clip-path="url(#badge)">
-    <!-- yellow badge background -->
-    <rect width="800" height="800" fill="#FFD84D" />
-    <!-- face scaled so the head nearly fills the badge, leaving only a
-         thin yellow ring (head r300 -> ~380 of the badge's r400) -->
-    <g transform="translate(400 400) scale(1.2667) translate(-388 -420)">
+    <!-- face on a transparent badge with a soft yellow glow instead of a
+         solid yellow ring; scaled so the glow fades out before the clip -->
+    <g filter="url(#glow)" transform="translate(400 400) scale(1.2) translate(-388 -420)">
       <!-- bandana tails -->
       <path
         d="M640 290 C700 270 758 288 782 316 C738 314 700 334 668 350 C656 328 648 308 640 290 Z"
