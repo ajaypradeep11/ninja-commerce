@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { CategoryResponseDto } from '../../categories/dto/category-response.dto';
+import { BrandResponseDto } from '../../brands/dto/brand-response.dto';
 
 export class ProductBaseResponseDto {
   id!: string;
@@ -11,6 +12,8 @@ export class ProductBaseResponseDto {
   stockQty!: number;
   active!: boolean;
   categoryId!: string;
+  @ApiProperty({ type: String, nullable: true })
+  brandId!: string | null;
   createdAt!: Date;
   updatedAt!: Date;
 }
@@ -21,6 +24,8 @@ export class ProductResponseDto extends ProductBaseResponseDto {
   reviewCount!: number;
   @ApiProperty({ type: CategoryResponseDto, required: false })
   category?: CategoryResponseDto;
+  @ApiProperty({ type: BrandResponseDto, required: false, nullable: true })
+  brand?: BrandResponseDto | null;
 }
 
 export class PaginatedProductsDto {

@@ -213,6 +213,142 @@
         ]
       }
     },
+    "/brands": {
+      "get": {
+        "operationId": "BrandsController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BrandResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Brands"
+        ]
+      },
+      "post": {
+        "operationId": "BrandsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBrandDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BrandResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Brands"
+        ]
+      }
+    },
+    "/brands/{id}": {
+      "patch": {
+        "operationId": "BrandsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBrandDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BrandResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Brands"
+        ]
+      },
+      "delete": {
+        "operationId": "BrandsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BrandResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Brands"
+        ]
+      }
+    },
     "/products": {
       "get": {
         "operationId": "ProductsController_findAll",
@@ -256,6 +392,14 @@
           },
           {
             "name": "q",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "brand",
             "required": false,
             "in": "query",
             "schema": {
@@ -1121,15 +1265,95 @@
           }
         }
       },
+      "BrandResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "sortOrder": {
+            "type": "number"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "slug",
+          "sortOrder",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "CreateBrandDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "sortOrder": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "name",
+          "slug"
+        ]
+      },
+      "UpdateBrandDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "sortOrder": {
+            "type": "number"
+          }
+        }
+      },
       "ProductResponseDto": {
         "type": "object",
         "properties": {
+          "brandId": {
+            "type": "string",
+            "nullable": true
+          },
           "averageRating": {
             "type": "number",
             "nullable": true
           },
           "category": {
             "$ref": "#/components/schemas/CategoryResponseDto"
+          },
+          "brand": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/BrandResponseDto"
+              }
+            ]
           },
           "reviewCount": {
             "type": "number"
@@ -1174,6 +1398,7 @@
           }
         },
         "required": [
+          "brandId",
           "averageRating",
           "reviewCount",
           "id",
@@ -1246,6 +1471,10 @@
           "categoryId": {
             "type": "string"
           },
+          "brandId": {
+            "type": "string",
+            "nullable": true
+          },
           "active": {
             "type": "boolean"
           }
@@ -1263,6 +1492,10 @@
       "ProductBaseResponseDto": {
         "type": "object",
         "properties": {
+          "brandId": {
+            "type": "string",
+            "nullable": true
+          },
           "id": {
             "type": "string"
           },
@@ -1303,6 +1536,7 @@
           }
         },
         "required": [
+          "brandId",
           "id",
           "name",
           "slug",
@@ -1434,6 +1668,10 @@
           },
           "categoryId": {
             "type": "string"
+          },
+          "brandId": {
+            "type": "string",
+            "nullable": true
           },
           "active": {
             "type": "boolean"

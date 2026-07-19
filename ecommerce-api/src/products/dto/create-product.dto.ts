@@ -7,6 +7,7 @@ import {
   IsUrl,
   Matches,
   Min,
+  ValidateIf,
 } from 'class-validator';
 
 export class CreateProductDto {
@@ -34,6 +35,12 @@ export class CreateProductDto {
 
   @IsString()
   categoryId!: string;
+
+  // Optional franchise tag; explicit null clears the brand on update.
+  @IsOptional()
+  @ValidateIf((_, value) => value !== null)
+  @IsString()
+  brandId?: string | null;
 
   @IsOptional()
   @IsBoolean()

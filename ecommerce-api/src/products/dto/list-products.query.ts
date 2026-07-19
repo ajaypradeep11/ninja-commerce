@@ -17,6 +17,10 @@ export class ListProductsQuery {
 
   @IsOptional()
   @IsString()
+  brand?: string;
+
+  @IsOptional()
+  @IsString()
   @MaxLength(200)
   q?: string;
 

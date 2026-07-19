@@ -46,6 +46,7 @@ export class ProductsController {
   @Get()
   @ApiOkResponse({ type: PaginatedProductsDto })
   @ApiQuery({ name: 'category', required: false, type: String })
+  @ApiQuery({ name: 'brand', required: false, type: String })
   @ApiQuery({ name: 'q', required: false, type: String })
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'pageSize', required: false, type: Number })

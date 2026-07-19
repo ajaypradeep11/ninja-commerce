@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Category, Prisma, Product } from '@prisma/client';
+import { Brand, Category, Prisma, Product } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { BulkProductItemDto } from './dto/bulk-upload-products.dto';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -33,6 +33,7 @@ function uniqueSlug(name: string, used: Set<string>): string {
 
 export type ProductWithRating = Product & {
   category?: Category;
+  brand?: Brand | null;
   averageRating: number | null;
   reviewCount: number;
 };
@@ -88,10 +89,11 @@ export class ProductsService {
     query: ListProductsQuery,
     includeInactive = false,
   ): Promise<PaginatedProducts> {
-    const { category, q, page = 1, pageSize = 12, sort } = query;
+    const { category, brand, q, page = 1, pageSize = 12, sort } = query;
     const where: Prisma.ProductWhereInput = {
       ...(includeInactive ? {} : { active: true }),
       ...(category ? { category: { slug: category } } : {}),
+      ...(brand ? { brand: { slug: brand } } : {}),
       ...(q
         ? {
             OR: [
@@ -104,7 +106,7 @@ export class ProductsService {
     const [products, total] = await Promise.all([
       this.prisma.product.findMany({
         where,
-        include: { category: true },
+        include: { category: true, brand: true },
         orderBy: SORT_MAP[sort ?? 'newest'],
         skip: (page - 1) * pageSize,
         take: pageSize,
@@ -117,7 +119,7 @@ export class ProductsService {
   async findByIdAdmin(id: string): Promise<ProductWithRating> {
     const product = await this.prisma.product.findUnique({
       where: { id },
-      include: { category: true },
+      include: { category: true, brand: true },
     });
     if (!product) throw new NotFoundException('Product not found');
     const [withRating] = await this.withRatings([product]);
@@ -127,7 +129,7 @@ export class ProductsService {
   async findBySlug(slug: string): Promise<ProductWithRating> {
     const product = await this.prisma.product.findUnique({
       where: { slug },
-      include: { category: true },
+      include: { category: true, brand: true },
     });
     if (!product || !product.active) {
       throw new NotFoundException('Product not found');
@@ -177,7 +179,9 @@ export class ProductsService {
         errors.push({ row, message: `invalid stock for "${name}"` });
         return;
       }
-      const categoryId = catByName.get((item.categoryName ?? '').trim().toLowerCase());
+      const categoryId = catByName.get(
+        (item.categoryName ?? '').trim().toLowerCase(),
+      );
       if (!categoryId) {
         errors.push({
           row,
@@ -207,7 +211,10 @@ export class ProductsService {
 
   async update(id: string, dto: UpdateProductDto): Promise<Product> {
     try {
-      return await this.prisma.product.update({ where: { id }, data: { ...dto } });
+      return await this.prisma.product.update({
+        where: { id },
+        data: { ...dto },
+      });
     } catch (e) {
       mapPrismaError(e, 'Product');
     }
