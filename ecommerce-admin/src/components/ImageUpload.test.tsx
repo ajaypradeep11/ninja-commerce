@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
 import { vi } from 'vitest';
 
@@ -97,5 +98,82 @@ describe('ImageUpload validation', () => {
 
     await waitFor(() => expect(toastError).toHaveBeenCalled());
     expect(uploadBytes).not.toHaveBeenCalled();
+  });
+});
+
+describe('ImageUpload add-by-URL', () => {
+  it('adds a pasted https URL without touching storage and clears the input', async () => {
+    const user = userEvent.setup();
+    render(<Harness />);
+    const input = screen.getByPlaceholderText(/paste image url/i);
+
+    await user.type(input, 'https://cdn.example.com/lamp.jpg');
+    await user.click(screen.getByRole('button', { name: /add url/i }));
+
+    expect(screen.getByTestId('count')).toHaveTextContent('1');
+    expect(screen.getByText('https://cdn.example.com/lamp.jpg')).toBeTruthy();
+    expect(uploadBytes).not.toHaveBeenCalled();
+    expect((input as HTMLInputElement).value).toBe('');
+  });
+
+  it('adds on Enter without submitting an enclosing form', async () => {
+    const onSubmit = vi.fn((e: React.FormEvent) => e.preventDefault());
+    const user = userEvent.setup();
+    render(
+      <form onSubmit={onSubmit}>
+        <Harness />
+      </form>,
+    );
+
+    await user.type(
+      screen.getByPlaceholderText(/paste image url/i),
+      'https://cdn.example.com/a.png{Enter}',
+    );
+
+    expect(screen.getByTestId('count')).toHaveTextContent('1');
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  it('rejects a non-http(s) URL with an error toast', async () => {
+    const user = userEvent.setup();
+    render(<Harness />);
+
+    await user.type(
+      screen.getByPlaceholderText(/paste image url/i),
+      'javascript:alert(1)',
+    );
+    await user.click(screen.getByRole('button', { name: /add url/i }));
+
+    expect(toastError).toHaveBeenCalled();
+    expect(screen.getByTestId('count')).toHaveTextContent('0');
+  });
+
+  it('rejects garbage that is not a URL at all', async () => {
+    const user = userEvent.setup();
+    render(<Harness />);
+
+    await user.type(
+      screen.getByPlaceholderText(/paste image url/i),
+      'not a url',
+    );
+    await user.click(screen.getByRole('button', { name: /add url/i }));
+
+    expect(toastError).toHaveBeenCalled();
+    expect(screen.getByTestId('count')).toHaveTextContent('0');
+  });
+
+  it('ignores a duplicate URL already in the list', async () => {
+    const user = userEvent.setup();
+    render(<Harness />);
+    const input = screen.getByPlaceholderText(/paste image url/i);
+    const add = screen.getByRole('button', { name: /add url/i });
+
+    await user.type(input, 'https://cdn.example.com/x.png');
+    await user.click(add);
+    await user.type(input, 'https://cdn.example.com/x.png');
+    await user.click(add);
+
+    expect(toastError).toHaveBeenCalled();
+    expect(screen.getByTestId('count')).toHaveTextContent('1');
   });
 });

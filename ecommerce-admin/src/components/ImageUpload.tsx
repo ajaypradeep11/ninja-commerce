@@ -1,10 +1,11 @@
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { GripVertical, Loader2, Trash2, Upload } from 'lucide-react';
+import { GripVertical, Link, Loader2, Trash2, Upload } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { storage } from '@/auth/firebase';
 import { SortableList } from '@/components/SortableList';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 interface ImageUploadProps {
   value: string[];
@@ -25,6 +26,30 @@ const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 export function ImageUpload({ value, onChange }: ImageUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
+  const [urlDraft, setUrlDraft] = useState('');
+
+  function addUrl() {
+    const raw = urlDraft.trim();
+    if (!raw) return;
+    let parsed: URL;
+    try {
+      parsed = new URL(raw);
+    } catch {
+      toast.error('That is not a valid URL.');
+      return;
+    }
+    // Only web URLs — the string is rendered as an <img src> everywhere.
+    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') {
+      toast.error('Image URLs must start with http:// or https://');
+      return;
+    }
+    if (value.includes(raw)) {
+      toast.error('That image URL is already in the list.');
+      return;
+    }
+    onChange([...value, raw]);
+    setUrlDraft('');
+  }
 
   async function onFiles(files: FileList | null) {
     if (!files?.length) return;
@@ -132,6 +157,30 @@ export function ImageUpload({ value, onChange }: ImageUploadProps) {
         )}
         Upload images
       </Button>
+      <div className="flex gap-2">
+        <Input
+          type="url"
+          placeholder="Paste image URL (https://…)"
+          value={urlDraft}
+          onChange={(e) => setUrlDraft(e.target.value)}
+          onKeyDown={(e) => {
+            // Enter adds the URL instead of submitting the product form.
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              addUrl();
+            }
+          }}
+        />
+        <Button
+          type="button"
+          variant="outline"
+          disabled={!urlDraft.trim()}
+          onClick={addUrl}
+        >
+          <Link className="mr-2 h-4 w-4" />
+          Add URL
+        </Button>
+      </div>
     </div>
   );
 }
