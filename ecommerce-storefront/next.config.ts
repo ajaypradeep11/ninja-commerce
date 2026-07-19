@@ -63,8 +63,10 @@ const SECURITY_HEADERS = [
 
 const nextConfig: NextConfig = {
   // Admins can attach product images from any https host, so the optimizer
-  // cannot pin a hostname allowlist.
-  images: { remotePatterns: [{ protocol: 'https', hostname: '**' }] },
+  // cannot pin a hostname allowlist — and a wildcard allowlist would turn
+  // /_next/image into an open proxy (SSRF). Serve images unoptimized instead;
+  // this matches what the App Hosting adapter already does in production.
+  images: { unoptimized: true },
   async headers() {
     return [{ source: '/:path*', headers: SECURITY_HEADERS }];
   },
