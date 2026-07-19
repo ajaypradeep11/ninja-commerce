@@ -65,6 +65,10 @@
   white-space: nowrap;
   animation: marquee 30s linear infinite;
 }
+/* Slower variant for content cards (e.g. the review rail). */
+.marquee-slow {
+  animation-duration: 80s;
+}
 @media (prefers-reduced-motion: reduce) {
   .marquee-track {
     animation-play-state: paused;

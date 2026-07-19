@@ -7,6 +7,7 @@ import { SITE } from '@/lib/site';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ProductCard } from '@/components/site/ProductCard';
+import { EbayReviews } from '@/components/site/EbayReviews';
 
 const COLLAGE_POSITION = [
   'top-0 left-2 sm:left-4',
@@ -96,6 +97,8 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      <EbayReviews />
     </>
   );
 }
