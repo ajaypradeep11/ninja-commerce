@@ -45,7 +45,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
   const [categories, brands, products] = await Promise.all([
     unwrap(categoriesControllerFindAll({ ...serverFetchOptions })),
-    unwrap(brandsControllerFindAll({ ...serverFetchOptions })),
+    // Degrade to no brand filters if /brands is unavailable (matches Header).
+    unwrap(brandsControllerFindAll({ ...serverFetchOptions })).catch(() => []),
     unwrap(
       productsControllerFindAll({
         query: { category: categorySlug, brand: brandSlug, q, sort, page },

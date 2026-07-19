@@ -22,7 +22,10 @@ const COLLAGE_POSITION = [
 export default async function HomePage() {
   const [categories, brands, products] = await Promise.all([
     unwrap(categoriesControllerFindAll({ ...serverFetchOptions })),
-    unwrap(brandsControllerFindAll({ ...serverFetchOptions })),
+    // Tolerate a missing /brands endpoint (e.g. the storefront rebuilds before
+    // the freshly-pushed API version is live) — degrade to no brand chips
+    // instead of failing the whole build, same as the Header does.
+    unwrap(brandsControllerFindAll({ ...serverFetchOptions })).catch(() => []),
     unwrap(
       productsControllerFindAll({
         query: { pageSize: 8, sort: 'newest' },
