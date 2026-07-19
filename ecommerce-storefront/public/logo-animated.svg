@@ -26,8 +26,10 @@
     }
   </style>
   <g>
-    <!-- face on a transparent badge, ringed by a thin yellow circle drawn
-         after the face (below); no clip, so the bandana tails stick out -->
+    <!-- thin yellow ring (~1px at header size) hugging the head; drawn
+         first so the bandana tails pass over it cleanly -->
+    <circle cx="400" cy="400" r="314" fill="none" stroke="#FFD84D" stroke-width="14" />
+    <!-- face on a transparent badge; no clip, so the bandana tails stick out -->
     <g transform="translate(12 -20)">
       <!-- bandana tails: outlined in the ring yellow so they read on dark
            backgrounds, sticking out past the ring like the original badge -->
@@ -63,7 +65,5 @@
         </g>
       </g>
     </g>
-    <!-- thin yellow ring (~1px at header size) hugging the head -->
-    <circle cx="400" cy="400" r="314" fill="none" stroke="#FFD84D" stroke-width="14" />
   </g>
 </svg>
