@@ -40,7 +40,10 @@ const CSP = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' https://picsum.photos https://*.googleusercontent.com data: blob:",
+  // Product images are admin-supplied URLs on arbitrary hosts (pasted in the
+  // admin form or uploaded to Firebase Storage), so any https origin may serve
+  // an image.
+  "img-src 'self' https: data: blob:",
   "font-src 'self' data:",
   `connect-src ${connectSrc}`,
   "frame-src https://*.firebaseapp.com",
@@ -59,7 +62,9 @@ const SECURITY_HEADERS = [
 ];
 
 const nextConfig: NextConfig = {
-  images: { remotePatterns: [{ protocol: 'https', hostname: 'picsum.photos' }] },
+  // Admins can attach product images from any https host, so the optimizer
+  // cannot pin a hostname allowlist.
+  images: { remotePatterns: [{ protocol: 'https', hostname: '**' }] },
   async headers() {
     return [{ source: '/:path*', headers: SECURITY_HEADERS }];
   },
