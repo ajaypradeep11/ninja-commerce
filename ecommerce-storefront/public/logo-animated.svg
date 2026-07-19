@@ -30,13 +30,23 @@
       <circle cx="400" cy="400" r="400" />
     </clipPath>
     <filter id="glow">
-      <feDropShadow dx="0" dy="0" stdDeviation="13" flood-color="#FFD84D" flood-opacity="0.95" />
+      <!-- solid ~2px (at header size) yellow rim hugging the silhouette,
+           then a soft glow fading out from it -->
+      <feMorphology in="SourceAlpha" operator="dilate" radius="30" result="dilated" />
+      <feFlood flood-color="#FFD84D" result="yellow" />
+      <feComposite in="yellow" in2="dilated" operator="in" result="rim" />
+      <feGaussianBlur in="rim" stdDeviation="11" result="soft" />
+      <feMerge>
+        <feMergeNode in="soft" />
+        <feMergeNode in="rim" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
     </filter>
   </defs>
   <g clip-path="url(#badge)">
     <!-- face on a transparent badge with a soft yellow glow instead of a
          solid yellow ring; scaled so the glow fades out before the clip -->
-    <g filter="url(#glow)" transform="translate(400 400) scale(1.2) translate(-388 -420)">
+    <g filter="url(#glow)" transform="translate(400 400) scale(1.15) translate(-388 -420)">
       <!-- bandana tails -->
       <path
         d="M640 290 C700 270 758 288 782 316 C738 314 700 334 668 350 C656 328 648 308 640 290 Z"
