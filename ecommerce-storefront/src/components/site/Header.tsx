@@ -32,7 +32,7 @@ export function Header() {
 
         <Link
           href="/"
-          className="flex items-center gap-2 justify-self-center font-display text-xl text-ink"
+          className="flex items-center gap-2 justify-self-center font-display text-3xl text-ink"
         >
           <Image src="/logo-animated.svg" alt="" width={56} height={56} priority />
           <span>
