@@ -71,9 +71,18 @@ export function HeaderMenu({ brands }: { brands: BrandResponseDto[] }) {
                     <li key={brand.id}>
                       <Link
                         href={`/products?brand=${brand.slug}`}
-                        className="block py-1.5 font-display text-lg text-ink hover:text-brand"
+                        className="flex items-center gap-3 py-1.5 font-display text-lg text-ink hover:text-brand"
                       >
-                        {brand.name}
+                        {brand.logoUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={brand.logoUrl}
+                            alt={brand.name}
+                            className="h-7 w-auto max-w-32 object-contain"
+                          />
+                        ) : (
+                          brand.name
+                        )}
                       </Link>
                     </li>
                   ))}

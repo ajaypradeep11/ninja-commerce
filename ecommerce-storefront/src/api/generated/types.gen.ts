@@ -52,6 +52,7 @@ export type UpdateCategoryDto = {
 };
 
 export type BrandResponseDto = {
+  logoUrl: string | null;
   id: string;
   name: string;
   slug: string;
@@ -64,12 +65,14 @@ export type CreateBrandDto = {
   name: string;
   slug: string;
   sortOrder?: number;
+  logoUrl?: string | null;
 };
 
 export type UpdateBrandDto = {
   name?: string;
   slug?: string;
   sortOrder?: number;
+  logoUrl?: string | null;
 };
 
 export type ValidateCouponDto = {

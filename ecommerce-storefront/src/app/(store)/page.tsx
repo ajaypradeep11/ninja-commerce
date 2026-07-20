@@ -132,7 +132,16 @@ export default async function HomePage() {
                       tabIndex={half === 1 ? -1 : undefined}
                       className="flex h-14 shrink-0 items-center justify-center rounded-xl border border-ink/15 px-8 font-display text-base whitespace-nowrap text-ink transition-colors hover:border-brand hover:text-brand"
                     >
-                      {brand.name}
+                      {brand.logoUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={brand.logoUrl}
+                          alt={brand.name}
+                          className="h-9 w-auto max-w-40 object-contain"
+                        />
+                      ) : (
+                        brand.name
+                      )}
                     </Link>
                   )),
                 )}
