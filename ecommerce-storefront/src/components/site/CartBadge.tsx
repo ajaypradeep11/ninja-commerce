@@ -15,7 +15,7 @@ export function CartBadge() {
     >
       <ShoppingBag aria-hidden className="size-5" />
       {hydrated && count > 0 && (
-        <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-brand font-mono text-[10px] text-surface">
+        <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-brand font-mono text-[10px] text-black">
           {count > 99 ? '99+' : count}
         </span>
       )}

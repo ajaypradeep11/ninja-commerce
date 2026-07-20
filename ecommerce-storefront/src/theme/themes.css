@@ -64,6 +64,16 @@
   --radius: 0.375rem;
 }
 
+[data-theme='ninja-light'] {
+  --color-surface: #ffffff;
+  --color-ink: #17161a;
+  /* Darker amber than ninja's yellow — yellow on white fails WCAG AA. */
+  --color-brand: #a16207;
+  --color-highlight: #b8452f;
+  --color-subtle: #f2efe8;
+  --radius: 0.375rem;
+}
+
 /* --- Signature divider per theme (everloom's woven stripe is the default
        .selvedge in globals.css) --- */
 
@@ -104,7 +114,8 @@
   background: var(--color-ink);
 }
 
-[data-theme='ninja'] .selvedge {
+[data-theme='ninja'] .selvedge,
+[data-theme='ninja-light'] .selvedge {
   /* dashed yellow blade stripe */
   height: 4px;
   background: repeating-linear-gradient(
@@ -117,12 +128,14 @@
 /* --- Ninja typography: localninja.ca weight treatment — Sora 800 with
        -0.03em tracking on page titles, 700 on other display text --- */
 
-[data-theme='ninja'] .font-display {
+[data-theme='ninja'] .font-display,
+[data-theme='ninja-light'] .font-display {
   font-weight: 700;
   letter-spacing: -0.02em;
 }
 
-[data-theme='ninja'] h1.font-display {
+[data-theme='ninja'] h1.font-display,
+[data-theme='ninja-light'] h1.font-display {
   font-weight: 800;
   letter-spacing: -0.03em;
 }

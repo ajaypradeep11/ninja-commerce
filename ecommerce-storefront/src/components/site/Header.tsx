@@ -9,6 +9,7 @@ import { SITE } from '@/lib/site';
 import { SearchBox } from './SearchBox';
 import { CartBadge } from './CartBadge';
 import { HeaderMenu } from './HeaderMenu';
+import { ThemeToggle } from './ThemeToggle';
 
 // Non-breaking spaces so the gaps between messages survive HTML
 // whitespace collapsing inside the marquee.
@@ -29,7 +30,7 @@ export async function Header() {
     <>
       {/* Scrolling announcement bar — scrolls away; only the nav bar sticks. */}
       <div className="overflow-hidden bg-brand py-1.5">
-        <div className="marquee-track marquee-lazy font-mono text-xs tracking-wide text-surface">
+        <div className="marquee-track marquee-lazy font-mono text-xs tracking-wide text-black">
           <span>{ANNOUNCEMENT_TEXT + SEP}</span>
           <span aria-hidden>{ANNOUNCEMENT_TEXT + SEP}</span>
         </div>
@@ -79,6 +80,7 @@ export async function Header() {
           <div className="hidden sm:block">
             <SearchBox />
           </div>
+          <ThemeToggle />
           <Link href="/account" aria-label="Account" className="p-1.5 text-ink hover:text-brand">
             <User aria-hidden className="size-5" />
           </Link>

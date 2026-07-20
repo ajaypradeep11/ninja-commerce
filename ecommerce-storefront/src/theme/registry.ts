@@ -7,11 +7,12 @@ export const THEME_IDS = [
   'arcade',
   'atelier',
   'ninja',
+  'ninja-light',
 ] as const;
 
 export type ThemeId = (typeof THEME_IDS)[number];
 
-export const DEFAULT_THEME: ThemeId = 'ninja';
+export const DEFAULT_THEME: ThemeId = 'ninja-light';
 
 export const THEME_STORAGE_KEY = 'storefront.theme.v1';
 
@@ -30,6 +31,7 @@ export const THEMES: readonly ThemeMeta[] = [
   { id: 'arcade', label: 'Arcade', swatches: { surface: '#f4f4f0', brand: '#2244ff', highlight: '#cc0e63' }, dark: false },
   { id: 'atelier', label: 'Atelier', swatches: { surface: '#ffffff', brand: '#2b2b2b', highlight: '#c93a24' }, dark: false },
   { id: 'ninja', label: 'Ninja', swatches: { surface: '#000000', brand: '#ffd84d', highlight: '#e8be8e' }, dark: true },
+  { id: 'ninja-light', label: 'Ninja Light', swatches: { surface: '#ffffff', brand: '#a16207', highlight: '#b8452f' }, dark: false },
 ];
 
 export function resolveTheme(value: unknown): ThemeId {

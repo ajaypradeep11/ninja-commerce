@@ -79,7 +79,7 @@ export function CheckoutButton({
         onClick={handleClick}
         disabled={disabled}
         size="lg"
-        className="w-full bg-brand text-surface hover:bg-brand/90"
+        className="w-full bg-brand text-black hover:bg-brand/90"
       >
         Checkout
       </Button>
