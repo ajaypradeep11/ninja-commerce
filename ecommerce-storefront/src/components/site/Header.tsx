@@ -44,7 +44,7 @@ export async function Header() {
       >
         <div className="px-3 pt-3">
           <div className="rounded-2xl bg-surface shadow-lg shadow-black/40">
-        <div className="container-wide relative grid grid-cols-[1fr_auto_1fr] items-center py-2.5">
+        <div className="container-wide relative grid grid-cols-[1fr_auto_1fr] items-center py-1.5">
         <div className="justify-self-start">
           <HeaderMenu brands={brands} />
         </div>
@@ -53,7 +53,7 @@ export async function Header() {
             columns and buries the menu button under the logo. */}
         <Link
           href="/"
-          className="flex items-center gap-2 justify-self-center font-display text-xl text-ink sm:text-3xl"
+          className="flex items-center gap-2 justify-self-center font-display text-xl text-ink sm:text-2xl"
         >
           <Image
             src="/logo-animated.svg"
@@ -61,7 +61,7 @@ export async function Header() {
             width={64}
             height={64}
             priority
-            className="size-10 sm:size-16"
+            className="size-9 sm:size-12"
           />
           <span>
             {SITE.wordmark.base}
