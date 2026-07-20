@@ -42,7 +42,7 @@ export function HeaderMenu({ brands }: { brands: BrandResponseDto[] }) {
       {open && (
         <nav
           aria-label="Main"
-          className="absolute inset-x-0 top-full z-40 border-b border-ink/10 bg-surface"
+          className="absolute inset-x-0 top-full z-40 rounded-b-2xl border-b border-ink/10 bg-surface"
         >
           <div className="container-wide py-4">
             {/* The header's inline search is hidden below sm, so the menu is

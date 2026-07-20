@@ -34,14 +34,17 @@ export async function Header() {
           <span aria-hidden>{ANNOUNCEMENT_TEXT + SEP}</span>
         </div>
       </div>
-      {/* Allbirds-style sticky nav: hamburger left, centered lockup, search +
-          icons right. Pure-black bar: override the surface/ink tokens locally
-          so text and the dropdown go light-on-black while brand yellow stays. */}
+      {/* Allbirds-style floating "notch" nav: a rounded black pill inset from
+          the edges, sticky, with the hero sliding underneath (the header takes
+          no flow height). Token override keeps text light-on-black while brand
+          yellow stays. */}
       <header
-        className="sticky top-0 z-50 bg-surface"
+        className="sticky top-0 z-50 h-0"
         style={{ '--color-surface': '#000000', '--color-ink': '#faf7f2' } as CSSProperties}
       >
-        <div className="container-wide relative grid grid-cols-[1fr_auto_1fr] items-center py-5">
+        <div className="px-3 pt-3">
+          <div className="rounded-2xl bg-surface shadow-lg shadow-black/40">
+        <div className="container-wide relative grid grid-cols-[1fr_auto_1fr] items-center py-4">
         <div className="justify-self-start">
           <HeaderMenu brands={brands} />
         </div>
@@ -76,7 +79,8 @@ export async function Header() {
           <CartBadge />
         </div>
         </div>
-        <div className="selvedge" />
+          </div>
+        </div>
       </header>
     </>
   );

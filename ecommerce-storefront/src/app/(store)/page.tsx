@@ -77,29 +77,6 @@ export default async function HomePage() {
 
       {/* Anime brands: clickable chips drifting right-to-left. Repeated a few
           times per half so the loop stays seamless on wide screens. */}
-      {brands.length > 0 && (
-        <section className="overflow-hidden py-10">
-          <div className="marquee-track marquee-slow">
-            {[0, 1].map((half) => (
-              <div key={half} aria-hidden={half === 1} className="flex gap-4 pr-4">
-                {Array.from({ length: 4 }).flatMap((_, rep) =>
-                  brands.map((brand) => (
-                    <Link
-                      key={`${rep}-${brand.id}`}
-                      href={`/products?brand=${brand.slug}`}
-                      tabIndex={half === 1 ? -1 : undefined}
-                      className="flex h-14 shrink-0 items-center justify-center rounded-xl border border-ink/15 px-8 font-display text-base whitespace-nowrap text-ink transition-colors hover:border-brand hover:text-brand"
-                    >
-                      {brand.name}
-                    </Link>
-                  )),
-                )}
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
       {/* Six product-type boxes: emoji at rest, name on hover */}
       <section className="container-wide py-10">
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-6">
@@ -126,6 +103,29 @@ export default async function HomePage() {
           ))}
         </div>
       </section>
+
+      {brands.length > 0 && (
+        <section className="overflow-hidden py-10">
+          <div className="marquee-track marquee-slow">
+            {[0, 1].map((half) => (
+              <div key={half} aria-hidden={half === 1} className="flex gap-4 pr-4">
+                {Array.from({ length: 4 }).flatMap((_, rep) =>
+                  brands.map((brand) => (
+                    <Link
+                      key={`${rep}-${brand.id}`}
+                      href={`/products?brand=${brand.slug}`}
+                      tabIndex={half === 1 ? -1 : undefined}
+                      className="flex h-14 shrink-0 items-center justify-center rounded-xl border border-ink/15 px-8 font-display text-base whitespace-nowrap text-ink transition-colors hover:border-brand hover:text-brand"
+                    >
+                      {brand.name}
+                    </Link>
+                  )),
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* All products: a slow 5-across crawl, same mechanic as the eBay rail */}
       <section className="overflow-hidden py-16">
