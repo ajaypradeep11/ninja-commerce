@@ -39,6 +39,11 @@ export default async function HomePage() {
     ),
   ]);
 
+  // Only logo'd brands ride the marquee; repeat them enough to fill an
+  // ultrawide viewport so the -50% loop stays seamless.
+  const logoBrands = brands.filter((brand) => brand.logoUrl);
+  const LOGO_REPEATS = Math.max(2, Math.ceil(10 / Math.max(1, logoBrands.length)));
+
   return (
     <>
       {/* Allbirds-style hero: full-bleed image, eyebrow + headline + CTAs
@@ -128,8 +133,11 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {brands.length > 0 && (
-        <section className="overflow-hidden py-10">
+      {/* Logo rail: only brands that actually have artwork appear here — a
+          name-only chip among logos looks unfinished. Every brand is still
+          reachable from the menu's Anime group and the shop filters. */}
+      {logoBrands.length > 0 && (
+        <section className="-mt-6 overflow-hidden pt-0 pb-6">
           <div className="marquee-track marquee-slow">
             {[0, 1].map((half) => (
               <div
@@ -137,37 +145,24 @@ export default async function HomePage() {
                 aria-hidden={half === 1}
                 className="flex gap-4 pr-4"
               >
-                {Array.from({ length: 4 }).flatMap((_, rep) =>
-                  brands.map((brand) =>
-                    // A logo carries the brand on its own — no chip around it.
-                    // Brands without one fall back to a named chip.
-                    brand.logoUrl ? (
-                      <Link
-                        key={`${rep}-${brand.id}`}
-                        href={`/products?brand=${brand.slug}`}
-                        tabIndex={half === 1 ? -1 : undefined}
-                        className="flex h-24 shrink-0 items-center justify-center px-6 opacity-85 transition-opacity hover:opacity-100"
-                      >
-                        {/* Square and wide logos both get room: height caps the
-                            tall ones, max-width caps the banner-shaped ones. */}
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={brand.logoUrl}
-                          alt={brand.name}
-                          className="max-h-24 w-auto max-w-60 object-contain"
-                        />
-                      </Link>
-                    ) : (
-                      <Link
-                        key={`${rep}-${brand.id}`}
-                        href={`/products?brand=${brand.slug}`}
-                        tabIndex={half === 1 ? -1 : undefined}
-                        className="flex h-14 shrink-0 items-center justify-center rounded-xl border border-ink/15 px-8 font-display text-base whitespace-nowrap text-ink transition-colors hover:border-brand hover:text-brand"
-                      >
-                        {brand.name}
-                      </Link>
-                    ),
-                  ),
+                {Array.from({ length: LOGO_REPEATS }).flatMap((_, rep) =>
+                  logoBrands.map((brand) => (
+                    <Link
+                      key={`${rep}-${brand.id}`}
+                      href={`/products?brand=${brand.slug}`}
+                      tabIndex={half === 1 ? -1 : undefined}
+                      className="flex h-40 shrink-0 items-center justify-center px-8 opacity-85 transition-opacity hover:opacity-100"
+                    >
+                      {/* Square and wide logos both get room: height caps the
+                          tall ones, max-width caps the banner-shaped ones. */}
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={brand.logoUrl!}
+                        alt={brand.name}
+                        className="max-h-40 w-auto max-w-96 object-contain"
+                      />
+                    </Link>
+                  )),
                 )}
               </div>
             ))}
