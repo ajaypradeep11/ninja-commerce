@@ -6,7 +6,7 @@ export const SITE = {
   tagline: 'Collectible LED lamps featuring the characters and worlds you love.',
   description:
     'LocalNinja brings anime-inspired LED lamps to your setup, shelf, and gaming space.',
-  contactEmail: 'hello@localninja.ca',
+  contactEmail: 'support@localninja.ca',
   // Scrolling announcement bar above the header.
   announcements: [
     'Free shipping above $55 CAD',

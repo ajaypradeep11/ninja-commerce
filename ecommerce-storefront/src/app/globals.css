@@ -128,27 +128,23 @@
   }
 }
 
-/* Hero delivery sticker: rests tilted, pops upright for a beat every cycle. */
-@keyframes sticker-pop {
+/* Hero delivery sticker: rests slightly tilted with a soft breathing float. */
+@keyframes sticker-float {
   0%,
-  86%,
   100% {
-    transform: rotate(-2deg) scale(1);
+    transform: rotate(-1.5deg) translateY(0);
   }
-  90% {
-    transform: rotate(1.5deg) scale(1.07);
-  }
-  94% {
-    transform: rotate(-3deg) scale(1.02);
+  50% {
+    transform: rotate(-0.5deg) translateY(-4px);
   }
 }
-.sticker-pop {
-  animation: sticker-pop 5s ease-in-out infinite;
+.sticker-float {
+  animation: sticker-float 4s ease-in-out infinite;
 }
 @media (prefers-reduced-motion: reduce) {
-  .sticker-pop {
+  .sticker-float {
     animation: none;
-    transform: rotate(-2deg);
+    transform: rotate(-1.5deg);
   }
 }
 
