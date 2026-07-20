@@ -138,25 +138,36 @@ export default async function HomePage() {
                 className="flex gap-4 pr-4"
               >
                 {Array.from({ length: 4 }).flatMap((_, rep) =>
-                  brands.map((brand) => (
-                    <Link
-                      key={`${rep}-${brand.id}`}
-                      href={`/products?brand=${brand.slug}`}
-                      tabIndex={half === 1 ? -1 : undefined}
-                      className="flex h-14 shrink-0 items-center justify-center rounded-xl border border-ink/15 px-8 font-display text-base whitespace-nowrap text-ink transition-colors hover:border-brand hover:text-brand"
-                    >
-                      {brand.logoUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
+                  brands.map((brand) =>
+                    // A logo carries the brand on its own — no chip around it.
+                    // Brands without one fall back to a named chip.
+                    brand.logoUrl ? (
+                      <Link
+                        key={`${rep}-${brand.id}`}
+                        href={`/products?brand=${brand.slug}`}
+                        tabIndex={half === 1 ? -1 : undefined}
+                        className="flex h-24 shrink-0 items-center justify-center px-6 opacity-85 transition-opacity hover:opacity-100"
+                      >
+                        {/* Square and wide logos both get room: height caps the
+                            tall ones, max-width caps the banner-shaped ones. */}
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={brand.logoUrl}
                           alt={brand.name}
-                          className="h-9 w-auto max-w-40 object-contain"
+                          className="max-h-24 w-auto max-w-60 object-contain"
                         />
-                      ) : (
-                        brand.name
-                      )}
-                    </Link>
-                  )),
+                      </Link>
+                    ) : (
+                      <Link
+                        key={`${rep}-${brand.id}`}
+                        href={`/products?brand=${brand.slug}`}
+                        tabIndex={half === 1 ? -1 : undefined}
+                        className="flex h-14 shrink-0 items-center justify-center rounded-xl border border-ink/15 px-8 font-display text-base whitespace-nowrap text-ink transition-colors hover:border-brand hover:text-brand"
+                      >
+                        {brand.name}
+                      </Link>
+                    ),
+                  ),
                 )}
               </div>
             ))}
