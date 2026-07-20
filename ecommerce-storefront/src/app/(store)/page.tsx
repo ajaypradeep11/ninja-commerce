@@ -8,8 +8,8 @@ import { Button } from '@/components/ui/button';
 import { ProductCard } from '@/components/site/ProductCard';
 import { EbayReviews } from '@/components/site/EbayReviews';
 
-// Placeholder hero shot from the product photo library.
-const HERO_IMAGE = '/anime/IMG_0601.jpg';
+// Hero shot: the lamp lineup glowing on marble (3200x1344, ~0.8MB JPEG).
+const HERO_IMAGE = '/hero.jpg';
 
 // Product-type tiles: static for now (these aren't DB categories yet), linking
 // into the shop search. Emoji is the resting face; the name reveals on hover.
@@ -42,14 +42,14 @@ export default async function HomePage() {
           overlaid near the bottom. Swap HERO_IMAGE for a shot art-directed
           for this space when one exists. */}
       <section className="px-3 pt-3">
-        <div className="relative h-[70vh] min-h-105 overflow-hidden rounded-2xl sm:h-[78vh]">
+        <div className="relative h-[78vh] min-h-105 overflow-hidden rounded-2xl sm:h-[88vh]">
         <Image
           src={HERO_IMAGE}
           alt=""
           fill
           priority
           sizes="100vw"
-          className="rounded-2xl object-cover"
+          className="rounded-2xl object-cover object-[center_20%]"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/10" />
         <div className="container-wide absolute inset-x-0 bottom-0 pb-10 sm:pb-14">
