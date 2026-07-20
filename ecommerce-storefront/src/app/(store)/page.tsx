@@ -55,7 +55,7 @@ export default async function HomePage() {
         {/* Ottawa delivery note bottom-left; copy bottom-right, Allbirds style */}
         <div className="container-wide absolute inset-x-0 bottom-0 flex flex-wrap items-end justify-between gap-6 pb-10 sm:pb-14">
           <div className="sticker-float max-w-2xs">
-            <p className="font-mono text-[10px] font-bold tracking-widest text-white/70">
+            <p className="neon-text-red font-display text-2xl tracking-wide sm:text-3xl">
               🛵 OTTAWA, ONTARIO
             </p>
             <p className="neon-text mt-1 font-display text-lg leading-snug">
