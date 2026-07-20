@@ -1445,6 +1445,10 @@
       "BrandResponseDto": {
         "type": "object",
         "properties": {
+          "logoUrl": {
+            "type": "string",
+            "nullable": true
+          },
           "id": {
             "type": "string"
           },
@@ -1467,6 +1471,7 @@
           }
         },
         "required": [
+          "logoUrl",
           "id",
           "name",
           "slug",
@@ -1487,6 +1492,11 @@
           },
           "sortOrder": {
             "type": "number"
+          },
+          "logoUrl": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri"
           }
         },
         "required": [
@@ -1506,6 +1516,11 @@
           },
           "sortOrder": {
             "type": "number"
+          },
+          "logoUrl": {
+            "type": "string",
+            "nullable": true,
+            "format": "uri"
           }
         }
       },
