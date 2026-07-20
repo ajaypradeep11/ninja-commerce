@@ -128,6 +128,30 @@
   }
 }
 
+/* Hero delivery sticker: rests tilted, pops upright for a beat every cycle. */
+@keyframes sticker-pop {
+  0%,
+  86%,
+  100% {
+    transform: rotate(-2deg) scale(1);
+  }
+  90% {
+    transform: rotate(1.5deg) scale(1.07);
+  }
+  94% {
+    transform: rotate(-3deg) scale(1.02);
+  }
+}
+.sticker-pop {
+  animation: sticker-pop 5s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sticker-pop {
+    animation: none;
+    transform: rotate(-2deg);
+  }
+}
+
 /* Gentler variant for the announcement bar. */
 .marquee-lazy {
   animation-duration: 60s;
