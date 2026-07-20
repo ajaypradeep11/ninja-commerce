@@ -49,7 +49,7 @@ export default async function HomePage() {
           fill
           priority
           sizes="100vw"
-          className="object-cover"
+          className="rounded-2xl object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/10" />
         <div className="container-wide absolute inset-x-0 bottom-0 pb-10 sm:pb-14">
@@ -75,13 +75,13 @@ export default async function HomePage() {
         </div>
         </div>
       </section>
-      <div className="selvedge mt-3" />
+      <div className="selvedge my-6" />
 
       {/* Anime brands: clickable chips drifting right-to-left. Repeated a few
           times per half so the loop stays seamless on wide screens. */}
       {/* Six product-type boxes: emoji at rest, name on hover. Same 12px
           edge inset as the floating notch bar so the two align. */}
-      <section className="px-3 py-10">
+      <section className="px-3 pt-0 pb-10">
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-6">
           {PRODUCT_TYPES.map((type) => (
             <Link
