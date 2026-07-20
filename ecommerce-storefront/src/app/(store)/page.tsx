@@ -41,7 +41,8 @@ export default async function HomePage() {
       {/* Allbirds-style hero: full-bleed image, eyebrow + headline + CTAs
           overlaid near the bottom. Swap HERO_IMAGE for a shot art-directed
           for this space when one exists. */}
-      <section className="relative h-[70vh] min-h-105 w-full overflow-hidden sm:h-[78vh]">
+      <section className="px-3 pt-3">
+        <div className="relative h-[70vh] min-h-105 overflow-hidden rounded-2xl sm:h-[78vh]">
         <Image
           src={HERO_IMAGE}
           alt=""
@@ -72,8 +73,9 @@ export default async function HomePage() {
             </Button>
           </div>
         </div>
+        </div>
       </section>
-      <div className="selvedge" />
+      <div className="selvedge mt-3" />
 
       {/* Anime brands: clickable chips drifting right-to-left. Repeated a few
           times per half so the loop stays seamless on wide screens. */}

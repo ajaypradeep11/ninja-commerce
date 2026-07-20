@@ -3,8 +3,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 export default function HomeLoading() {
   return (
     <>
-      <Skeleton className="h-[70vh] min-h-105 w-full rounded-none sm:h-[78vh]" />
-      <div className="selvedge" />
+      <div className="px-3 pt-3">
+        <Skeleton className="h-[70vh] min-h-105 w-full rounded-2xl sm:h-[78vh]" />
+      </div>
+      <div className="selvedge mt-3" />
 
       {/* Brand marquee row */}
       <section className="overflow-hidden py-10">
