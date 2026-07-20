@@ -1,6 +1,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { brandsControllerFindAll, productsControllerFindAll } from '@/api/generated';
+import {
+  brandsControllerFindAll,
+  productsControllerFindAll,
+} from '@/api/generated';
 import { unwrap } from '@/api/unwrap';
 import { serverFetchOptions } from '@/api/server';
 import { SITE } from '@/lib/site';
@@ -43,48 +46,58 @@ export default async function HomePage() {
           for this space when one exists. */}
       <section className="px-3 pt-3">
         <div className="relative h-[78vh] min-h-105 overflow-hidden rounded-2xl sm:h-[88vh]">
-        <Image
-          src={HERO_IMAGE}
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="rounded-2xl object-cover object-[center_45%] max-sm:translate-y-6 max-sm:scale-110 max-sm:object-[center_0%]"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/10" />
-        {/* Ottawa delivery note bottom-left; copy bottom-right, Allbirds style */}
-        <div className="container-wide absolute inset-x-0 bottom-0 flex flex-wrap items-end justify-between gap-6 pb-10 sm:pb-14">
-          <div className="sticker-float max-w-2xs">
-            <p className="neon-text-red font-display text-2xl tracking-wide sm:text-3xl">
-              🛵 OTTAWA, ONTARIO
-            </p>
-            <p className="neon-text mt-1 font-display text-lg leading-snug">
-              Same-day &amp; 2-day local delivery!
-            </p>
-          </div>
-
-          <div className="flex flex-col items-end text-right">
-          <p className="font-mono text-xs tracking-widest text-white/80">
-            COLLECTIBLE LED LAMPS
-          </p>
-          <h1 className="mt-2 max-w-3xl font-display text-4xl leading-tight text-white sm:text-6xl">
-            Your favorite anime, in a whole new light.
-          </h1>
-          <p className="mt-3 max-w-md text-white/80">{SITE.tagline}</p>
-          <div className="mt-6 flex flex-wrap justify-end gap-3">
-            <Button asChild size="lg" className="bg-brand text-black hover:bg-brand/90">
-              <Link href="/products?category=anime-lamps">Shop anime lamps</Link>
-            </Button>
-            <Button
-              asChild
-              size="lg"
-              className="bg-white text-black hover:bg-white/90"
+          <Image
+            src={HERO_IMAGE}
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="rounded-2xl object-cover object-[center_45%] max-sm:translate-y-6 max-sm:scale-110 max-sm:object-[center_0%]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/10" />
+          {/* Ottawa delivery note bottom-left; copy bottom-right, Allbirds style */}
+          <div className="container-wide absolute inset-x-0 bottom-0 flex flex-wrap items-end justify-between gap-6 pb-10 sm:pb-14">
+            <aside
+              className="max-w-xs text-white"
+              aria-label="Shipping and delivery"
             >
-              <Link href="/products">Shop all</Link>
-            </Button>
+              <p className="font-display text-base leading-tight whitespace-nowrap sm:text-xl">
+                📍 OTTAWA · FREE SHIPPING
+              </p>
+              <div className="mt-2 space-y-0.5 text-xs leading-snug text-white/85 sm:text-sm">
+                <p>Standard · 4–7 days · Free on orders $65+</p>
+                <p>Expedited · 2–3 days · Extra charge</p>
+              </div>
+            </aside>
+
+            <div className="flex flex-col items-end text-right">
+              <p className="font-mono text-xs tracking-widest text-white/80">
+                COLLECTIBLE LED LAMPS
+              </p>
+              <h1 className="mt-2 max-w-3xl font-display text-4xl leading-tight text-white sm:text-6xl">
+                Your favorite anime, in a whole new light.
+              </h1>
+              <p className="mt-3 max-w-md text-white/80">{SITE.tagline}</p>
+              <div className="mt-6 flex flex-wrap justify-end gap-3">
+                <Button
+                  asChild
+                  size="lg"
+                  className="bg-brand text-black hover:bg-brand/90"
+                >
+                  <Link href="/products?category=anime-lamps">
+                    Shop anime lamps
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  size="lg"
+                  className="bg-white text-black hover:bg-white/90"
+                >
+                  <Link href="/products">Shop all</Link>
+                </Button>
+              </div>
+            </div>
           </div>
-          </div>
-        </div>
         </div>
       </section>
       <div className="selvedge my-6" />
@@ -123,7 +136,11 @@ export default async function HomePage() {
         <section className="overflow-hidden py-10">
           <div className="marquee-track marquee-slow">
             {[0, 1].map((half) => (
-              <div key={half} aria-hidden={half === 1} className="flex gap-4 pr-4">
+              <div
+                key={half}
+                aria-hidden={half === 1}
+                className="flex gap-4 pr-4"
+              >
                 {Array.from({ length: 4 }).flatMap((_, rep) =>
                   brands.map((brand) => (
                     <Link
@@ -154,14 +171,20 @@ export default async function HomePage() {
       {/* All products: a slow 5-across crawl, same mechanic as the eBay rail */}
       <section className="overflow-hidden py-16">
         <div className="container-wide flex items-baseline justify-between">
-          <p className="font-mono text-xs tracking-wide text-ink/60">ALL PRODUCTS</p>
+          <p className="font-mono text-xs tracking-wide text-ink/60">
+            ALL PRODUCTS
+          </p>
           <Link href="/products" className="text-sm text-brand hover:underline">
             Shop all
           </Link>
         </div>
         <div className="marquee-track marquee-crawl mt-6">
           {[0, 1].map((half) => (
-            <div key={half} aria-hidden={half === 1} className="flex gap-4 pr-4">
+            <div
+              key={half}
+              aria-hidden={half === 1}
+              className="flex gap-4 pr-4"
+            >
               {products.items.map((product) => (
                 <div
                   key={`${half}-${product.id}`}

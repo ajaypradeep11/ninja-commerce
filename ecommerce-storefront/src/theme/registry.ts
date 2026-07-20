@@ -29,7 +29,7 @@ export const THEMES: readonly ThemeMeta[] = [
   { id: 'meadow', label: 'Meadow', swatches: { surface: '#f7f5ec', brand: '#3f6b4a', highlight: '#a54a2c' }, dark: false },
   { id: 'arcade', label: 'Arcade', swatches: { surface: '#f4f4f0', brand: '#2244ff', highlight: '#cc0e63' }, dark: false },
   { id: 'atelier', label: 'Atelier', swatches: { surface: '#ffffff', brand: '#2b2b2b', highlight: '#c93a24' }, dark: false },
-  { id: 'ninja', label: 'Ninja', swatches: { surface: '#0a0a0a', brand: '#ffd84d', highlight: '#e8be8e' }, dark: true },
+  { id: 'ninja', label: 'Ninja', swatches: { surface: '#000000', brand: '#ffd84d', highlight: '#e8be8e' }, dark: true },
 ];
 
 export function resolveTheme(value: unknown): ThemeId {

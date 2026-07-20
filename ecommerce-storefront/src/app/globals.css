@@ -128,67 +128,6 @@
   }
 }
 
-/* Neon sign text — warm-white core with layered brand-yellow glow, breathing
-   like the lamps in the hero shot. */
-.neon-text {
-  color: #fff3c4;
-  text-shadow:
-    0 0 3px rgba(255, 216, 77, 0.9),
-    0 0 10px rgba(255, 216, 77, 0.65),
-    0 0 24px rgba(255, 216, 77, 0.45),
-    0 0 48px rgba(255, 216, 77, 0.25);
-  animation: neon-breathe 3.2s ease-in-out infinite;
-}
-/* Red variant, same breathing glow. */
-.neon-text-red {
-  color: #ffd9d4;
-  text-shadow:
-    0 0 3px rgba(255, 77, 64, 0.9),
-    0 0 10px rgba(255, 77, 64, 0.65),
-    0 0 24px rgba(255, 77, 64, 0.45),
-    0 0 48px rgba(255, 77, 64, 0.25);
-  animation: neon-breathe 3.2s ease-in-out infinite;
-}
-@media (prefers-reduced-motion: reduce) {
-  .neon-text-red {
-    animation: none;
-  }
-}
-@keyframes neon-breathe {
-  0%,
-  100% {
-    filter: brightness(1);
-  }
-  50% {
-    filter: brightness(0.78);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .neon-text {
-    animation: none;
-  }
-}
-
-/* Hero delivery sticker: rests slightly tilted with a soft breathing float. */
-@keyframes sticker-float {
-  0%,
-  100% {
-    transform: rotate(-1.5deg) translateY(0);
-  }
-  50% {
-    transform: rotate(-0.5deg) translateY(-4px);
-  }
-}
-.sticker-float {
-  animation: sticker-float 4s ease-in-out infinite;
-}
-@media (prefers-reduced-motion: reduce) {
-  .sticker-float {
-    animation: none;
-    transform: rotate(-1.5deg);
-  }
-}
-
 /* Gentler variant for the announcement bar. */
 .marquee-lazy {
   animation-duration: 60s;
@@ -266,7 +205,11 @@
   --secondary: var(--color-subtle);
   --secondary-foreground: var(--color-ink);
   --muted: var(--color-subtle);
-  --muted-foreground: color-mix(in oklab, var(--color-ink) 65%, var(--color-surface));
+  --muted-foreground: color-mix(
+    in oklab,
+    var(--color-ink) 65%,
+    var(--color-surface)
+  );
   --accent: var(--color-subtle);
   --accent-foreground: var(--color-ink);
   --destructive: var(--color-highlight);
@@ -284,7 +227,11 @@
   --sidebar-primary-foreground: var(--color-surface);
   --sidebar-accent: var(--color-subtle);
   --sidebar-accent-foreground: var(--color-ink);
-  --sidebar-border: color-mix(in oklab, var(--color-ink) 15%, var(--color-surface));
+  --sidebar-border: color-mix(
+    in oklab,
+    var(--color-ink) 15%,
+    var(--color-surface)
+  );
   --sidebar-ring: var(--color-brand);
 }
 
