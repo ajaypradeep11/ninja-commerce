@@ -52,8 +52,18 @@ export default async function HomePage() {
           className="rounded-2xl object-cover object-[center_8%]"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/10" />
-        {/* Copy bottom-right, Allbirds style */}
-        <div className="container-wide absolute inset-x-0 bottom-0 flex flex-col items-end pb-10 text-right sm:pb-14">
+        {/* Ottawa delivery note bottom-left; copy bottom-right, Allbirds style */}
+        <div className="container-wide absolute inset-x-0 bottom-0 flex flex-wrap items-end justify-between gap-6 pb-10 sm:pb-14">
+          <div className="max-w-xs">
+            <p className="font-mono text-xs tracking-widest text-brand">
+              OTTAWA, ONTARIO
+            </p>
+            <p className="mt-2 text-sm text-white/85">
+              Local? We deliver same-day or within two days, right to your door.
+            </p>
+          </div>
+
+          <div className="flex flex-col items-end text-right">
           <p className="font-mono text-xs tracking-widest text-white/80">
             COLLECTIBLE LED LAMPS
           </p>
@@ -72,6 +82,7 @@ export default async function HomePage() {
             >
               <Link href="/products">Shop all</Link>
             </Button>
+          </div>
           </div>
         </div>
         </div>
