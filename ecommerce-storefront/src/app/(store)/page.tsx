@@ -64,10 +64,6 @@ export default async function HomePage() {
               <p className="font-display text-base leading-tight whitespace-nowrap sm:text-xl">
                 📍 OTTAWA · FREE SHIPPING
               </p>
-              <div className="mt-2 space-y-0.5 text-xs leading-snug text-white/85 sm:text-sm">
-                <p>Standard · 4–7 days · Free on orders $65+</p>
-                <p>Expedited · 2–3 days · Extra charge</p>
-              </div>
             </aside>
 
             <div className="flex flex-col items-end text-right">
