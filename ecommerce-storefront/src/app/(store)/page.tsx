@@ -49,7 +49,7 @@ export default async function HomePage() {
           fill
           priority
           sizes="100vw"
-          className="rounded-2xl object-cover object-[center_20%]"
+          className="rounded-2xl object-cover object-[center_8%]"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/10" />
         <div className="container-wide absolute inset-x-0 bottom-0 pb-10 sm:pb-14">
