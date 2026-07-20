@@ -128,6 +128,32 @@
   }
 }
 
+/* Neon sign text — warm-white core with layered brand-yellow glow, breathing
+   like the lamps in the hero shot. */
+.neon-text {
+  color: #fff3c4;
+  text-shadow:
+    0 0 3px rgba(255, 216, 77, 0.9),
+    0 0 10px rgba(255, 216, 77, 0.65),
+    0 0 24px rgba(255, 216, 77, 0.45),
+    0 0 48px rgba(255, 216, 77, 0.25);
+  animation: neon-breathe 3.2s ease-in-out infinite;
+}
+@keyframes neon-breathe {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(0.78);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .neon-text {
+    animation: none;
+  }
+}
+
 /* Hero delivery sticker: rests slightly tilted with a soft breathing float. */
 @keyframes sticker-float {
   0%,

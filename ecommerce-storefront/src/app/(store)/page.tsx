@@ -54,11 +54,11 @@ export default async function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/10" />
         {/* Ottawa delivery note bottom-left; copy bottom-right, Allbirds style */}
         <div className="container-wide absolute inset-x-0 bottom-0 flex flex-wrap items-end justify-between gap-6 pb-10 sm:pb-14">
-          <div className="sticker-float max-w-2xs rounded-2xl bg-brand/95 px-4 py-3 shadow-md shadow-black/30">
-            <p className="font-mono text-[10px] font-bold tracking-widest text-black/75">
+          <div className="sticker-float max-w-2xs">
+            <p className="font-mono text-[10px] font-bold tracking-widest text-white/70">
               🛵 OTTAWA, ONTARIO
             </p>
-            <p className="mt-0.5 font-display text-sm leading-snug text-black">
+            <p className="neon-text mt-1 font-display text-lg leading-snug">
               Same-day &amp; 2-day local delivery!
             </p>
           </div>
