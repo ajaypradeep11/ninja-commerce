@@ -61,11 +61,17 @@ export async function Header() {
             width={64}
             height={64}
             priority
-            className="size-9 sm:size-12"
+            className="size-10 sm:size-14"
           />
-          <span>
+          <span className="relative">
             {SITE.wordmark.base}
-            <span className="text-brand">{SITE.wordmark.accent}</span>
+            <span className="ninja-vanish text-brand">{SITE.wordmark.accent}</span>
+            <span
+              aria-hidden
+              className="ninja-star pointer-events-none absolute top-1/2 left-1/2 text-lg text-brand"
+            >
+              ✦
+            </span>
           </span>
         </Link>
 

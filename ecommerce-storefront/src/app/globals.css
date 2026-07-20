@@ -65,6 +65,69 @@
   white-space: nowrap;
   animation: marquee 30s linear infinite;
 }
+/* Ninja wordmark antics: every cycle the accent word vanishes in a smoky
+   blur while a shuriken streaks across, then it reappears. */
+@keyframes ninja-vanish {
+  0%,
+  74%,
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateX(0) scale(1);
+  }
+  78% {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateX(12px) scale(1.2);
+  }
+  86% {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateX(-10px) scale(0.85);
+  }
+  92% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateX(0) scale(1);
+  }
+}
+.ninja-vanish {
+  display: inline-block;
+  animation: ninja-vanish 7s ease-in-out infinite;
+}
+@keyframes ninja-star {
+  0%,
+  74% {
+    opacity: 0;
+    transform: translate(-130%, -50%) rotate(0deg);
+  }
+  77% {
+    opacity: 1;
+  }
+  88% {
+    opacity: 1;
+    transform: translate(230%, -50%) rotate(720deg);
+  }
+  89%,
+  100% {
+    opacity: 0;
+    transform: translate(230%, -50%) rotate(720deg);
+  }
+}
+.ninja-star {
+  animation: ninja-star 7s ease-in-out infinite;
+  opacity: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ninja-vanish,
+  .ninja-star {
+    animation: none;
+  }
+  .ninja-star {
+    display: none;
+  }
+}
+
 /* Gentler variant for the announcement bar. */
 .marquee-lazy {
   animation-duration: 60s;
