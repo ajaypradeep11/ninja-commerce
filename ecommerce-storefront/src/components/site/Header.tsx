@@ -26,19 +26,19 @@ export async function Header() {
   ).catch(() => []);
 
   return (
-    <header className="bg-surface">
-      {/* Scrolling announcement bar (the "running bar", moved up from the footer) */}
+    <>
+      {/* Scrolling announcement bar — scrolls away; only the nav bar sticks. */}
       <div className="overflow-hidden bg-brand py-1.5">
         <div className="marquee-track marquee-lazy font-mono text-xs tracking-wide text-surface">
           <span>{ANNOUNCEMENT_TEXT + SEP}</span>
           <span aria-hidden>{ANNOUNCEMENT_TEXT + SEP}</span>
         </div>
       </div>
-      {/* simplymdrn-style row: hamburger left, centered lockup, icons right.
-          Pure-black bar: override the surface/ink tokens locally so text and
-          the dropdown go light-on-black while brand yellow stays. */}
-      <div
-        className="bg-surface"
+      {/* Allbirds-style sticky nav: hamburger left, centered lockup, search +
+          icons right. Pure-black bar: override the surface/ink tokens locally
+          so text and the dropdown go light-on-black while brand yellow stays. */}
+      <header
+        className="sticky top-0 z-50 bg-surface"
         style={{ '--color-surface': '#000000', '--color-ink': '#faf7f2' } as CSSProperties}
       >
         <div className="container-wide relative grid grid-cols-[1fr_auto_1fr] items-center py-5">
@@ -76,8 +76,8 @@ export async function Header() {
           <CartBadge />
         </div>
         </div>
-      </div>
-      <div className="selvedge" />
-    </header>
+        <div className="selvedge" />
+      </header>
+    </>
   );
 }

@@ -3,17 +3,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 export default function HomeLoading() {
   return (
     <>
-      <section className="bg-subtle">
-        <div className="container-wide grid max-w-[150rem] gap-12 py-16 md:grid-cols-2 md:items-center md:py-24">
-          <div className="space-y-4">
-            <Skeleton className="h-10 w-full max-w-sm" />
-            <Skeleton className="h-10 w-2/3 max-w-xs" />
-            <Skeleton className="h-4 w-full max-w-xs" />
-            <Skeleton className="mt-6 h-10 w-32" />
-          </div>
-          <Skeleton className="h-72 w-full sm:h-96 lg:h-[30rem]" />
-        </div>
-      </section>
+      <Skeleton className="h-[70vh] min-h-105 w-full rounded-none sm:h-[78vh]" />
       <div className="selvedge" />
 
       {/* Brand marquee row */}

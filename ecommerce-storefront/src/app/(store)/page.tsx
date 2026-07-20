@@ -4,16 +4,12 @@ import { brandsControllerFindAll, productsControllerFindAll } from '@/api/genera
 import { unwrap } from '@/api/unwrap';
 import { serverFetchOptions } from '@/api/server';
 import { SITE } from '@/lib/site';
-import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ProductCard } from '@/components/site/ProductCard';
 import { EbayReviews } from '@/components/site/EbayReviews';
 
-const COLLAGE_POSITION = [
-  'top-0 left-2 sm:left-4',
-  'top-10 left-1/2 -translate-x-1/2',
-  'top-20 right-2 sm:right-4',
-];
+// Placeholder hero shot from the product photo library.
+const HERO_IMAGE = '/anime/IMG_0601.jpg';
 
 // Product-type tiles: static for now (these aren't DB categories yet), linking
 // into the shop search. Emoji is the resting face; the name reveals on hover.
@@ -40,48 +36,41 @@ export default async function HomePage() {
     ),
   ]);
 
-  // Only products that actually have an image can appear in the hero collage;
-  // otherwise the collage column renders as a large empty block.
-  const collage = products.items.filter((p) => p.images[0]).slice(0, 3);
-
   return (
     <>
-      <section className="bg-subtle">
-        <div className="container-wide grid max-w-[150rem] gap-12 py-16 md:grid-cols-2 md:items-center md:py-24">
-          <div>
-            <h1 className="font-display text-4xl leading-tight text-ink sm:text-5xl">
-              Your favorite anime, in a whole new light.
-            </h1>
-            <p className="mt-5 max-w-md text-ink/70">{SITE.tagline}</p>
-            <Button asChild size="lg" className="mt-8 bg-brand text-surface hover:bg-brand/90">
-              <Link href="/products">Shop anime lamps</Link>
+      {/* Allbirds-style hero: full-bleed image, eyebrow + headline + CTAs
+          overlaid near the bottom. Swap HERO_IMAGE for a shot art-directed
+          for this space when one exists. */}
+      <section className="relative h-[70vh] min-h-105 w-full overflow-hidden sm:h-[78vh]">
+        <Image
+          src={HERO_IMAGE}
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/10" />
+        <div className="container-wide absolute inset-x-0 bottom-0 pb-10 sm:pb-14">
+          <p className="font-mono text-xs tracking-widest text-white/80">
+            COLLECTIBLE LED LAMPS
+          </p>
+          <h1 className="mt-2 max-w-3xl font-display text-4xl leading-tight text-white sm:text-6xl">
+            Your favorite anime, in a whole new light.
+          </h1>
+          <p className="mt-3 max-w-md text-white/80">{SITE.tagline}</p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Button asChild size="lg" className="bg-brand text-black hover:bg-brand/90">
+              <Link href="/products?category=anime-lamps">Shop anime lamps</Link>
+            </Button>
+            <Button
+              asChild
+              size="lg"
+              className="bg-white text-black hover:bg-white/90"
+            >
+              <Link href="/products">Shop all</Link>
             </Button>
           </div>
-          {collage.length > 0 && (
-          <div className="relative h-72 sm:h-96 lg:h-[30rem]">
-            {collage.map(
-              (product, i) =>
-                product.images[0] && (
-                  <div
-                    key={product.id}
-                    className={cn(
-                      'absolute aspect-3/4 w-36 overflow-hidden rounded-xl border border-surface shadow-lg sm:w-48 lg:w-60',
-                      COLLAGE_POSITION[i],
-                    )}
-                    style={{ zIndex: i }}
-                  >
-                    <Image
-                      src={product.images[0]}
-                      alt={product.name}
-                      fill
-                      sizes="(max-width: 640px) 144px, (max-width: 1024px) 192px, 240px"
-                      className="object-cover"
-                    />
-                  </div>
-                ),
-            )}
-          </div>
-          )}
         </div>
       </section>
       <div className="selvedge" />
