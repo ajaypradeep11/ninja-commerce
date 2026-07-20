@@ -77,8 +77,9 @@ export default async function HomePage() {
 
       {/* Anime brands: clickable chips drifting right-to-left. Repeated a few
           times per half so the loop stays seamless on wide screens. */}
-      {/* Six product-type boxes: emoji at rest, name on hover */}
-      <section className="container-wide py-10">
+      {/* Six product-type boxes: emoji at rest, name on hover. Same 12px
+          edge inset as the floating notch bar so the two align. */}
+      <section className="px-3 py-10">
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-6">
           {PRODUCT_TYPES.map((type) => (
             <Link
