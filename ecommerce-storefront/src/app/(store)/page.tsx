@@ -49,7 +49,7 @@ export default async function HomePage() {
           fill
           priority
           sizes="100vw"
-          className="rounded-2xl object-cover object-[center_8%]"
+          className="rounded-2xl object-cover object-[center_8%] max-sm:translate-y-6 max-sm:scale-110 max-sm:object-[center_0%]"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/10" />
         {/* Ottawa delivery note bottom-left; copy bottom-right, Allbirds style */}

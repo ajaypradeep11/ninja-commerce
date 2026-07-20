@@ -42,7 +42,7 @@ export async function Header() {
         className="sticky top-0 z-50 h-0"
         style={{ '--color-surface': '#000000', '--color-ink': '#faf7f2' } as CSSProperties}
       >
-        <div className="px-3 pt-6">
+        <div className="px-5 pt-6 sm:px-3">
           <div className="mx-auto w-full max-w-[90rem] rounded-2xl bg-surface shadow-lg shadow-black/40">
         <div className="container-wide relative grid grid-cols-[1fr_auto_1fr] items-center py-1.5">
         <div className="justify-self-start">
