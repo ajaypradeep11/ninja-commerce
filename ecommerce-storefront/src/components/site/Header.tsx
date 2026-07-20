@@ -44,7 +44,7 @@ export async function Header() {
       >
         <div className="px-3 pt-3">
           <div className="rounded-2xl bg-surface shadow-lg shadow-black/40">
-        <div className="container-wide relative grid grid-cols-[1fr_auto_1fr] items-center py-4">
+        <div className="container-wide relative grid grid-cols-[1fr_auto_1fr] items-center py-2.5">
         <div className="justify-self-start">
           <HeaderMenu brands={brands} />
         </div>
