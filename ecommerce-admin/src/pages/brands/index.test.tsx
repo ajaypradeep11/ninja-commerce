@@ -2,6 +2,9 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
 
+// The logo upload control pulls in the Firebase app; keep tests offline.
+vi.mock('@/auth/firebase', () => ({ storage: {} }));
+
 const createMutate = vi.fn();
 vi.mock('@/api/hooks/brands', () => ({
   useBrands: () => ({

@@ -1,6 +1,9 @@
-import { GripVertical, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { GripVertical, ImagePlus, Loader2, Trash2, X } from 'lucide-react';
+import { useRef, useState } from 'react';
 import { toast } from 'sonner';
+import { storage } from '@/auth/firebase';
+import { optimizeProductImage } from '@/lib/optimize-product-image';
 import {
   useBrands,
   useCreateBrand,
@@ -34,10 +37,95 @@ interface BrandRowProps {
   brand: BrandResponseDto;
   handleProps: DragHandleProps;
   onRename: (name: string) => void;
+  onLogoChange: (logoUrl: string | null) => void;
   onDelete: () => void;
 }
 
-function BrandRow({ brand, handleProps, onRename, onDelete }: BrandRowProps) {
+function BrandLogoControl({
+  brand,
+  onLogoChange,
+}: {
+  brand: BrandResponseDto;
+  onLogoChange: (logoUrl: string | null) => void;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+
+  async function onFile(files: FileList | null) {
+    const file = files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const optimized = await optimizeProductImage(file);
+      // Reuses the products/ path so the existing storage rules apply.
+      const storageRef = ref(storage, `products/brand-${crypto.randomUUID()}.webp`);
+      await uploadBytes(storageRef, optimized, {
+        contentType: 'image/webp',
+        cacheControl: 'public,max-age=31536000,immutable',
+      });
+      onLogoChange(await getDownloadURL(storageRef));
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : 'Logo upload failed.',
+      );
+    } finally {
+      setUploading(false);
+      if (inputRef.current) inputRef.current.value = '';
+    }
+  }
+
+  return (
+    <div className="flex items-center gap-1">
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => void onFile(e.target.files)}
+      />
+      {brand.logoUrl ? (
+        <>
+          <img
+            src={brand.logoUrl}
+            alt={`${brand.name} logo`}
+            className="h-8 w-14 rounded border bg-black object-contain"
+          />
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label={`Remove ${brand.name} logo`}
+            onClick={() => onLogoChange(null)}
+          >
+            <X className="h-3.5 w-3.5" />
+          </Button>
+        </>
+      ) : (
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={uploading}
+          aria-label={`Upload ${brand.name} logo`}
+          onClick={() => inputRef.current?.click()}
+        >
+          {uploading ? (
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          ) : (
+            <ImagePlus className="h-3.5 w-3.5" />
+          )}
+          Logo
+        </Button>
+      )}
+    </div>
+  );
+}
+
+function BrandRow({
+  brand,
+  handleProps,
+  onRename,
+  onLogoChange,
+  onDelete,
+}: BrandRowProps) {
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(brand.name);
 
@@ -82,6 +170,7 @@ function BrandRow({ brand, handleProps, onRename, onDelete }: BrandRowProps) {
       <span className="w-32 truncate text-xs text-muted-foreground">
         /{brand.slug}
       </span>
+      <BrandLogoControl brand={brand} onLogoChange={onLogoChange} />
       <AlertDialog>
         <AlertDialogTrigger asChild>
           <Button variant="ghost" size="icon" aria-label={`Delete ${brand.name}`}>
@@ -163,6 +252,12 @@ export function BrandsPage() {
               onRename={(name) =>
                 update.mutate(
                   { id: brand.id, body: { name } },
+                  { onError: errorToast },
+                )
+              }
+              onLogoChange={(logoUrl) =>
+                update.mutate(
+                  { id: brand.id, body: { logoUrl } },
                   { onError: errorToast },
                 )
               }
