@@ -3,7 +3,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 export default function HomeLoading() {
   return (
     <>
-      <div className="px-3 pt-3">
+      <div className="-mt-[var(--notch-space)] px-3 pt-3">
         <Skeleton className="h-[78vh] min-h-105 w-full rounded-2xl sm:h-[88vh]" />
       </div>
       <div className="selvedge mt-3" />

@@ -5,7 +5,8 @@ export default function StoreLayout({ children }: { children: React.ReactNode })
   return (
     <>
       <Header />
-      <main>{children}</main>
+      {/* Clears the floating notch; the home hero pulls itself back up. */}
+      <main className="pt-[var(--notch-space)]">{children}</main>
       <Footer />
     </>
   );

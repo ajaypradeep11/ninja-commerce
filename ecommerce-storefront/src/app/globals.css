@@ -136,6 +136,13 @@
   color: var(--color-brand-text);
 }
 
+/* Vertical space the floating notch covers: its top gap plus the pill. Pages
+   reserve this so content doesn't slide under the bar; the home hero cancels
+   it deliberately so the pill floats over the image. */
+:root {
+  --notch-space: 5.25rem;
+}
+
 /* Header notch: its own little colour world — a dark bar with brand-yellow
    accents, regardless of the (light) page around it. */
 .notch {

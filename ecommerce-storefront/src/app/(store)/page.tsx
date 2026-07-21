@@ -49,7 +49,9 @@ export default async function HomePage() {
       {/* Allbirds-style hero: full-bleed image, eyebrow + headline + CTAs
           overlaid near the bottom. Swap HERO_IMAGE for a shot art-directed
           for this space when one exists. */}
-      <section className="px-3 pt-3">
+      {/* Cancels the layout's notch clearance so the pill floats over the
+          hero image, Allbirds-style. */}
+      <section className="-mt-[var(--notch-space)] px-3 pt-3">
         <div className="relative h-[78vh] min-h-105 overflow-hidden rounded-2xl sm:h-[88vh]">
           <Image
             src={HERO_IMAGE}
