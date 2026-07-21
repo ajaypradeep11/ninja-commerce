@@ -19,7 +19,11 @@ const COLUMNS = [
   },
   {
     heading: 'About',
-    links: [{ href: '/about', label: `About ${SITE.name}` }],
+    links: [
+      { href: '/about', label: `About ${SITE.name}` },
+      { href: '/terms', label: 'Terms of service' },
+      { href: '/privacy', label: 'Privacy policy' },
+    ],
   },
 ];
 

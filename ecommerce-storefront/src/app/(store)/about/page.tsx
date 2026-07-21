@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { SITE } from '@/lib/site';
 import { StaticPageHeader } from '@/components/site/StaticPageHeader';
 
@@ -6,23 +7,77 @@ export const metadata = { title: 'About' };
 export default function AboutPage() {
   return (
     <StaticPageHeader eyebrow="About" title={`About ${SITE.name}`}>
-      <p>
-        {SITE.name} is the LocalNinja destination for anime-inspired LED
-        lamps. We bring fan-favorite characters, emblems, and worlds off the
-        screen and into the spaces where you watch, play, collect, and create.
-      </p>
-      <p>
-        Each lamp pairs detailed acrylic artwork with a light base that offers
-        16 colors and remote control. Power it by USB or batteries, set the
-        mood from across the room, and give your desk, shelf, or gaming setup a
-        glow that feels unmistakably yours.
-      </p>
-      <p>
-        Our collection is curated for fans who care about the details. We show
-        multiple views of every design, keep the shopping experience simple,
-        and make it easy to find a lamp for your favorite series—or the next
-        gift for someone else&rsquo;s collection.
-      </p>
+      <section>
+        <h2 className="font-display text-xl text-ink">Our story</h2>
+        <p className="mt-2">
+          We are Ajay and Aleena, just a couple who love anime, and we decided
+          to turn our shared passion into a shop we could share with the world.
+        </p>
+        <p className="mt-4">
+          Our journey really began when we instantly bonded over our favorite
+          shows. The true spark happened when Aleena pulled a Saitama figure
+          keychain right out of her bag, we completely geeked out, and that
+          shared love for anime eventually inspired us to build this store
+          together.
+        </p>
+        <p className="mt-4">
+          We wanted to create a place where fellow fans could easily find
+          amazing gear to light up their own spaces. From our LED anime lamps
+          and lightboxes to our t-shirts and keystraps, we hand-pick and curate
+          items that we would proudly display in our own home.
+        </p>
+      </section>
+
+      <section>
+        <h2 className="font-display text-xl text-ink">Our Ottawa roots</h2>
+        <p className="mt-2">
+          Our business home base is proudly located right here in Ottawa,
+          Ontario, Canada. The &ldquo;Local&rdquo; in {SITE.name} represents our
+          commitment to our community. We process, pack, and ship right from
+          here, and we are thrilled to offer our Ottawa neighbours special
+          perks however we can.
+        </p>
+      </section>
+
+      <section>
+        <h2 className="font-display text-xl text-ink">Our promise</h2>
+        <p className="mt-2">
+          Whether you&rsquo;re a lifelong otaku or just discovering your very
+          first series, our goal is to help you celebrate your fandom. As a
+          small, two-person business, every single order means the world to us.
+          We are committed to providing top-notch customer service, careful
+          packaging, and products that make you smile the moment you open the
+          box.
+        </p>
+        <p className="mt-4">
+          Thank you for stopping by, supporting our small business, and sharing
+          in our love for anime.
+        </p>
+        <p className="mt-4">
+          Stay awesome,
+          <br />
+          <span className="font-semibold text-ink">Ajay &amp; Aleena</span>
+          <br />
+          <span className="italic">Founders, {SITE.name}</span>
+        </p>
+      </section>
+
+      <section>
+        <h2 className="font-display text-xl text-ink">Let&rsquo;s connect</h2>
+        <p className="mt-2">
+          Come hang out with us on Instagram and TikTok at{' '}
+          <span className="font-semibold text-ink">{SITE.policy.social}</span>{' '}
+          to see our latest drops, epic anime setups, and more.
+        </p>
+        <p className="mt-4">
+          <Link
+            href="/products?sort=best_selling"
+            className="text-brand underline underline-offset-4 hover:no-underline"
+          >
+            Shop our favourites
+          </Link>
+        </p>
+      </section>
     </StaticPageHeader>
   );
 }
