@@ -43,7 +43,9 @@ export async function Header() {
           {/* Stretches edge-to-edge until the viewport passes 2620px, then
               holds that width so the bar never sprawls on huge displays. */}
           <div className="mx-auto w-full max-w-[2620px] rounded-2xl bg-surface shadow-lg shadow-black/40">
-        <div className="container-wide relative grid grid-cols-[1fr_auto_1fr] items-center py-1.5">
+        {/* Padding is the only height lever here — the 56px logo sets the
+            floor, and it stays that size. */}
+        <div className="container-wide relative grid grid-cols-[1fr_auto_1fr] items-center py-0.5">
         <div className="flex items-center gap-5 justify-self-start">
           <HeaderMenu brands={brands} />
           {/* Hidden on phones, where the pill only has room for the lockup. */}
