@@ -16,6 +16,11 @@ import { EbayReviews } from '@/components/site/EbayReviews';
 // Hero shot: the lamp lineup glowing on marble (3200x1344, ~0.8MB JPEG).
 const HERO_IMAGE = '/hero.jpg';
 
+// The hero's primary CTA already points here, so this category is left out of
+// the tile grid below rather than shown twice. Both read the same constant so
+// they can't drift apart.
+const HERO_CATEGORY_SLUG = 'anime-lamps';
+
 // Tailwind needs whole class names at build time, so the column count can't be
 // interpolated. Six is the widest the tiles read well at; beyond that they wrap.
 const XL_COLUMNS: Record<number, string> = {
@@ -48,6 +53,11 @@ export default async function HomePage() {
   // ultrawide viewport so the -50% loop stays seamless.
   const logoBrands = brands.filter((brand) => brand.logoUrl);
   const LOGO_REPEATS = Math.max(2, Math.ceil(10 / Math.max(1, logoBrands.length)));
+
+  // The hero already leads with one category, so the grid covers the rest.
+  const tileCategories = categories.filter(
+    (category) => category.slug !== HERO_CATEGORY_SLUG,
+  );
 
   return (
     <>
@@ -92,7 +102,7 @@ export default async function HomePage() {
                   size="lg"
                   className="bg-brand text-black hover:bg-brand/90"
                 >
-                  <Link href="/products?category=anime-lamps">
+                  <Link href={`/products?category=${HERO_CATEGORY_SLUG}`}>
                     Shop anime lamps
                   </Link>
                 </Button>
@@ -116,14 +126,14 @@ export default async function HomePage() {
           at rest, name on hover. Categories without artwork show their name
           outright, so the row still works before the images land. Same 12px
           edge inset as the floating notch bar so the two align. */}
-      {categories.length > 0 && (
+      {tileCategories.length > 0 && (
         <section className="px-3 pt-0 pb-10">
           <div
             className={`grid grid-cols-2 gap-4 sm:grid-cols-3 ${
-              XL_COLUMNS[Math.min(categories.length, 6)] ?? 'xl:grid-cols-6'
+              XL_COLUMNS[Math.min(tileCategories.length, 6)] ?? 'xl:grid-cols-6'
             }`}
           >
-            {categories.map((category) => (
+            {tileCategories.map((category) => (
               <Link
                 key={category.id}
                 href={`/products?category=${category.slug}`}
