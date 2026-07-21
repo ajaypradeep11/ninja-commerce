@@ -2,14 +2,17 @@
   <!-- Favicon: the mascot, static. Browsers don't animate SVG favicons and
        render them at ~16-32px, so the blink/glance script and the ring's
        drop-shadow are dropped — both are invisible at this size and only
-       cost bytes. The black tile matches the PNG siblings (icon.png /
-       apple-icon.png, kept for Safari < 17 and iOS, which don't take SVG
-       icons) so the tab and the installed app icon look the same. -->
-  <rect width="800" height="800" fill="#000" />
-  <!-- The art spans x 86-803 / y 86-714, so it overflows the right edge and
-       sits high. This centres that box in the tile and shrinks it enough to
-       keep the bandana tails off the edge. -->
-  <g transform="translate(400 400) scale(0.95) translate(-444.5 -400)">
+       cost bytes. Background is transparent so the mascot sits on whatever
+       the tab bar is; icon.png mirrors it for Safari < 17. The home-screen
+       icons (apple-touch-icon, the manifest set) stay on a black tile —
+       an installed app tile can't be transparent. -->
+  <!-- Rendered extents (stroke and curve overshoot included, so wider than
+       the path coords read): x 77-814, centre 445.5; y 77-723. The art
+       overflows the right edge, so this centres it and scales it up to fill
+       ~96% of the viewBox, leaving ~17 units of even margin to keep the ring
+       and the bandana tails off the edge — a tab favicon renders at ~16px
+       and needs every pixel it can get. -->
+  <g transform="translate(400 400) scale(1.04) translate(-445.5 -400)">
   <circle cx="400" cy="400" r="314" fill="none" stroke="#FFD84D" stroke-width="18" />
   <g transform="translate(12 -20)">
     <!-- bandana tails -->
