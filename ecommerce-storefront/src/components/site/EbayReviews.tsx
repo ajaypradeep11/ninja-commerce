@@ -32,15 +32,23 @@ const REVIEWS = [
 // eBay's four-letter wordmark colors, rendered as text so no asset is needed.
 const EBAY_COLORS = ['#E53238', '#0064D2', '#F5AF02', '#86B817'];
 
+const EBAY_STORE_URL = 'https://www.ebay.ca/usr/local_ninja';
+
 function EbayWordmark() {
   return (
-    <span aria-label="eBay" className="text-3xl font-bold tracking-tight">
+    <a
+      href={EBAY_STORE_URL}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Visit our eBay store"
+      className="text-3xl font-bold tracking-tight transition-opacity hover:opacity-80"
+    >
       {'ebay'.split('').map((letter, i) => (
         <span key={i} style={{ color: EBAY_COLORS[i] }}>
           {letter}
         </span>
       ))}
-    </span>
+    </a>
   );
 }
 
