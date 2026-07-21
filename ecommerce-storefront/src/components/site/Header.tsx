@@ -51,9 +51,15 @@ export async function Header() {
           {/* Hidden on phones, where the pill only has room for the lockup. */}
           <Link
             href="/products?sort=newest"
-            className="hidden font-mono text-xs tracking-widest text-ink uppercase hover:text-brand lg:block"
+            className="hidden font-mono text-xs font-bold tracking-widest text-ink uppercase hover:text-brand lg:block"
           >
             New Arrivals
+          </Link>
+          <Link
+            href="/products?sort=best_selling"
+            className="hidden font-mono text-xs font-bold tracking-widest text-ink uppercase hover:text-brand lg:block"
+          >
+            Best Sellers
           </Link>
         </div>
 
@@ -84,12 +90,6 @@ export async function Header() {
         </Link>
 
         <div className="flex items-center gap-4 justify-self-end">
-          <Link
-            href="/products?sort=best_selling"
-            className="hidden font-mono text-xs tracking-widest text-ink uppercase hover:text-brand lg:block"
-          >
-            Best Sellers
-          </Link>
           <div className="hidden sm:block">
             <SearchBox />
           </div>
