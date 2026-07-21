@@ -12,7 +12,9 @@ export const THEME_IDS = [
 
 export type ThemeId = (typeof THEME_IDS)[number];
 
-export const DEFAULT_THEME: ThemeId = 'ninja-light';
+// Everyone starts dark — no OS/`prefers-color-scheme` sniffing anywhere.
+// Light mode is opt-in via the header toggle and remembered per browser.
+export const DEFAULT_THEME: ThemeId = 'ninja';
 
 export const THEME_STORAGE_KEY = 'storefront.theme.v1';
 
