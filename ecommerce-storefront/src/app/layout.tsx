@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import {
   Archivo,
   Bricolage_Grotesque,
@@ -58,6 +58,18 @@ const fontVariables = [
 export const metadata: Metadata = {
   title: { default: SITE.name, template: `%s — ${SITE.name}` },
   description: SITE.description,
+  // Installed-to-home-screen behaviour. iOS ignores the manifest for these,
+  // so it needs its own meta tags.
+  appleWebApp: {
+    capable: true,
+    title: SITE.name,
+    statusBarStyle: 'black-translucent',
+  },
+};
+
+export const viewport: Viewport = {
+  // Tints the status bar / browser chrome to match the header.
+  themeColor: '#000000',
 };
 
 export default function RootLayout({
