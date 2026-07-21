@@ -45,6 +45,10 @@ export interface PaginatedProducts {
   pageSize: number;
 }
 
+// Upper bound on rows the best-selling ranking pulls into memory in one
+// request. Well above the catalog size; exists so the query stays bounded.
+const BEST_SELLING_SCAN = 1000;
+
 const SORT_MAP: Record<string, Prisma.ProductOrderByWithRelationInput> = {
   newest: { createdAt: 'desc' },
   price_asc: { priceCents: 'asc' },
@@ -124,8 +128,9 @@ export class ProductsService {
    * Ranks by units actually sold on orders that were paid (a PENDING order is
    * just an intent, and CANCELLED/REFUNDED ones shouldn't count). Prisma can't
    * order by a filtered relation aggregate, so the ranking is applied in
-   * memory over the matching rows — fine for a catalog of this size, and the
-   * place to revisit if the catalog grows into the thousands.
+   * memory — over a bounded window of the newest BEST_SELLING_SCAN rows, so
+   * one request can never pull an unbounded catalog into memory. Swap this for
+   * a materialised sales-rank column if the catalog outgrows the window.
    */
   private async findBestSelling(
     where: Prisma.ProductWhereInput,
@@ -136,6 +141,8 @@ export class ProductsService {
       this.prisma.product.findMany({
         where,
         include: { category: true, brand: true },
+        orderBy: { createdAt: 'desc' },
+        take: BEST_SELLING_SCAN,
       }),
       this.prisma.orderItem.groupBy({
         by: ['productId'],
