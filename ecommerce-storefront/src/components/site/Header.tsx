@@ -41,7 +41,16 @@ export async function Header() {
           yellow stays. */}
       <header
         className="sticky top-0 z-50 h-0"
-        style={{ '--color-surface': '#000000', '--color-ink': '#faf7f2' } as CSSProperties}
+        style={
+          {
+            '--color-surface': '#000000',
+            '--color-ink': '#faf7f2',
+            '--color-brand': '#ffd84d',
+            // The pill is always dark, so brand text stays the true yellow
+            // even when the page is in light mode.
+            '--color-brand-text': '#ffd84d',
+          } as CSSProperties
+        }
       >
         <div className="px-5 pt-6 sm:px-3">
           <div className="mx-auto w-full max-w-[90rem] rounded-2xl bg-surface shadow-lg shadow-black/40">
@@ -54,7 +63,7 @@ export async function Header() {
             columns and buries the menu button under the logo. */}
         <Link
           href="/"
-          className="flex items-center gap-2 justify-self-center font-display text-xl text-ink sm:text-2xl"
+          className="site-wordmark flex items-center gap-2 justify-self-center font-display text-xl text-ink sm:text-2xl"
         >
           <Image
             src="/logo-animated.svg"

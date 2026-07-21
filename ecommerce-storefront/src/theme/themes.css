@@ -67,8 +67,11 @@
 [data-theme='ninja-light'] {
   --color-surface: #ffffff;
   --color-ink: #17161a;
-  /* Darker amber than ninja's yellow — yellow on white fails WCAG AA. */
-  --color-brand: #a16207;
+  /* Same brand yellow as the dark theme — it fills buttons, badges and the
+     wordmark. Yellow *text* on white is unreadable (1.4:1), so links and
+     labels resolve through --color-brand-text instead. */
+  --color-brand: #ffd84d;
+  --color-brand-text: #a16207;
   --color-highlight: #b8452f;
   --color-subtle: #f2efe8;
   --radius: 0.375rem;
@@ -173,6 +176,12 @@
 }
 
 [data-theme='ninja'] {
+  --font-display: var(--font-sora);
+  --font-sans: var(--font-inter);
+}
+
+/* Light mode is the same brand, so it wears the same typefaces. */
+[data-theme='ninja-light'] {
   --font-display: var(--font-sora);
   --font-sans: var(--font-inter);
 }

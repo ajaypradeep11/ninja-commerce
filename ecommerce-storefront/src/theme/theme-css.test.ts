@@ -66,8 +66,13 @@ describe('WCAG AA contrast audit', () => {
     const c = (role: string) => colorVar(block, role);
     // ink on surface — body text
     expect(contrast(c('ink'), c('surface'))).toBeGreaterThanOrEqual(4.5);
-    // brand on surface — link text (same pair covers surface-on-brand buttons)
-    expect(contrast(c('brand'), c('surface'))).toBeGreaterThanOrEqual(4.5);
+    // Brand-colored text on surface — links and labels. A theme may keep a
+    // vivid brand fill and define --color-brand-text for type; when it does,
+    // that is the color a reader actually sees, so audit that one.
+    const brandText = /--color-brand-text:\s*#/.test(block)
+      ? colorVar(block, 'brand-text')
+      : c('brand');
+    expect(contrast(brandText, c('surface'))).toBeGreaterThanOrEqual(4.5);
     // highlight on surface — error/sale text
     expect(contrast(c('highlight'), c('surface'))).toBeGreaterThanOrEqual(4.5);
     // ink on subtle — text on muted panels (footer, badges)

@@ -8,6 +8,9 @@
   --color-surface: #faf7f2;
   --color-ink: #23201c;
   --color-brand: #2f4a7a;
+  /* Brand color for *text*. Defaults to the brand itself; a theme overrides
+     it when its brand fill would be unreadable as type (see ninja-light). */
+  --color-brand-text: var(--color-brand);
   --color-highlight: #a64b35;
   --color-subtle: #e7dfd2;
 }
@@ -118,6 +121,21 @@
   animation: ninja-star 7s ease-in-out infinite;
   opacity: 0;
 }
+
+/* Keep the header wordmark identical to Ninja dark in every theme. */
+.site-wordmark {
+  font-family: var(--font-sora);
+}
+
+/* Route brand-colored TEXT through --color-brand-text (identical to the brand
+   in every theme that doesn't override it), so a vivid brand fill can stay
+   vivid without making links illegible. Declared after Tailwind's utilities
+   so it wins on equal specificity. */
+.text-brand,
+.hover\:text-brand:hover {
+  color: var(--color-brand-text);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ninja-vanish,
   .ninja-star {
