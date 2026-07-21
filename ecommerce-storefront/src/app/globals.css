@@ -136,6 +136,22 @@
   color: var(--color-brand-text);
 }
 
+/* Header notch: its own little colour world, so the bar stays legible no
+   matter which theme the page is wearing. Dark pill everywhere by default. */
+.notch {
+  --color-surface: #000000;
+  --color-ink: #faf7f2;
+  --color-brand: #ffd84d;
+  --color-brand-text: #ffd84d;
+}
+/* Light mode: the whole bar goes brand yellow with near-black type. */
+[data-theme='ninja-light'] .notch {
+  --color-surface: #ffd84d;
+  --color-ink: #2b2926;
+  --color-brand: #000000;
+  --color-brand-text: #000000;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ninja-vanish,
   .ninja-star {
