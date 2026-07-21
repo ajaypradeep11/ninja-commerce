@@ -41,7 +41,9 @@ export async function Header() {
         <div className="px-5 pt-6 sm:px-6">
           {/* Stretches edge-to-edge until the viewport passes 2620px, then
               holds that width so the bar never sprawls on huge displays. */}
-          <div className="mx-auto w-full max-w-[2620px] rounded-2xl bg-surface shadow-lg shadow-brand/40">
+          {/* Zero-offset shadow so the yellow glow radiates evenly on all
+              four sides rather than only pooling underneath. */}
+          <div className="mx-auto w-full max-w-[2620px] rounded-2xl bg-surface shadow-[0_0_36px_rgba(255,216,77,0.45)]">
         {/* Padding is the only height lever here — the 56px logo sets the
             floor, and it stays that size. */}
         <div className="container-wide relative grid grid-cols-[1fr_auto_1fr] items-center py-0.5">
