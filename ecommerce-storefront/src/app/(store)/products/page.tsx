@@ -13,7 +13,12 @@ import { Pagination } from '@/components/site/Pagination';
 
 export const metadata = { title: 'Shop' };
 
-const SORT_VALUES = ['newest', 'price_asc', 'price_desc'] as const;
+const SORT_VALUES = [
+  'newest',
+  'best_selling',
+  'price_asc',
+  'price_desc',
+] as const;
 type Sort = (typeof SORT_VALUES)[number];
 
 function first(value: string | string[] | undefined): string | undefined {

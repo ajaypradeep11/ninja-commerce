@@ -103,6 +103,10 @@ export class ProductsService {
           }
         : {}),
     };
+    if (sort === 'best_selling') {
+      return this.findBestSelling(where, page, pageSize);
+    }
+
     const [products, total] = await Promise.all([
       this.prisma.product.findMany({
         where,
@@ -114,6 +118,50 @@ export class ProductsService {
       this.prisma.product.count({ where }),
     ]);
     return { items: await this.withRatings(products), total, page, pageSize };
+  }
+
+  /**
+   * Ranks by units actually sold on orders that were paid (a PENDING order is
+   * just an intent, and CANCELLED/REFUNDED ones shouldn't count). Prisma can't
+   * order by a filtered relation aggregate, so the ranking is applied in
+   * memory over the matching rows — fine for a catalog of this size, and the
+   * place to revisit if the catalog grows into the thousands.
+   */
+  private async findBestSelling(
+    where: Prisma.ProductWhereInput,
+    page: number,
+    pageSize: number,
+  ): Promise<PaginatedProducts> {
+    const [products, sold] = await Promise.all([
+      this.prisma.product.findMany({
+        where,
+        include: { category: true, brand: true },
+      }),
+      this.prisma.orderItem.groupBy({
+        by: ['productId'],
+        where: { order: { status: { in: ['PAID', 'SHIPPED', 'DELIVERED'] } } },
+        _sum: { quantity: true },
+      }),
+    ]);
+
+    const unitsById = new Map(
+      sold.map((row) => [row.productId, row._sum.quantity ?? 0]),
+    );
+    const ranked = [...products].sort((a, b) => {
+      const byUnits = (unitsById.get(b.id) ?? 0) - (unitsById.get(a.id) ?? 0);
+      // Never-sold products fall to the back, newest first among equals.
+      return byUnits !== 0
+        ? byUnits
+        : b.createdAt.getTime() - a.createdAt.getTime();
+    });
+
+    const start = (page - 1) * pageSize;
+    return {
+      items: await this.withRatings(ranked.slice(start, start + pageSize)),
+      total: products.length,
+      page,
+      pageSize,
+    };
   }
 
   async findByIdAdmin(id: string): Promise<ProductWithRating> {

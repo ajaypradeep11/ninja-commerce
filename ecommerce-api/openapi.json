@@ -546,7 +546,8 @@
               "enum": [
                 "newest",
                 "price_asc",
-                "price_desc"
+                "price_desc",
+                "best_selling"
               ],
               "type": "string"
             }

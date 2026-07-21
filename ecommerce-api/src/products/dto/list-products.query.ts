@@ -38,8 +38,8 @@ export class ListProductsQuery {
   pageSize: number = 12;
 
   @IsOptional()
-  @IsIn(['newest', 'price_asc', 'price_desc'])
-  sort?: 'newest' | 'price_asc' | 'price_desc';
+  @IsIn(['newest', 'price_asc', 'price_desc', 'best_selling'])
+  sort?: 'newest' | 'price_asc' | 'price_desc' | 'best_selling';
 
   @IsOptional()
   @Transform(({ value }) => value === 'true' || value === true)

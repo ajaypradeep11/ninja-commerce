@@ -44,8 +44,15 @@ export async function Header() {
               holds that width so the bar never sprawls on huge displays. */}
           <div className="mx-auto w-full max-w-[2620px] rounded-2xl bg-surface shadow-lg shadow-black/40">
         <div className="container-wide relative grid grid-cols-[1fr_auto_1fr] items-center py-1.5">
-        <div className="justify-self-start">
+        <div className="flex items-center gap-5 justify-self-start">
           <HeaderMenu brands={brands} />
+          {/* Hidden on phones, where the pill only has room for the lockup. */}
+          <Link
+            href="/products?sort=newest"
+            className="hidden font-mono text-xs tracking-widest text-ink uppercase hover:text-brand lg:block"
+          >
+            New Arrivals
+          </Link>
         </div>
 
         {/* Shrink the lockup on phones: at full size it collapses the 1fr side
@@ -75,6 +82,12 @@ export async function Header() {
         </Link>
 
         <div className="flex items-center gap-4 justify-self-end">
+          <Link
+            href="/products?sort=best_selling"
+            className="hidden font-mono text-xs tracking-widest text-ink uppercase hover:text-brand lg:block"
+          >
+            Best Sellers
+          </Link>
           <div className="hidden sm:block">
             <SearchBox />
           </div>

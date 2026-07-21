@@ -53,7 +53,7 @@ export class ProductsController {
   @ApiQuery({
     name: 'sort',
     required: false,
-    enum: ['newest', 'price_asc', 'price_desc'],
+    enum: ['newest', 'price_asc', 'price_desc', 'best_selling'],
   })
   @ApiQuery({ name: 'all', required: false, type: Boolean })
   findAll(

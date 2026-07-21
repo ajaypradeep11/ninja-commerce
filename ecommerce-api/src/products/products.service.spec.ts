@@ -55,6 +55,39 @@ describe('ProductsService', () => {
     });
   });
 
+  it('findAll sorts by units sold on paid orders when sort=best_selling', async () => {
+    const older = new Date('2026-01-01');
+    const newer = new Date('2026-02-01');
+    prisma.product.findMany.mockResolvedValue([
+      { id: 'unsold', createdAt: newer },
+      { id: 'few', createdAt: older },
+      { id: 'many', createdAt: older },
+    ]);
+    prisma.orderItem = {
+      groupBy: jest.fn().mockResolvedValue([
+        { productId: 'few', _sum: { quantity: 2 } },
+        { productId: 'many', _sum: { quantity: 9 } },
+      ]),
+    } as never;
+
+    const result = await service.findAll({
+      sort: 'best_selling',
+      page: 1,
+      pageSize: 12,
+    });
+
+    expect(result.items.map((p) => p.id)).toEqual(['many', 'few', 'unsold']);
+    expect(result.total).toBe(3);
+    // Only orders that were actually paid count toward the ranking.
+    const groupByArgs = (prisma.orderItem as unknown as { groupBy: jest.Mock })
+      .groupBy.mock.calls[0][0];
+    expect(groupByArgs.where.order.status.in).toEqual([
+      'PAID',
+      'SHIPPED',
+      'DELIVERED',
+    ]);
+  });
+
   it('findAll filters by brand slug', async () => {
     await service.findAll({ brand: 'naruto', page: 1, pageSize: 12 });
     const where = prisma.product.findMany.mock.calls[0][0].where;

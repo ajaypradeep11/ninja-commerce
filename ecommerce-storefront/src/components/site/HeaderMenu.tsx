@@ -9,6 +9,9 @@ import { SearchBox } from './SearchBox';
 
 const NAV = [
   { href: '/products', label: 'Shop' },
+  // Mirrors the header links, which are hidden on narrow screens.
+  { href: '/products?sort=newest', label: 'New Arrivals' },
+  { href: '/products?sort=best_selling', label: 'Best Sellers' },
   { href: '/about', label: 'About' },
   { href: '/faq', label: 'FAQ' },
 ];

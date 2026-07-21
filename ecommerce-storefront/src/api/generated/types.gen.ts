@@ -563,7 +563,7 @@ export type ProductsControllerFindAllData = {
   path?: never;
   query?: {
     all?: boolean;
-    sort?: 'newest' | 'price_asc' | 'price_desc';
+    sort?: 'newest' | 'price_asc' | 'price_desc' | 'best_selling';
     pageSize?: number;
     page?: number;
     q?: string;
