@@ -3,6 +3,7 @@ export class CategoryResponseDto {
   name!: string;
   slug!: string;
   sortOrder!: number;
+  imageUrl!: string | null;
   createdAt!: Date;
   updatedAt!: Date;
 }

@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {
   brandsControllerFindAll,
+  categoriesControllerFindAll,
   productsControllerFindAll,
 } from '@/api/generated';
 import { unwrap } from '@/api/unwrap';
@@ -15,23 +16,26 @@ import { EbayReviews } from '@/components/site/EbayReviews';
 // Hero shot: the lamp lineup glowing on marble (3200x1344, ~0.8MB JPEG).
 const HERO_IMAGE = '/hero.jpg';
 
-// Product-type tiles: static for now (these aren't DB categories yet), linking
-// into the shop search. Emoji is the resting face; the name reveals on hover.
-const PRODUCT_TYPES = [
-  { label: 'Lamps', emoji: '💡', q: 'lamp' },
-  { label: 'Lightbox', emoji: '🖼️', q: 'lightbox' },
-  { label: 'Clothing', emoji: '👕', q: 'clothing' },
-  { label: 'Beanie', emoji: '🧢', q: 'beanie' },
-  { label: 'Socks', emoji: '🧦', q: 'socks' },
-  { label: 'Keystraps', emoji: '🔑', q: 'keystrap' },
-];
+// Tailwind needs whole class names at build time, so the column count can't be
+// interpolated. Six is the widest the tiles read well at; beyond that they wrap.
+const XL_COLUMNS: Record<number, string> = {
+  1: 'xl:grid-cols-1',
+  2: 'xl:grid-cols-2',
+  3: 'xl:grid-cols-3',
+  4: 'xl:grid-cols-4',
+  5: 'xl:grid-cols-5',
+  6: 'xl:grid-cols-6',
+};
 
 export default async function HomePage() {
-  const [brands, products] = await Promise.all([
+  const [brands, categories, products] = await Promise.all([
     // Tolerate a missing /brands endpoint (e.g. the storefront rebuilds before
     // the freshly-pushed API version is live) — degrade to no brand marquee
     // instead of failing the whole build, same as the Header does.
     unwrap(brandsControllerFindAll({ ...serverFetchOptions })).catch(() => []),
+    unwrap(categoriesControllerFindAll({ ...serverFetchOptions })).catch(
+      () => [],
+    ),
     unwrap(
       productsControllerFindAll({
         query: { pageSize: 24, sort: 'newest' },
@@ -108,33 +112,50 @@ export default async function HomePage() {
 
       {/* Anime brands: clickable chips drifting right-to-left. Repeated a few
           times per half so the loop stays seamless on wide screens. */}
-      {/* Six product-type boxes: emoji at rest, name on hover. Same 12px
+      {/* Category boxes, straight from the DB: tile artwork uploaded in admin
+          at rest, name on hover. Categories without artwork show their name
+          outright, so the row still works before the images land. Same 12px
           edge inset as the floating notch bar so the two align. */}
-      <section className="px-3 pt-0 pb-10">
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-6">
-          {PRODUCT_TYPES.map((type) => (
-            <Link
-              key={type.label}
-              href={`/products?q=${type.q}`}
-              aria-label={type.label}
-              className="group relative flex aspect-square items-center justify-center rounded-xl bg-subtle transition-colors hover:bg-subtle/70"
-            >
-              <span
-                aria-hidden
-                className="text-6xl transition-opacity duration-200 group-hover:opacity-0"
+      {categories.length > 0 && (
+        <section className="px-3 pt-0 pb-10">
+          <div
+            className={`grid grid-cols-2 gap-4 sm:grid-cols-3 ${
+              XL_COLUMNS[Math.min(categories.length, 6)] ?? 'xl:grid-cols-6'
+            }`}
+          >
+            {categories.map((category) => (
+              <Link
+                key={category.id}
+                href={`/products?category=${category.slug}`}
+                aria-label={category.name}
+                className="group relative flex aspect-square items-center justify-center overflow-hidden rounded-xl bg-subtle transition-colors hover:bg-subtle/70"
               >
-                {type.emoji}
-              </span>
-              <span
-                aria-hidden
-                className="absolute inset-0 flex items-center justify-center font-display text-2xl text-ink opacity-0 transition-opacity duration-200 group-hover:opacity-100"
-              >
-                {type.label}
-              </span>
-            </Link>
-          ))}
-        </div>
-      </section>
+                {category.imageUrl && (
+                  <Image
+                    src={category.imageUrl}
+                    alt=""
+                    fill
+                    sizes="(max-width: 640px) 50vw, (max-width: 1280px) 33vw, 17vw"
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                )}
+                {/* Scrim only where there's art to sit on, so the name stays
+                    legible over a bright photo. */}
+                <span
+                  aria-hidden
+                  className={
+                    category.imageUrl
+                      ? 'absolute inset-0 flex items-center justify-center bg-black/45 font-display text-2xl text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100'
+                      : 'absolute inset-0 flex items-center justify-center px-3 text-center font-display text-2xl text-ink'
+                  }
+                >
+                  {category.name}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Logo rail: only brands that actually have artwork appear here — a
           name-only chip among logos looks unfinished. Every brand is still

@@ -35,6 +35,7 @@ export type CategoryResponseDto = {
   name: string;
   slug: string;
   sortOrder: number;
+  imageUrl: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -43,12 +44,14 @@ export type CreateCategoryDto = {
   name: string;
   slug: string;
   sortOrder?: number;
+  imageUrl?: string | null;
 };
 
 export type UpdateCategoryDto = {
   name?: string;
   slug?: string;
   sortOrder?: number;
+  imageUrl?: string | null;
 };
 
 export type BrandResponseDto = {

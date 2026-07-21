@@ -1,4 +1,11 @@
-import { IsInt, IsOptional, IsString, Matches } from 'class-validator';
+import {
+  IsInt,
+  IsOptional,
+  IsString,
+  IsUrl,
+  Matches,
+  ValidateIf,
+} from 'class-validator';
 
 export class CreateCategoryDto {
   @IsString()
@@ -11,4 +18,10 @@ export class CreateCategoryDto {
   @IsOptional()
   @IsInt()
   sortOrder?: number;
+
+  // Tile artwork for the storefront's category grid; explicit null clears it.
+  @IsOptional()
+  @ValidateIf((_, value) => value !== null)
+  @IsUrl({ require_tld: false })
+  imageUrl?: string | null;
 }

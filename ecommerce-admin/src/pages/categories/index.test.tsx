@@ -2,6 +2,10 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
 
+// The page uploads tile images, so it imports the Firebase app — which would
+// otherwise try to initialise for real here.
+vi.mock('@/auth/firebase', () => ({ storage: {} }));
+
 const createMutate = vi.fn();
 vi.mock('@/api/hooks/categories', () => ({
   useCategories: () => ({
