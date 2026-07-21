@@ -42,7 +42,7 @@ describe('ProductsService', () => {
     expect(prisma.product.findMany).toHaveBeenCalledWith({
       where: {
         active: true,
-        category: { slug: 'tees' },
+        category: { slug: { in: ['tees'] } },
         OR: [
           { name: { contains: 'polka', mode: 'insensitive' } },
           { description: { contains: 'polka', mode: 'insensitive' } },
@@ -91,7 +91,19 @@ describe('ProductsService', () => {
   it('findAll filters by brand slug', async () => {
     await service.findAll({ brand: 'naruto', page: 1, pageSize: 12 });
     const where = prisma.product.findMany.mock.calls[0][0].where;
-    expect(where.brand).toEqual({ slug: 'naruto' });
+    expect(where.brand).toEqual({ slug: { in: ['naruto'] } });
+  });
+
+  it('findAll accepts comma-separated category and brand lists', async () => {
+    await service.findAll({
+      category: 'tees, hoodies',
+      brand: 'naruto,bleach',
+      page: 1,
+      pageSize: 12,
+    });
+    const where = prisma.product.findMany.mock.calls[0][0].where;
+    expect(where.category).toEqual({ slug: { in: ['tees', 'hoodies'] } });
+    expect(where.brand).toEqual({ slug: { in: ['naruto', 'bleach'] } });
   });
 
   it('findAll includes inactive products when includeInactive', async () => {

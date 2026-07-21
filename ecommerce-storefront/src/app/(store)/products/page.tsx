@@ -8,7 +8,7 @@ import {
 import { unwrap } from '@/api/unwrap';
 import { serverFetchOptions } from '@/api/server';
 import { ProductCard } from '@/components/site/ProductCard';
-import { ListingControls } from '@/components/site/ListingControls';
+import { FilterSortPanel } from '@/components/site/FilterSortPanel';
 import { Pagination } from '@/components/site/Pagination';
 
 export const metadata = { title: 'Shop' };
@@ -36,14 +36,23 @@ function parsePage(value: string | string[] | undefined): number {
   return !Number.isFinite(parsed) || parsed < 1 ? 1 : parsed;
 }
 
+// The filter panel ticks several boxes at once, so category/brand arrive as
+// comma-separated slug lists.
+function parseSlugs(value: string | string[] | undefined): string[] {
+  return (first(value) ?? '')
+    .split(',')
+    .map((slug) => slug.trim())
+    .filter(Boolean);
+}
+
 interface ProductsPageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
   const params = await searchParams;
-  const categorySlug = first(params.category);
-  const brandSlug = first(params.brand);
+  const categorySlugs = parseSlugs(params.category);
+  const brandSlugs = parseSlugs(params.brand);
   const q = first(params.q);
   const sort = parseSort(params.sort);
   const page = parsePage(params.page);
@@ -54,30 +63,39 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     unwrap(brandsControllerFindAll({ ...serverFetchOptions })).catch(() => []),
     unwrap(
       productsControllerFindAll({
-        query: { category: categorySlug, brand: brandSlug, q, sort, page },
+        query: {
+          category: categorySlugs.join(',') || undefined,
+          brand: brandSlugs.join(',') || undefined,
+          q,
+          sort,
+          page,
+        },
         ...serverFetchOptions,
       }),
     ),
   ]);
 
-  const activeCategory = categorySlug
-    ? categories.find((category) => category.slug === categorySlug)
-    : undefined;
-  const activeBrand = brandSlug
-    ? brands.find((brand) => brand.slug === brandSlug)
-    : undefined;
+  const activeCategories = categories.filter((c) =>
+    categorySlugs.includes(c.slug),
+  );
+  const activeBrands = brands.filter((b) => brandSlugs.includes(b.slug));
 
-  if ((categorySlug && !activeCategory) || (brandSlug && !activeBrand)) {
+  // A slug that matches nothing is a bad URL, not an empty result set.
+  if (
+    activeCategories.length !== categorySlugs.length ||
+    activeBrands.length !== brandSlugs.length
+  ) {
     notFound();
   }
 
-  const heading = activeCategory
-    ? activeCategory.name
-    : activeBrand
-      ? activeBrand.name
-      : q
-        ? `Results for "${q}"`
-        : 'Shop all';
+  const heading =
+    activeCategories.length === 1 && !activeBrands.length
+      ? activeCategories[0].name
+      : activeBrands.length === 1 && !activeCategories.length
+        ? activeBrands[0].name
+        : q
+          ? `Results for "${q}"`
+          : 'Shop all';
 
   return (
     <>
@@ -88,11 +106,11 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
         </div>
 
         <div className="mt-8">
-          <ListingControls
+          <FilterSortPanel
             categories={categories}
             brands={brands}
-            activeCategory={activeCategory?.slug}
-            activeBrand={activeBrand?.slug}
+            activeCategories={activeCategories.map((c) => c.slug)}
+            activeBrands={activeBrands.map((b) => b.slug)}
             sort={sort}
             q={q}
           />

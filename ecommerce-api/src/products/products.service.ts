@@ -45,6 +45,14 @@ export interface PaginatedProducts {
   pageSize: number;
 }
 
+// "tees" or "tees,hoodies" -> ['tees'] / ['tees','hoodies'].
+function splitSlugs(value?: string): string[] {
+  return (value ?? '')
+    .split(',')
+    .map((slug) => slug.trim())
+    .filter(Boolean);
+}
+
 // Upper bound on rows the best-selling ranking pulls into memory in one
 // request. Well above the catalog size; exists so the query stays bounded.
 const BEST_SELLING_SCAN = 1000;
@@ -94,10 +102,14 @@ export class ProductsService {
     includeInactive = false,
   ): Promise<PaginatedProducts> {
     const { category, brand, q, page = 1, pageSize = 12, sort } = query;
+    // category/brand accept a comma-separated list so the storefront's filter
+    // panel can tick several boxes; a single slug still works unchanged.
+    const categories = splitSlugs(category);
+    const brands = splitSlugs(brand);
     const where: Prisma.ProductWhereInput = {
       ...(includeInactive ? {} : { active: true }),
-      ...(category ? { category: { slug: category } } : {}),
-      ...(brand ? { brand: { slug: brand } } : {}),
+      ...(categories.length ? { category: { slug: { in: categories } } } : {}),
+      ...(brands.length ? { brand: { slug: { in: brands } } } : {}),
       ...(q
         ? {
             OR: [
