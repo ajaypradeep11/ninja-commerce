@@ -153,7 +153,7 @@ export default async function HomePage() {
                       key={`${rep}-${brand.id}`}
                       href={`/products?brand=${brand.slug}`}
                       tabIndex={half === 1 ? -1 : undefined}
-                      className="flex h-40 shrink-0 items-center justify-center px-8 opacity-85 transition-opacity hover:opacity-100"
+                      className="flex h-40 shrink-0 items-center justify-center px-8 transition-transform hover:scale-105"
                     >
                       {/* Square and wide logos both get room: height caps the
                           tall ones, max-width caps the banner-shaped ones. */}
