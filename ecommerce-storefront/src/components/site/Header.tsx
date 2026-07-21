@@ -39,7 +39,7 @@ export async function Header() {
           flow height). The .notch class re-scopes the color tokens — black
           pill by default, brand yellow in light mode (see globals.css). */}
       <header className="notch sticky top-0 z-50 h-0">
-        <div className="px-5 pt-6 sm:px-3">
+        <div className="px-5 pt-6 sm:px-3.5">
           {/* Stretches edge-to-edge until the viewport passes 2620px, then
               holds that width so the bar never sprawls on huge displays. */}
           <div className="mx-auto w-full max-w-[2620px] rounded-2xl bg-surface shadow-lg shadow-black/40">
