@@ -12,11 +12,13 @@ export const THEME_IDS = [
 
 export type ThemeId = (typeof THEME_IDS)[number];
 
-// Everyone starts dark — no OS/`prefers-color-scheme` sniffing anywhere.
-// Light mode is opt-in via the header toggle and remembered per browser.
-export const DEFAULT_THEME: ThemeId = 'ninja';
+// The storefront ships a single mode: white page, dark header. No OS
+// `prefers-color-scheme` sniffing and no in-app switcher.
+export const DEFAULT_THEME: ThemeId = 'ninja-light';
 
-export const THEME_STORAGE_KEY = 'storefront.theme.v1';
+// Bumped to v2 when the dark/light toggle was removed: any preference a
+// browser stored under v1 is ignored, so everyone lands on the single mode.
+export const THEME_STORAGE_KEY = 'storefront.theme.v2';
 
 export interface ThemeMeta {
   id: ThemeId;

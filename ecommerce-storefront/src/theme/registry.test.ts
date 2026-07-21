@@ -41,6 +41,6 @@ describe('registry', () => {
   });
 
   it('exposes the storage key', () => {
-    expect(THEME_STORAGE_KEY).toBe('storefront.theme.v1');
+    expect(THEME_STORAGE_KEY).toBe('storefront.theme.v2');
   });
 });
