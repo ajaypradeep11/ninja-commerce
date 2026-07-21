@@ -2,10 +2,14 @@
   <!-- Favicon: the mascot, static. Browsers don't animate SVG favicons and
        render them at ~16-32px, so the blink/glance script and the ring's
        drop-shadow are dropped — both are invisible at this size and only
-       cost bytes. Background stays transparent: on light tab bars the black
-       face reads, and on dark ones the yellow ring and tan eye band carry it.
-       PNG siblings (icon.png / apple-icon.png) remain for Safari < 17 and
-       iOS, which don't take SVG icons. -->
+       cost bytes. The black tile matches the PNG siblings (icon.png /
+       apple-icon.png, kept for Safari < 17 and iOS, which don't take SVG
+       icons) so the tab and the installed app icon look the same. -->
+  <rect width="800" height="800" fill="#000" />
+  <!-- The art spans x 86-803 / y 86-714, so it overflows the right edge and
+       sits high. This centres that box in the tile and shrinks it enough to
+       keep the bandana tails off the edge. -->
+  <g transform="translate(400 400) scale(0.95) translate(-444.5 -400)">
   <circle cx="400" cy="400" r="314" fill="none" stroke="#FFD84D" stroke-width="18" />
   <g transform="translate(12 -20)">
     <!-- bandana tails -->
@@ -33,5 +37,6 @@
       <circle cx="366" cy="361" r="16" fill="#fff" />
       <circle cx="409" cy="409" r="8.5" fill="#fff" />
     </g>
+  </g>
   </g>
 </svg>
