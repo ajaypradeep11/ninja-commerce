@@ -65,6 +65,17 @@ export const metadata: Metadata = {
     title: SITE.name,
     statusBarStyle: 'black-translucent',
   },
+  // Declared here rather than via app/icon.* convention files: Next keys those
+  // by basename, so icon.png and icon.svg collide and both routes serve the
+  // PNG (content-type and all). Plain files under public/ have no such quirk.
+  // SVG first for browsers that take it; the PNG covers Safari < 17.
+  icons: {
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/icon.png', type: 'image/png', sizes: '512x512' },
+    ],
+    apple: { url: '/apple-touch-icon.png', sizes: '180x180' },
+  },
 };
 
 export const viewport: Viewport = {
