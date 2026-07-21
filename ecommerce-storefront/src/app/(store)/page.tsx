@@ -9,6 +9,7 @@ import { serverFetchOptions } from '@/api/server';
 import { SITE } from '@/lib/site';
 import { Button } from '@/components/ui/button';
 import { ProductCard } from '@/components/site/ProductCard';
+import { ProductRail } from '@/components/site/ProductRail';
 import { EbayReviews } from '@/components/site/EbayReviews';
 
 // Hero shot: the lamp lineup glowing on marble (3200x1344, ~0.8MB JPEG).
@@ -182,23 +183,8 @@ export default async function HomePage() {
             Shop all
           </Link>
         </div>
-        <div className="marquee-track marquee-crawl mt-6">
-          {[0, 1].map((half) => (
-            <div
-              key={half}
-              aria-hidden={half === 1}
-              className="flex gap-4 pr-4"
-            >
-              {products.items.map((product) => (
-                <div
-                  key={`${half}-${product.id}`}
-                  className="w-[calc((100vw-6rem)/5)] min-w-52 shrink-0 whitespace-normal"
-                >
-                  <ProductCard product={product} />
-                </div>
-              ))}
-            </div>
-          ))}
+        <div className="mt-6">
+          <ProductRail products={products.items} />
         </div>
       </section>
 
