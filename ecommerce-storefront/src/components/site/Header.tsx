@@ -40,7 +40,9 @@ export async function Header() {
           pill by default, brand yellow in light mode (see globals.css). */}
       <header className="notch sticky top-0 z-50 h-0">
         <div className="px-5 pt-6 sm:px-3">
-          <div className="mx-auto w-full max-w-[90rem] rounded-2xl bg-surface shadow-lg shadow-black/40">
+          {/* Stretches edge-to-edge until the viewport passes 2620px, then
+              holds that width so the bar never sprawls on huge displays. */}
+          <div className="mx-auto w-full max-w-[2620px] rounded-2xl bg-surface shadow-lg shadow-black/40">
         <div className="container-wide relative grid grid-cols-[1fr_auto_1fr] items-center py-1.5">
         <div className="justify-self-start">
           <HeaderMenu brands={brands} />
