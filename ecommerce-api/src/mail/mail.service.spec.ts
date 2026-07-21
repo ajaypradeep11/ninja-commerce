@@ -90,4 +90,55 @@ describe('MailService', () => {
       expect.objectContaining({ from: 'Ops <ops@x.ca>' }),
     );
   });
+
+  describe('sendReturnRequestedEmails', () => {
+    it('confirms with the customer and alerts support, in one call', async () => {
+      const service = new MailService(configWith({ SMTP_HOST: 'smtp.test' }));
+      await service.sendReturnRequestedEmails(
+        order({ returnReason: 'Wrong size' } as Partial<Order>),
+      );
+
+      expect(sendMail).toHaveBeenCalledTimes(2);
+      expect(sendMail).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({
+          to: 'buyer@example.com',
+          subject: expect.stringMatching(/return request/i),
+        }),
+      );
+      expect(sendMail).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({
+          to: 'support@localninja.ca',
+          subject: expect.stringContaining('ABC12345'),
+          text: expect.stringContaining('Wrong size'),
+        }),
+      );
+    });
+
+    it('omits the reason line when no reason was given', async () => {
+      const service = new MailService(configWith({ SMTP_HOST: 'smtp.test' }));
+      await service.sendReturnRequestedEmails(order());
+
+      const supportCall = sendMail.mock.calls[1][0];
+      expect(supportCall.text).not.toMatch(/Reason:/);
+    });
+
+    it('still emails the customer even if the support alert fails', async () => {
+      sendMail
+        .mockResolvedValueOnce({})
+        .mockRejectedValueOnce(new Error('smtp down'));
+      const service = new MailService(configWith({ SMTP_HOST: 'smtp.test' }));
+      await expect(
+        service.sendReturnRequestedEmails(order()),
+      ).resolves.toBeUndefined();
+      expect(sendMail).toHaveBeenCalledTimes(2);
+    });
+
+    it('skips sending (logs only) when SMTP is unconfigured', async () => {
+      const service = new MailService(configWith({}));
+      await service.sendReturnRequestedEmails(order());
+      expect(sendMail).not.toHaveBeenCalled();
+    });
+  });
 });

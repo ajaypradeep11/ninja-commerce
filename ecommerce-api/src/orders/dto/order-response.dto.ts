@@ -33,6 +33,12 @@ export class OrderResponseDto {
   totalCents!: number | null;
   @ApiProperty({ type: [OrderItemResponseDto] })
   items!: OrderItemResponseDto[];
+  @ApiProperty({ type: Date, nullable: true })
+  deliveredAt!: Date | null;
+  @ApiProperty({ type: Date, nullable: true })
+  returnRequestedAt!: Date | null;
+  @ApiProperty({ type: String, nullable: true })
+  returnReason!: string | null;
   createdAt!: Date;
   updatedAt!: Date;
 }

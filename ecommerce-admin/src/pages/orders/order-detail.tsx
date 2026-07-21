@@ -133,8 +133,29 @@ export function OrderDetailPage() {
             <div>Payment intent: {order.stripePaymentIntentId ?? '—'}</div>
             <div>Created: {new Date(order.createdAt).toLocaleString()}</div>
             <div>Updated: {new Date(order.updatedAt).toLocaleString()}</div>
+            {order.deliveredAt && (
+              <div>Delivered: {new Date(order.deliveredAt).toLocaleString()}</div>
+            )}
           </CardContent>
         </Card>
+
+        {order.returnRequestedAt && (
+          <Card className="border-amber-500/50">
+            <CardHeader>
+              <CardTitle>Return requested</CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-1 text-sm">
+              <div className="text-muted-foreground">
+                Requested {new Date(order.returnRequestedAt).toLocaleString()}
+              </div>
+              <div>{order.returnReason ?? 'No reason given.'}</div>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Once the item is back, use Refund below to issue the customer&rsquo;s
+                money back.
+              </p>
+            </CardContent>
+          </Card>
+        )}
 
         <div className="flex gap-3">
           {nextStatus && (

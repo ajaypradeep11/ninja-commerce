@@ -258,6 +258,9 @@ export type OrderResponseDto = {
   taxCents: number | null;
   totalCents: number | null;
   items: Array<OrderItemResponseDto>;
+  deliveredAt: string | null;
+  returnRequestedAt: string | null;
+  returnReason: string | null;
   id: string;
   userId: string;
   email: string;
@@ -291,6 +294,10 @@ export type OrderCancelResponseDto = {
    * Stripe refund id when a paid order was refunded
    */
   refundId?: string | null;
+};
+
+export type RequestReturnDto = {
+  reason?: string;
 };
 
 export type ReviewResponseDto = {
@@ -563,7 +570,7 @@ export type ProductsControllerFindAllData = {
   path?: never;
   query?: {
     all?: boolean;
-    sort?: 'newest' | 'price_asc' | 'price_desc';
+    sort?: 'newest' | 'price_asc' | 'price_desc' | 'best_selling';
     pageSize?: number;
     page?: number;
     q?: string;
@@ -813,6 +820,22 @@ export type OrdersControllerCancelResponses = {
 
 export type OrdersControllerCancelResponse =
   OrdersControllerCancelResponses[keyof OrdersControllerCancelResponses];
+
+export type OrdersControllerRequestReturnData = {
+  body: RequestReturnDto;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/orders/{id}/return';
+};
+
+export type OrdersControllerRequestReturnResponses = {
+  200: OrderResponseDto;
+};
+
+export type OrdersControllerRequestReturnResponse =
+  OrdersControllerRequestReturnResponses[keyof OrdersControllerRequestReturnResponses];
 
 export type ReviewsControllerListData = {
   body?: never;

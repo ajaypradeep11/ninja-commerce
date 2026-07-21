@@ -6,6 +6,7 @@ import { useOrder } from '@/api/hooks/account';
 import { ApiError } from '@/api/unwrap';
 import { CancelOrderButton } from '@/components/site/CancelOrderButton';
 import { OrderStatusBadge } from '@/components/site/OrderStatusBadge';
+import { RequestReturnButton } from '@/components/site/RequestReturnButton';
 import { Price } from '@/components/site/Price';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -81,6 +82,12 @@ export default function OrderDetailPage() {
         </div>
         <div className="flex items-center gap-3">
           <CancelOrderButton orderId={order.id} status={order.status} />
+          <RequestReturnButton
+            orderId={order.id}
+            status={order.status}
+            deliveredAt={order.deliveredAt}
+            returnRequestedAt={order.returnRequestedAt}
+          />
           <OrderStatusBadge status={order.status} />
         </div>
       </div>

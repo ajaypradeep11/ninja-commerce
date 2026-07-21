@@ -21,6 +21,9 @@ const VALID_TRANSITIONS: Record<string, OrderStatus[]> = {
 
 const REFUNDABLE: OrderStatus[] = ['PAID', 'SHIPPED', 'DELIVERED'];
 
+const RETURN_WINDOW_DAYS = 30;
+const RETURN_WINDOW_MS = RETURN_WINDOW_DAYS * 24 * 60 * 60 * 1000;
+
 @Injectable()
 export class OrdersService {
   constructor(
@@ -88,7 +91,9 @@ export class OrdersService {
     }
     const updated = await this.prisma.order.update({
       where: { id },
-      data: { status },
+      // Stamp deliveredAt exactly once, on the PAID/SHIPPED -> DELIVERED leg —
+      // the 30-day return window is computed from it.
+      data: { status, ...(status === 'DELIVERED' ? { deliveredAt: new Date() } : {}) },
     });
     // Fire-and-forget: MailService catches its own errors, so a mail outage
     // never fails the admin's status change.
@@ -161,5 +166,40 @@ export class OrdersService {
       payment_intent: order.stripePaymentIntentId,
     });
     return { status: order.status, refundId: refund.id };
+  }
+
+  // Customer-initiated return request within 30 days of delivery. Does not
+  // refund by itself — it flags the order for an admin to action (via the
+  // existing refund endpoint) once the returned item is back in hand.
+  async requestReturn(
+    id: string,
+    requester: AuthUser,
+    reason?: string,
+  ): Promise<Order> {
+    const order = await this.prisma.order.findUnique({ where: { id } });
+    if (!order) throw new NotFoundException('Order not found');
+    if (!requester.admin && order.userId !== requester.uid) {
+      throw new ForbiddenException('Not your order');
+    }
+    if (order.status !== 'DELIVERED' || !order.deliveredAt) {
+      throw new ConflictException('Only delivered orders can be returned');
+    }
+    if (Date.now() - order.deliveredAt.getTime() > RETURN_WINDOW_MS) {
+      throw new ConflictException(
+        `The ${RETURN_WINDOW_DAYS}-day return window has closed`,
+      );
+    }
+    if (order.returnRequestedAt) {
+      throw new ConflictException(
+        'A return has already been requested for this order',
+      );
+    }
+
+    const updated = await this.prisma.order.update({
+      where: { id },
+      data: { returnRequestedAt: new Date(), returnReason: reason ?? null },
+    });
+    void this.mail.sendReturnRequestedEmails(updated);
+    return updated;
   }
 }

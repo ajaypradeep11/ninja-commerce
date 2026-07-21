@@ -21,6 +21,7 @@ import type { AuthUser } from '../auth/auth.types';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { ListOrdersQuery } from './dto/list-orders.query';
 import { OrderCancelResponseDto } from './dto/order-cancel-response.dto';
+import { RequestReturnDto } from './dto/request-return.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 import {
   OrderResponseDto,
@@ -86,5 +87,17 @@ export class OrdersController {
     @CurrentUser() user: AuthUser,
   ): Promise<OrderCancelResponseDto> {
     return this.orders.cancel(id, user);
+  }
+
+  // Owner or admin — no AdminGuard; ownership is enforced in the service.
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: OrderResponseDto })
+  @Post(':id/return')
+  requestReturn(
+    @Param('id') id: string,
+    @Body() dto: RequestReturnDto,
+    @CurrentUser() user: AuthUser,
+  ): Promise<Order> {
+    return this.orders.requestReturn(id, user, dto.reason);
   }
 }

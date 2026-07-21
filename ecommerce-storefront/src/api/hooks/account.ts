@@ -3,6 +3,7 @@ import {
   ordersControllerCancel,
   ordersControllerFindMine,
   ordersControllerFindOne,
+  ordersControllerRequestReturn,
   usersControllerGetMe,
   usersControllerUpdateAddresses,
   type AddressDto,
@@ -46,6 +47,17 @@ export function useCancelOrder(id: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => unwrap(ordersControllerCancel({ path: { id } })),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['orders'] });
+    },
+  });
+}
+
+export function useRequestReturn(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (reason?: string) =>
+      unwrap(ordersControllerRequestReturn({ path: { id }, body: { reason } })),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['orders'] });
     },

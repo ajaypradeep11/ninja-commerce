@@ -121,6 +121,9 @@ model Order {
   couponCode            String?
   taxCents              Int?
   totalCents            Int?
+  deliveredAt           DateTime?
+  returnRequestedAt     DateTime?
+  returnReason          String?
   items                 OrderItem[]
   redemption            CouponRedemption?
   createdAt             DateTime          @default(now())

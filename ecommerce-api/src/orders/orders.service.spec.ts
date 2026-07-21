@@ -24,7 +24,10 @@ describe('OrdersService', () => {
       checkout: { sessions: { expire: jest.Mock } };
     };
   };
-  let mail: { sendOrderStatusEmail: jest.Mock };
+  let mail: {
+    sendOrderStatusEmail: jest.Mock;
+    sendReturnRequestedEmails: jest.Mock;
+  };
   let service: OrdersService;
 
   beforeEach(() => {
@@ -43,7 +46,10 @@ describe('OrdersService', () => {
         checkout: { sessions: { expire: jest.fn().mockResolvedValue({}) } },
       },
     };
-    mail = { sendOrderStatusEmail: jest.fn().mockResolvedValue(undefined) };
+    mail = {
+      sendOrderStatusEmail: jest.fn().mockResolvedValue(undefined),
+      sendReturnRequestedEmails: jest.fn().mockResolvedValue(undefined),
+    };
     service = new OrdersService(
       prisma as unknown as PrismaService,
       stripe as unknown as StripeService,
@@ -109,6 +115,16 @@ describe('OrdersService', () => {
       ConflictException,
     );
     expect(mail.sendOrderStatusEmail).not.toHaveBeenCalled();
+  });
+
+  it('updateStatus stamps deliveredAt on the SHIPPED -> DELIVERED leg', async () => {
+    prisma.order.findUnique.mockResolvedValue({ id: 'o1', status: 'SHIPPED' });
+    prisma.order.update.mockResolvedValue({ id: 'o1', status: 'DELIVERED' });
+    await service.updateStatus('o1', 'DELIVERED');
+    expect(prisma.order.update).toHaveBeenCalledWith({
+      where: { id: 'o1' },
+      data: { status: 'DELIVERED', deliveredAt: expect.any(Date) },
+    });
   });
 
   it('refund calls Stripe with the payment intent', async () => {
@@ -242,6 +258,125 @@ describe('OrdersService', () => {
         payment_intent: 'pi_2',
       });
       expect(res).toEqual({ status: 'PAID', refundId: 're_1' });
+    });
+  });
+
+  describe('requestReturn', () => {
+    const owner = { uid: 'owner', email: 'o@x.com', admin: false };
+    const now = Date.now();
+    const daysAgo = (n: number) => new Date(now - n * 24 * 60 * 60 * 1000);
+
+    it('flags a recently delivered order and emails the customer + support', async () => {
+      const delivered = {
+        id: 'o1',
+        userId: 'owner',
+        status: 'DELIVERED',
+        deliveredAt: daysAgo(5),
+        returnRequestedAt: null,
+      };
+      const updated = { ...delivered, returnRequestedAt: new Date(), returnReason: 'Wrong size' };
+      prisma.order.findUnique.mockResolvedValue(delivered);
+      prisma.order.update.mockResolvedValue(updated);
+
+      const res = await service.requestReturn('o1', owner, 'Wrong size');
+
+      expect(prisma.order.update).toHaveBeenCalledWith({
+        where: { id: 'o1' },
+        data: { returnRequestedAt: expect.any(Date), returnReason: 'Wrong size' },
+      });
+      expect(mail.sendReturnRequestedEmails).toHaveBeenCalledWith(updated);
+      expect(res).toEqual(updated);
+    });
+
+    it('defaults returnReason to null when no reason is given', async () => {
+      prisma.order.findUnique.mockResolvedValue({
+        id: 'o1',
+        userId: 'owner',
+        status: 'DELIVERED',
+        deliveredAt: daysAgo(1),
+        returnRequestedAt: null,
+      });
+      prisma.order.update.mockResolvedValue({ id: 'o1' });
+
+      await service.requestReturn('o1', owner);
+
+      expect(prisma.order.update).toHaveBeenCalledWith(
+        expect.objectContaining({ data: expect.objectContaining({ returnReason: null }) }),
+      );
+    });
+
+    it('rejects a non-delivered order', async () => {
+      prisma.order.findUnique.mockResolvedValue({
+        id: 'o1',
+        userId: 'owner',
+        status: 'SHIPPED',
+        deliveredAt: null,
+      });
+      await expect(service.requestReturn('o1', owner)).rejects.toBeInstanceOf(
+        ConflictException,
+      );
+      expect(mail.sendReturnRequestedEmails).not.toHaveBeenCalled();
+    });
+
+    it('rejects once the 30-day window has closed', async () => {
+      prisma.order.findUnique.mockResolvedValue({
+        id: 'o1',
+        userId: 'owner',
+        status: 'DELIVERED',
+        deliveredAt: daysAgo(31),
+        returnRequestedAt: null,
+      });
+      await expect(service.requestReturn('o1', owner)).rejects.toBeInstanceOf(
+        ConflictException,
+      );
+    });
+
+    it('rejects a second return request on the same order', async () => {
+      prisma.order.findUnique.mockResolvedValue({
+        id: 'o1',
+        userId: 'owner',
+        status: 'DELIVERED',
+        deliveredAt: daysAgo(2),
+        returnRequestedAt: daysAgo(1),
+      });
+      await expect(service.requestReturn('o1', owner)).rejects.toBeInstanceOf(
+        ConflictException,
+      );
+    });
+
+    it('forbids requesting a return on another customer’s order', async () => {
+      prisma.order.findUnique.mockResolvedValue({
+        id: 'o1',
+        userId: 'someone-else',
+        status: 'DELIVERED',
+        deliveredAt: daysAgo(1),
+        returnRequestedAt: null,
+      });
+      await expect(
+        service.requestReturn('o1', { uid: 'intruder', email: '', admin: false }),
+      ).rejects.toBeInstanceOf(ForbiddenException);
+    });
+
+    it('lets an admin request a return on any order', async () => {
+      const delivered = {
+        id: 'o1',
+        userId: 'someone-else',
+        status: 'DELIVERED',
+        deliveredAt: daysAgo(1),
+        returnRequestedAt: null,
+      };
+      prisma.order.findUnique.mockResolvedValue(delivered);
+      prisma.order.update.mockResolvedValue({ ...delivered, returnRequestedAt: new Date() });
+      await expect(
+        service.requestReturn('o1', { uid: 'admin', email: '', admin: true }),
+      ).resolves.toMatchObject({ id: 'o1' });
+    });
+
+    it('404s on an unknown order', async () => {
+      prisma.order.findUnique.mockResolvedValue(null);
+      await expect(service.requestReturn('nope', owner)).rejects.toBeInstanceOf(
+        NotFoundException,
+      );
     });
   });
 });

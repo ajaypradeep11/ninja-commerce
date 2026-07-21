@@ -1169,6 +1169,51 @@
         ]
       }
     },
+    "/orders/{id}/return": {
+      "post": {
+        "operationId": "OrdersController_requestReturn",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestReturnDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Orders"
+        ]
+      }
+    },
     "/products/{productId}/reviews": {
       "get": {
         "operationId": "ReviewsController_list",
@@ -2151,6 +2196,20 @@
               "$ref": "#/components/schemas/OrderItemResponseDto"
             }
           },
+          "deliveredAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "returnRequestedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "returnReason": {
+            "type": "string",
+            "nullable": true
+          },
           "id": {
             "type": "string"
           },
@@ -2182,6 +2241,9 @@
           "taxCents",
           "totalCents",
           "items",
+          "deliveredAt",
+          "returnRequestedAt",
+          "returnReason",
           "id",
           "userId",
           "email",
@@ -2266,6 +2328,15 @@
         "required": [
           "status"
         ]
+      },
+      "RequestReturnDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "maxLength": 1000
+          }
+        }
       },
       "ReviewResponseDto": {
         "type": "object",

@@ -131,7 +131,14 @@ export function OrdersPage() {
                     {formatUsd(o.totalCents ?? o.subtotalCents)}
                   </TableCell>
                   <TableCell>
-                    <OrderStatusBadge status={o.status as OrderStatus} />
+                    <div className="flex items-center gap-2">
+                      <OrderStatusBadge status={o.status as OrderStatus} />
+                      {o.returnRequestedAt && (
+                        <Badge variant="outline" className="border-amber-500 text-amber-600">
+                          Return requested
+                        </Badge>
+                      )}
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}

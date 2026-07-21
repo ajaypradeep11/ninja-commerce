@@ -62,9 +62,57 @@ export class MailService {
       `Questions? Just reply to this email or write to ${SUPPORT_EMAIL}.\n\n` +
       `— The LocalNinja team`;
 
+    await this.deliver({
+      to: order.email,
+      subject: copy.subject,
+      text,
+      logRef: `${order.status} email for order ${order.id}`,
+    });
+  }
+
+  // Confirms receipt to the customer and alerts the support inbox so someone
+  // actions the return once the item is back — requestReturn() itself only
+  // flags the order, it does not refund.
+  async sendReturnRequestedEmails(order: Order): Promise<void> {
+    const shortId = order.id.slice(-8).toUpperCase();
+    const total =
+      order.totalCents != null
+        ? `\nOrder total: $${(order.totalCents / 100).toFixed(2)}`
+        : '';
+    const reasonLine = order.returnReason ? `\nReason: ${order.returnReason}` : '';
+
+    await this.deliver({
+      to: order.email,
+      subject: 'We received your return request',
+      text:
+        `Hi,\n\nWe've received your request to return order ${shortId}. ` +
+        `Once it arrives back with us we'll refund your original payment ` +
+        `method — no store credit, no restocking fee.${total}\n\n` +
+        `Questions? Just reply to this email or write to ${SUPPORT_EMAIL}.\n\n` +
+        `— The LocalNinja team`,
+      logRef: `return-request confirmation for order ${order.id}`,
+    });
+
+    await this.deliver({
+      to: SUPPORT_EMAIL,
+      subject: `Return requested — order ${shortId}`,
+      text:
+        `Order ${order.id} (${order.email}) requested a return.` +
+        `${total}${reasonLine}\n\n` +
+        `Once the item is back, refund it from the admin order detail page.`,
+      logRef: `return-request ops alert for order ${order.id}`,
+    });
+  }
+
+  private async deliver(message: {
+    to: string;
+    subject: string;
+    text: string;
+    logRef: string;
+  }): Promise<void> {
     if (!this.transporter) {
       this.logger.log(
-        `SMTP not configured — skipped "${copy.subject}" to ${order.email} (order ${order.id})`,
+        `SMTP not configured — skipped "${message.subject}" to ${message.to} (${message.logRef})`,
       );
       return;
     }
@@ -72,14 +120,14 @@ export class MailService {
     try {
       await this.transporter.sendMail({
         from: this.from,
-        to: order.email,
-        subject: copy.subject,
-        text,
+        to: message.to,
+        subject: message.subject,
+        text: message.text,
       });
-      this.logger.log(`Sent ${order.status} email for order ${order.id}`);
+      this.logger.log(`Sent ${message.logRef}`);
     } catch (err) {
       this.logger.error(
-        `Failed to send ${order.status} email for order ${order.id}`,
+        `Failed to send ${message.logRef}`,
         err instanceof Error ? err.stack : String(err),
       );
     }

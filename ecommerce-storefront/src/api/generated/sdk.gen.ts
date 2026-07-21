@@ -51,6 +51,8 @@ import type {
   OrdersControllerFindOneResponses,
   OrdersControllerRefundData,
   OrdersControllerRefundResponses,
+  OrdersControllerRequestReturnData,
+  OrdersControllerRequestReturnResponses,
   OrdersControllerUpdateStatusData,
   OrdersControllerUpdateStatusResponses,
   ProductsControllerAdjustStockData,
@@ -601,6 +603,29 @@ export const ordersControllerCancel = <ThrowOnError extends boolean = false>(
     unknown,
     ThrowOnError
   >({ url: '/orders/{id}/cancel', ...options });
+
+export const ordersControllerRequestReturn = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<OrdersControllerRequestReturnData, ThrowOnError>,
+): RequestResult<
+  OrdersControllerRequestReturnResponses,
+  unknown,
+  ThrowOnError
+> =>
+  (options.client ?? client).post<
+    OrdersControllerRequestReturnResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/orders/{id}/return',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
 
 export const reviewsControllerList = <ThrowOnError extends boolean = false>(
   options: Options<ReviewsControllerListData, ThrowOnError>,
