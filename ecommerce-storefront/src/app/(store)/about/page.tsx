@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { SITE } from '@/lib/site';
 import { StaticPageHeader } from '@/components/site/StaticPageHeader';
@@ -20,6 +21,19 @@ export default function AboutPage() {
           shared love for anime eventually inspired us to build this store
           together.
         </p>
+        <figure className="mt-6">
+          <Image
+            src="/about-saitama-keychain.png"
+            alt="The Saitama figure keychain that sparked it all, resting on a set of keys."
+            width={1582}
+            height={1133}
+            sizes="(max-width: 640px) 100vw, 640px"
+            className="w-full rounded-2xl object-cover"
+          />
+          <figcaption className="mt-2 text-sm italic text-ink/70">
+            The Saitama keychain that started it all.
+          </figcaption>
+        </figure>
         <p className="mt-4">
           We wanted to create a place where fellow fans could easily find
           amazing gear to light up their own spaces. From our LED anime lamps
@@ -29,7 +43,7 @@ export default function AboutPage() {
       </section>
 
       <section>
-        <h2 className="font-display text-xl text-ink">Our Ottawa roots</h2>
+        <h2 className="font-display text-xl text-ink">Our Ottawa</h2>
         <p className="mt-2">
           Our business home base is proudly located right here in Ottawa,
           Ontario, Canada. The &ldquo;Local&rdquo; in {SITE.name} represents our
