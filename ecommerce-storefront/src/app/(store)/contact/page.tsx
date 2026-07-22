@@ -24,12 +24,19 @@ export default function ContactPage() {
         </Link>{' '}
         or our{' '}
         <Link
-          href="/shipping-returns"
+          href="/shipping"
           className="text-brand underline underline-offset-4 hover:no-underline"
         >
-          shipping &amp; returns policy
+          shipping
         </Link>{' '}
-        first — we might have already answered it there.
+        and{' '}
+        <Link
+          href="/returns"
+          className="text-brand underline underline-offset-4 hover:no-underline"
+        >
+          returns
+        </Link>{' '}
+        policies first — we might have already answered it there.
       </p>
 
       <section>

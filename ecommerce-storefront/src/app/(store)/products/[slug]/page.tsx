@@ -129,13 +129,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
               <AccordionContent>
                 <p>
                   Ships within 48 hours. Free returns for 30 days — see our{' '}
-                  <Link
-                    href="/shipping-returns"
-                    className="underline hover:text-brand"
-                  >
-                    shipping &amp; returns policy
-                  </Link>
-                  .
+                  <Link href="/shipping" className="underline hover:text-brand">
+                    shipping
+                  </Link>{' '}
+                  and{' '}
+                  <Link href="/returns" className="underline hover:text-brand">
+                    returns
+                  </Link>{' '}
+                  policies.
                 </p>
               </AccordionContent>
             </AccordionItem>

@@ -13,7 +13,8 @@ const COLUMNS = [
     heading: 'Help',
     links: [
       { href: '/faq', label: 'FAQ' },
-      { href: '/shipping-returns', label: 'Shipping & returns' },
+      { href: '/shipping', label: 'Shipping' },
+      { href: '/returns', label: 'Returns & refunds' },
       { href: '/contact', label: 'Contact' },
     ],
   },
@@ -50,10 +51,10 @@ export function Footer() {
               30-day returns — a full refund to your original payment method, no
               store credit.{' '}
               <Link
-                href="/shipping-returns"
+                href="/returns"
                 className="text-ink underline underline-offset-4 hover:text-brand"
               >
-                See shipping &amp; returns
+                See returns &amp; refunds
               </Link>
               .
             </p>

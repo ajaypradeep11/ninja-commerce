@@ -92,7 +92,7 @@ export default function TermsPage() {
           Ontario residents on purchases over {policy.freeShipping}, as set out
           in our{' '}
           <Link
-            href="/shipping-returns"
+            href="/shipping"
             className="text-brand underline underline-offset-4 hover:no-underline"
           >
             shipping policy
@@ -111,7 +111,7 @@ export default function TermsPage() {
           be unused, unworn, and in their original packaging. For hygiene
           reasons, opened socks cannot be returned. Please review our full{' '}
           <Link
-            href="/shipping-returns"
+            href="/returns"
             className="text-brand underline underline-offset-4 hover:no-underline"
           >
             return and exchange policy
