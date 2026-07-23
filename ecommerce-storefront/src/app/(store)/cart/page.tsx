@@ -13,8 +13,15 @@ import { readClientCurrency } from '@/lib/currency';
 export default function CartPage() {
   const { lines, hydrated } = useCart();
 
+  // Read fresh on every render (not memoized) so a currency switch — which
+  // triggers router.refresh() — picks up the new cookie value immediately.
+  // Safe from hydration mismatches: it only affects JSX rendered past the
+  // `hydrated` gate below, i.e. never during the server-rendered first pass.
+  const currency = readClientCurrency();
+
   useEffect(() => {
-    applyCartRefresh(getLines())
+    if (lines.length === 0) return;
+    applyCartRefresh(getLines(), currency)
       .then(({ removedUnavailable }) => {
         if (removedUnavailable) {
           toast.error('Some items are no longer available and were removed.');
@@ -23,7 +30,10 @@ export default function CartPage() {
       .catch(() => {
         /* best-effort refresh — leave the cart as-is on unexpected failure */
       });
-  }, []);
+    // Re-runs on a currency switch so cached line prices are re-read in the
+    // newly selected currency.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currency]);
 
   if (!hydrated) {
     return <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6" />;
@@ -39,12 +49,6 @@ export default function CartPage() {
       </div>
     );
   }
-
-  // Read fresh on every render (not memoized) so a currency switch — which
-  // triggers router.refresh() — picks up the new cookie value immediately.
-  // Safe from hydration mismatches: this only runs past the `hydrated` gate
-  // above, i.e. never during the server-rendered first pass.
-  const currency = readClientCurrency();
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6">

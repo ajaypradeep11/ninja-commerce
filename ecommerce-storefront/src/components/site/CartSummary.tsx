@@ -134,7 +134,7 @@ export function CartSummary({ lines, currency }: { lines: CartLine[]; currency: 
         one use per customer.
       </p>
       <div className="mt-6">
-        <CheckoutButton lines={lines} couponCode={quote?.code} />
+        <CheckoutButton lines={lines} couponCode={quote?.code} currency={currency} />
       </div>
     </div>
   );

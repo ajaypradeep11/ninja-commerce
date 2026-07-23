@@ -12,6 +12,7 @@ const KEY = 'localninja.cart.v1';
 const MAX_QTY = 99;
 const listeners = new Set<() => void>();
 let lines: CartLine[] = load();
+let cartCurrency: 'CAD' | 'USD' | null = loadCurrency();
 const EMPTY: CartLine[] = [];
 
 function isValidLine(raw: unknown): raw is CartLine {
@@ -43,10 +44,30 @@ function load(): CartLine[] {
   return [];
 }
 
+function loadCurrency(): 'CAD' | 'USD' | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const parsed: unknown = JSON.parse(window.localStorage.getItem(KEY) ?? '');
+    const raw = (parsed as { currency?: unknown })?.currency;
+    return raw === 'CAD' || raw === 'USD' ? raw : null;
+  } catch {
+    return null;
+  }
+}
+
+export function getCartCurrency(): 'CAD' | 'USD' | null {
+  return typeof window === 'undefined' ? null : cartCurrency;
+}
+
+export function setCartCurrency(currency: 'CAD' | 'USD'): void {
+  cartCurrency = currency;
+  persist(lines);
+}
+
 function persist(next: CartLine[]) {
   lines = next;
   if (typeof window !== 'undefined') {
-    window.localStorage.setItem(KEY, JSON.stringify({ lines }));
+    window.localStorage.setItem(KEY, JSON.stringify({ lines, currency: cartCurrency }));
   }
   listeners.forEach((l) => l());
 }
@@ -74,6 +95,7 @@ export function removeLine(productId: string): void {
 }
 
 export function clearCart(): void {
+  cartCurrency = null;
   persist([]);
 }
 

@@ -1,4 +1,4 @@
-import { addLine, setQuantity, removeLine, clearCart, updateLineMeta, getLines, subscribe, subtotalCents, cartCount } from './store';
+import { addLine, setQuantity, removeLine, clearCart, updateLineMeta, getLines, getCartCurrency, setCartCurrency, subscribe, subtotalCents, cartCount } from './store';
 
 const tee = { productId: 'p1', slug: 'organic-cotton-tee', name: 'Organic Cotton Tee', priceCents: 2900, image: null, stockQty: 40 };
 const hoodie = { productId: 'p2', slug: 'heavyweight-hoodie', name: 'Heavyweight Hoodie', priceCents: 7900, image: null, stockQty: 3 };
@@ -78,4 +78,19 @@ test('subscribe notifies on mutation and unsubscribes', () => {
   addLine(tee, 1);
   expect(cb).toHaveBeenCalled();
   off();
+});
+
+test('remembers which currency the cart was priced in', () => {
+  clearCart();
+  addLine(tee, 1);
+  setCartCurrency('CAD');
+  expect(getCartCurrency()).toBe('CAD');
+
+  setCartCurrency('USD');
+  expect(getCartCurrency()).toBe('USD');
+});
+
+test('reports no currency for a fresh cart', () => {
+  clearCart();
+  expect(getCartCurrency()).toBe(null);
 });
