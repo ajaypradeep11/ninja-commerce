@@ -152,6 +152,44 @@
   --color-brand-text: #ffd84d;
 }
 
+/* Sign-in / create-account canvas: always black, in every theme. Same trick
+   as .notch — re-point the role tokens on the wrapper so everything inside
+   (selvedge, links, form copy) re-themes with it rather than needing
+   per-element colour overrides. */
+.auth-canvas {
+  --color-surface: #000000;
+  --color-ink: #f4f3ef;
+  --color-brand: #ffd84d;
+  --color-brand-text: #ffd84d;
+  --color-highlight: #e8be8e;
+  --color-subtle: #2a2a28;
+
+  /* The shadcn semantic vars are declared on :root, where their var()
+     references already resolved against the *page* theme's role tokens —
+     descendants inherit those finished colours, so overriding the roles above
+     doesn't reach them. Re-declare the ones the auth form's primitives use so
+     they resolve again, here, against the black canvas. Without this the
+     submit button keeps the light theme's white label on brand yellow. */
+  --background: var(--color-surface);
+  --foreground: var(--color-ink);
+  --primary: var(--color-brand);
+  --primary-foreground: var(--color-surface);
+  --secondary: var(--color-subtle);
+  --secondary-foreground: var(--color-ink);
+  --muted: var(--color-subtle);
+  --muted-foreground: color-mix(
+    in oklab,
+    var(--color-ink) 65%,
+    var(--color-surface)
+  );
+  --accent: var(--color-subtle);
+  --accent-foreground: var(--color-ink);
+  --destructive: var(--color-highlight);
+  --border: color-mix(in oklab, var(--color-ink) 15%, var(--color-surface));
+  --input: color-mix(in oklab, var(--color-ink) 15%, var(--color-surface));
+  --ring: var(--color-brand);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ninja-vanish,
   .ninja-star {
