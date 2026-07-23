@@ -12,14 +12,31 @@ import { Button } from '@/components/ui/button';
 import { ProductCard } from '@/components/site/ProductCard';
 import { ProductRail } from '@/components/site/ProductRail';
 import { EbayReviews } from '@/components/site/EbayReviews';
+import { HeroCarousel } from '@/components/site/HeroCarousel';
 
-// Hero shot: the lamp lineup glowing on marble (3200x1344, ~0.8MB JPEG).
-const HERO_IMAGE = '/hero.jpg';
+// Hero shots, cross-faded in order (both 3200x1344, ~0.8MB JPEG).
+const HERO_SLIDES = [
+  // The Naruto LED lamp lineup. Boxes sit mid-frame across the full width, so
+  // a plain centre crop keeps the row intact.
+  { src: '/hero-naruto-lamps.jpg', className: 'object-center' },
+  // The lamp lineup glowing on marble, framed slightly high and pushed down on
+  // phones so the lamps clear the overlaid copy.
+  {
+    src: '/hero.jpg',
+    className:
+      'object-[center_45%] max-sm:translate-y-6 max-sm:scale-110 max-sm:object-[center_0%]',
+  },
+];
 
 // The hero's primary CTA already points here, so this category is left out of
 // the tile grid below rather than shown twice. Both read the same constant so
 // they can't drift apart.
 const HERO_CATEGORY_SLUG = 'anime-lamps';
+
+// Category tiles are parked until their artwork is uploaded in admin — without
+// it the row is a wall of blank boxes. Flip to true to bring the grid back;
+// the markup below is otherwise untouched.
+const SHOW_CATEGORY_TILES = false;
 
 // Tailwind needs whole class names at build time, so the column count can't be
 // interpolated. Six is the widest the tiles read well at; beyond that they wrap.
@@ -52,7 +69,10 @@ export default async function HomePage() {
   // Only logo'd brands ride the marquee; repeat them enough to fill an
   // ultrawide viewport so the -50% loop stays seamless.
   const logoBrands = brands.filter((brand) => brand.logoUrl);
-  const LOGO_REPEATS = Math.max(2, Math.ceil(10 / Math.max(1, logoBrands.length)));
+  const LOGO_REPEATS = Math.max(
+    2,
+    Math.ceil(10 / Math.max(1, logoBrands.length)),
+  );
 
   // The hero already leads with one category, so the grid covers the rest.
   const tileCategories = categories.filter(
@@ -68,14 +88,7 @@ export default async function HomePage() {
           hero image, Allbirds-style. */}
       <section className="-mt-[var(--notch-space)] px-3 pt-3">
         <div className="relative h-[78vh] min-h-105 overflow-hidden rounded-2xl sm:h-[88vh]">
-          <Image
-            src={HERO_IMAGE}
-            alt=""
-            fill
-            priority
-            sizes="100vw"
-            className="rounded-2xl object-cover object-[center_45%] max-sm:translate-y-6 max-sm:scale-110 max-sm:object-[center_0%]"
-          />
+          <HeroCarousel slides={HERO_SLIDES} />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/10" />
           {/* Ottawa delivery note bottom-left; copy bottom-right, Allbirds style */}
           <div className="container-wide absolute inset-x-0 bottom-0 flex flex-wrap items-end justify-between gap-6 pb-10 sm:pb-14">
@@ -126,7 +139,7 @@ export default async function HomePage() {
           at rest, name on hover. Categories without artwork show their name
           outright, so the row still works before the images land. Same 12px
           edge inset as the floating notch bar so the two align. */}
-      {tileCategories.length > 0 && (
+      {SHOW_CATEGORY_TILES && tileCategories.length > 0 && (
         <section className="px-3 pt-0 pb-10">
           <div
             className={`grid grid-cols-2 gap-4 sm:grid-cols-3 ${
@@ -171,37 +184,43 @@ export default async function HomePage() {
           name-only chip among logos looks unfinished. Every brand is still
           reachable from the menu's Anime group and the shop filters. */}
       {logoBrands.length > 0 && (
-        <section className="-mt-6 overflow-hidden pt-0 pb-6">
-          <div className="marquee-track marquee-slow">
-            {[0, 1].map((half) => (
-              <div
-                key={half}
-                aria-hidden={half === 1}
-                className="flex gap-4 pr-4"
-              >
-                {Array.from({ length: LOGO_REPEATS }).flatMap((_, rep) =>
-                  logoBrands.map((brand) => (
-                    <Link
-                      key={`${rep}-${brand.id}`}
-                      href={`/products?brand=${brand.slug}`}
-                      tabIndex={half === 1 ? -1 : undefined}
-                      className="flex h-40 shrink-0 items-center justify-center px-8 transition-transform hover:scale-105"
-                    >
-                      {/* Square and wide logos both get room: height caps the
+        <>
+          <section className="-mt-6 overflow-hidden pt-0 pb-6">
+            <div className="marquee-track marquee-slow">
+              {[0, 1].map((half) => (
+                <div
+                  key={half}
+                  aria-hidden={half === 1}
+                  className="flex gap-4 pr-4"
+                >
+                  {Array.from({ length: LOGO_REPEATS }).flatMap((_, rep) =>
+                    logoBrands.map((brand) => (
+                      <Link
+                        key={`${rep}-${brand.id}`}
+                        href={`/products?brand=${brand.slug}`}
+                        tabIndex={half === 1 ? -1 : undefined}
+                        className="flex h-40 shrink-0 items-center justify-center px-8 transition-transform hover:scale-105"
+                      >
+                        {/* Square and wide logos both get room: height caps the
                           tall ones, max-width caps the banner-shaped ones. */}
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={brand.logoUrl!}
-                        alt={brand.name}
-                        className="max-h-40 w-auto max-w-96 object-contain"
-                      />
-                    </Link>
-                  )),
-                )}
-              </div>
-            ))}
-          </div>
-        </section>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={brand.logoUrl!}
+                          alt={brand.name}
+                          className="max-h-40 w-auto max-w-96 object-contain"
+                        />
+                      </Link>
+                    )),
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+          {/* Closes the brand rail off from the product crawl below. Rides with
+            the rail so it doesn't strand a divider when no brands have art.
+            Tight top margin pulls it up close under the logos. */}
+          <div className="selvedge mt-2 mb-6" />
+        </>
       )}
 
       {/* All products: a slow 5-across crawl, same mechanic as the eBay rail */}
