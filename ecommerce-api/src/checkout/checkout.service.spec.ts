@@ -280,4 +280,37 @@ describe('CheckoutService', () => {
       'US',
     ]);
   });
+
+  it('pins coupon currency to USD when applying a USD PERCENT coupon', async () => {
+    prisma.product.findMany.mockResolvedValue([
+      { id: 'p1', name: 'Lamp', priceCents: 5499, priceUsdCents: 3999, stockQty: 10, active: true },
+    ]);
+    coupons.quoteForUser.mockResolvedValue({
+      coupon: { id: 'c1', code: 'SAVE20', type: 'PERCENT', value: 20 },
+      discountCents: 800,
+    });
+    stripe.client.checkout.sessions.create.mockResolvedValue({
+      id: 'cs_1',
+      url: 'https://stripe.test/session',
+    });
+
+    await service.createSession(user, {
+      items: [{ productId: 'p1', quantity: 2 }],
+      couponCode: 'SAVE20',
+      currency: 'USD',
+    });
+
+    expect(coupons.quoteForUser).toHaveBeenCalledWith(
+      'u1',
+      'SAVE20',
+      7998,
+      'USD',
+    );
+    expect(stripe.client.coupons.create).toHaveBeenCalledWith({
+      amount_off: 800,
+      currency: 'usd',
+      duration: 'once',
+      name: 'SAVE20',
+    });
+  });
 });
