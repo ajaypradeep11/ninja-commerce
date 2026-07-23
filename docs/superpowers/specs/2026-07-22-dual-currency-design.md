@@ -1,7 +1,7 @@
 # Dual CAD/USD pricing
 
 **Date:** 2026-07-22
-**Scope:** All three sub-projects — `ecommerce-api` (schema, checkout, stats),
+**Scope:** All three sub-projects — `ecommerce-api` (schema, checkout),
 `ecommerce-admin` (product form, bulk upload, money formatting),
 `ecommerce-storefront` (currency state, price rendering, switcher, cart).
 
@@ -90,11 +90,15 @@ forever, with no dependence on a rate that may have moved. Existing orders defau
   ("This code is valid on CAD orders only"). PERCENT coupons apply to either.
 - `SHIPPING_COUNTRIES` becomes `['CA', 'US']`.
 
-### 3. Admin stats (`ecommerce-api/src/admin`)
+### 3. Admin stats (`ecommerce-api/src/admin`) — no change required
 
-Revenue currently sums `totalCents` across all orders. Adding CAD and USD integers
-produces a meaningless figure, so stats are reported per currency. Counts that are not
-money (orders today, low stock) are unaffected.
+An earlier draft of this spec said `/admin/stats` sums `totalCents` and would therefore
+mix currencies. That was wrong. `AdminService.stats()` returns only `ordersToday` (a
+count) and `lowStockProducts` (a list) — it touches no money columns at all, so mixing
+CAD and USD cannot arise there.
+
+No work is needed in this module. The currency-aware money formatting in admin is still
+required, but it belongs to the orders list and order detail screens (§7), not to stats.
 
 ### 4. Storefront currency state
 
