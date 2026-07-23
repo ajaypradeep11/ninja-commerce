@@ -8,6 +8,7 @@ import { useCart } from '@/cart/useCart';
 import { applyCartRefresh } from '@/components/site/cart-refresh';
 import { CartLineRow } from '@/components/site/CartLineRow';
 import { CartSummary } from '@/components/site/CartSummary';
+import { readClientCurrency } from '@/lib/currency';
 
 export default function CartPage() {
   const { lines, hydrated } = useCart();
@@ -39,6 +40,12 @@ export default function CartPage() {
     );
   }
 
+  // Read fresh on every render (not memoized) so a currency switch — which
+  // triggers router.refresh() — picks up the new cookie value immediately.
+  // Safe from hydration mismatches: this only runs past the `hydrated` gate
+  // above, i.e. never during the server-rendered first pass.
+  const currency = readClientCurrency();
+
   return (
     <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
       <h1 className="font-display text-3xl text-ink sm:text-4xl">Cart</h1>
@@ -47,11 +54,17 @@ export default function CartPage() {
       <div className="grid gap-10 md:grid-cols-[1fr_320px]">
         <div>
           {lines.map((line) => (
-            <CartLineRow key={line.productId} line={line} onQuantityChange={setQuantity} onRemove={removeLine} />
+            <CartLineRow
+              key={line.productId}
+              line={line}
+              currency={currency}
+              onQuantityChange={setQuantity}
+              onRemove={removeLine}
+            />
           ))}
         </div>
 
-        <CartSummary lines={lines} />
+        <CartSummary lines={lines} currency={currency} />
       </div>
     </div>
   );

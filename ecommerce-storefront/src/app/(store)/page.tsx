@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { cookies } from 'next/headers';
 import {
   brandsControllerFindAll,
   categoriesControllerFindAll,
@@ -7,6 +8,7 @@ import {
 } from '@/api/generated';
 import { unwrap } from '@/api/unwrap';
 import { serverFetchOptions } from '@/api/server';
+import { CURRENCY_COOKIE, parseCurrency } from '@/lib/currency';
 import { SITE } from '@/lib/site';
 import { Button } from '@/components/ui/button';
 import { ProductCard } from '@/components/site/ProductCard';
@@ -50,6 +52,10 @@ const XL_COLUMNS: Record<number, string> = {
 };
 
 export default async function HomePage() {
+  // Reading cookies opts this route into dynamic rendering, which is what stops
+  // a cached page from serving the wrong currency's prices.
+  const currency = parseCurrency((await cookies()).get(CURRENCY_COOKIE)?.value);
+
   const [brands, categories, products] = await Promise.all([
     // Tolerate a missing /brands endpoint (e.g. the storefront rebuilds before
     // the freshly-pushed API version is live) — degrade to no brand marquee
@@ -234,7 +240,7 @@ export default async function HomePage() {
           </Link>
         </div>
         <div className="mt-6">
-          <ProductRail products={products.items} />
+          <ProductRail products={products.items} currency={currency} />
         </div>
       </section>
 

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { cookies } from 'next/headers';
 import { cache } from 'react';
 import {
   productsControllerFindAll,
@@ -9,6 +10,7 @@ import {
 import type { ProductResponseDto } from '@/api/generated';
 import { ApiError, unwrap } from '@/api/unwrap';
 import { serverFetchOptions } from '@/api/server';
+import { CURRENCY_COOKIE, parseCurrency, priceFor } from '@/lib/currency';
 import { AddToCart } from '@/components/site/AddToCart';
 import { Gallery } from '@/components/site/Gallery';
 import { Markdown } from '@/components/site/Markdown';
@@ -66,6 +68,9 @@ export async function generateMetadata({
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
+  // Reading cookies opts this route into dynamic rendering, which is what stops
+  // a cached page from serving the wrong currency's prices.
+  const currency = parseCurrency((await cookies()).get(CURRENCY_COOKIE)?.value);
   const { slug } = await params;
   const product = await getProduct(slug);
   const relatedProducts = await getRelatedProducts(product);
@@ -89,7 +94,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             {product.name}
           </h1>
 
-          <Price cents={product.priceCents} className="mt-4 text-2xl" />
+          <Price cents={priceFor(product, currency)} currency={currency} className="mt-4 text-2xl" />
 
           {product.averageRating !== null && (
             <Link
@@ -146,7 +151,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         </div>
       </div>
 
-      <RelatedProducts products={relatedProducts} />
+      <RelatedProducts products={relatedProducts} currency={currency} />
     </div>
   );
 }

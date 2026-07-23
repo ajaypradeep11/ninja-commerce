@@ -30,7 +30,7 @@ export function OrderCard({ order }: { order: OrderResponseDto }) {
       <p className="text-sm text-ink/60">
         {itemCount} item{itemCount === 1 ? '' : 's'}
       </p>
-      <Price cents={total} />
+      <Price cents={total} currency={order.currency} />
     </Link>
   );
 }

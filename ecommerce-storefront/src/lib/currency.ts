@@ -19,3 +19,12 @@ export function priceFor(
 ): number {
   return currency === 'USD' ? product.priceUsdCents : product.priceCents;
 }
+
+// Client Components (e.g. the cart page) can't call next/headers' cookies(),
+// so they read document.cookie directly. Kept alongside parseCurrency so the
+// two never disagree on what a missing/malformed cookie defaults to.
+export function readClientCurrency(): Currency {
+  if (typeof document === 'undefined') return 'CAD';
+  const match = document.cookie.match(/(?:^|;\s*)localninja\.currency=([^;]*)/);
+  return parseCurrency(match ? decodeURIComponent(match[1]) : undefined);
+}
