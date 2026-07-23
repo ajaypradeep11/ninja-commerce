@@ -4,6 +4,9 @@ import type { ProductResponseDto } from '@/api/generated';
 import { Price } from './Price';
 import { RatingStars } from './RatingStars';
 
+const IMAGE_SIZES =
+  '(max-width: 768px) 50vw, (max-width: 1280px) 25vw, (max-width: 1536px) 20vw, 17vw';
+
 export function ProductCard({ product }: { product: ProductResponseDto }) {
   const { name, slug, images, priceCents, stockQty, averageRating, reviewCount } = product;
   const outOfStock = stockQty === 0;
@@ -20,8 +23,21 @@ export function ProductCard({ product }: { product: ProductResponseDto }) {
             src={images[0]}
             alt={name}
             fill
-            sizes="(max-width: 768px) 50vw, (max-width: 1280px) 25vw, (max-width: 1536px) 20vw, 17vw"
+            sizes={IMAGE_SIZES}
             className="object-cover motion-safe:transition-transform motion-safe:duration-300 motion-safe:group-hover:scale-105"
+          />
+        )}
+        {/* Second shot stacked on top, revealed on hover. CSS-only so the card
+            stays a server component; decorative alt since the image above
+            already names the product. Cards without a second image just keep
+            showing the first. */}
+        {images[1] && (
+          <Image
+            src={images[1]}
+            alt=""
+            fill
+            sizes={IMAGE_SIZES}
+            className="object-cover opacity-0 group-hover:opacity-100 motion-safe:transition-[opacity,transform] motion-safe:duration-300 motion-safe:group-hover:scale-105"
           />
         )}
         {outOfStock && (

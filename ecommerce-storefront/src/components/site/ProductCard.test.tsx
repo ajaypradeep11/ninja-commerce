@@ -40,6 +40,32 @@ describe('ProductCard', () => {
     expect(screen.getByText('OUT OF STOCK')).toBeInTheDocument();
   });
 
+  it('stacks the second image as a hover swap when the product has one', () => {
+    const { container } = render(
+      <ProductCard
+        product={makeProduct({
+          images: [
+            'https://picsum.photos/seed/tee-1/900/1125',
+            'https://picsum.photos/seed/tee-2/900/1125',
+          ],
+        })}
+      />,
+    );
+
+    const images = container.querySelectorAll('img');
+    expect(images).toHaveLength(2);
+    // The swap is CSS-only: the second image sits on top at opacity-0 and
+    // fades in on hover of the card group.
+    expect(images[1].className).toContain('group-hover:opacity-100');
+    // Decorative — the first image already carries the product name.
+    expect(images[1]).toHaveAttribute('alt', '');
+  });
+
+  it('renders a single image when the product has no second image', () => {
+    const { container } = render(<ProductCard product={makeProduct()} />);
+    expect(container.querySelectorAll('img')).toHaveLength(1);
+  });
+
   it('shows no stock badge when stockQty is comfortably above the low-stock threshold', () => {
     render(<ProductCard product={makeProduct({ stockQty: 40 })} />);
     expect(screen.queryByText('LOW STOCK')).not.toBeInTheDocument();
