@@ -12,7 +12,7 @@ export const SITE = {
   // numbers that quietly drift out of sync when copy-pasted.
   policy: {
     freeShipping: '$65 CAD',
-    freeShippingInternational: '$150 CAD',
+    freeShippingUsd: '$49 USD',
     returnWindowDays: 30,
     processingHours: 48,
     supportHours: 'Monday – Friday, 9 AM – 5 PM EST',
