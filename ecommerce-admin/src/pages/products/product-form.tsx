@@ -33,6 +33,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
+import { suggestUsdFromCad } from '@/lib/fx';
 import { centsToDollars, dollarsToCents } from '@/lib/money';
 import { slugify } from '@/lib/slugify';
 
@@ -42,7 +43,10 @@ const formSchema = z.object({
     .string()
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug must be kebab-case'),
   description: z.string().min(1, 'Description is required'),
-  price: z
+  priceCad: z
+    .string()
+    .refine((v) => dollarsToCents(v) !== null, 'Enter a valid price'),
+  priceUsd: z
     .string()
     .refine((v) => dollarsToCents(v) !== null, 'Enter a valid price'),
   categoryId: z.string().min(1, 'Pick a category'),
@@ -59,7 +63,8 @@ const EMPTY: FormValues = {
   name: '',
   slug: '',
   description: '',
-  price: '',
+  priceCad: '',
+  priceUsd: '',
   categoryId: '',
   brandId: 'none',
   stockQty: 0,
@@ -101,7 +106,8 @@ export function ProductFormPage() {
           name: existing.name,
           slug: existing.slug,
           description: existing.description,
-          price: centsToDollars(existing.priceCents),
+          priceCad: centsToDollars(existing.priceCents),
+          priceUsd: centsToDollars(existing.priceUsdCents),
           categoryId: existing.categoryId,
           brandId: existing.brandId ?? 'none',
           stockQty: existing.stockQty,
@@ -118,12 +124,18 @@ export function ProductFormPage() {
     if (!slugTouched) form.setValue('slug', slugify(name));
   }
 
+  function onAutofillUsd() {
+    const suggested = suggestUsdFromCad(form.getValues('priceCad'));
+    if (suggested) form.setValue('priceUsd', suggested, { shouldValidate: true });
+  }
+
   function onSubmit(values: FormValues) {
     const body = {
       name: values.name,
       slug: values.slug,
       description: values.description,
-      priceCents: dollarsToCents(values.price)!,
+      priceCents: dollarsToCents(values.priceCad)!,
+      priceUsdCents: dollarsToCents(values.priceUsd)!,
       categoryId: values.categoryId,
       brandId: values.brandId === 'none' ? null : values.brandId,
       stockQty: values.stockQty,
@@ -222,17 +234,36 @@ export function ProductFormPage() {
           <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
-              name="price"
+              name="priceCad"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Price (USD)</FormLabel>
+                  <FormLabel>Price (CAD)</FormLabel>
                   <FormControl>
-                    <Input inputMode="decimal" placeholder="29.00" {...field} />
+                    <Input placeholder="54.99" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="priceUsd"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Price (USD)</FormLabel>
+                  <FormControl>
+                    <Input placeholder="39.99" {...field} />
+                  </FormControl>
+                  {/* Suggestion only — the admin is expected to review it. */}
+                  <Button type="button" variant="outline" onClick={onAutofillUsd}>
+                    Autofill from CAD
+                  </Button>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="stockQty"
