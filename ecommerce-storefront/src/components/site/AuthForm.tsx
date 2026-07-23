@@ -5,12 +5,14 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from 'firebase/auth';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { auth } from '@/auth/firebase';
+import { SITE } from '@/lib/site';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -112,7 +114,19 @@ export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
 
   return (
     <div className="mx-auto w-full max-w-sm">
-      <h1 className="font-display text-3xl">{copy.heading}</h1>
+      <div className="flex items-center gap-3">
+        <Link href="/" aria-label={SITE.name} className="shrink-0">
+          <Image
+            src="/logo-animated.svg"
+            alt=""
+            width={64}
+            height={64}
+            priority
+            className="size-14"
+          />
+        </Link>
+        <h1 className="font-display text-3xl">{copy.heading}</h1>
+      </div>
       <div className="selvedge mt-4 mb-8" />
       <form
         onSubmit={(e) => void handleSubmit(onSubmit)(e)}
