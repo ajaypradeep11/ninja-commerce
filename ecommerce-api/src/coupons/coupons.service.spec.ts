@@ -46,29 +46,29 @@ describe('CouponsService', () => {
 
     it('404s on an unknown code', async () => {
       prisma.coupon.findUnique.mockResolvedValue(null);
-      await expect(service.quoteForUser('u1', 'nope', 1000)).rejects.toBeInstanceOf(
-        NotFoundException,
-      );
+      await expect(
+        service.quoteForUser('u1', 'nope', 1000, 'CAD'),
+      ).rejects.toBeInstanceOf(NotFoundException);
     });
 
     it('404s on an inactive code', async () => {
       prisma.coupon.findUnique.mockResolvedValue({ ...percent10, active: false });
-      await expect(service.quoteForUser('u1', 'SAVE10', 1000)).rejects.toBeInstanceOf(
-        NotFoundException,
-      );
+      await expect(
+        service.quoteForUser('u1', 'SAVE10', 1000, 'CAD'),
+      ).rejects.toBeInstanceOf(NotFoundException);
     });
 
     it('409s when the user already redeemed the coupon', async () => {
       prisma.coupon.findUnique.mockResolvedValue(percent10);
       prisma.couponRedemption.findUnique.mockResolvedValue({ id: 'r1' });
-      await expect(service.quoteForUser('u1', 'SAVE10', 1000)).rejects.toBeInstanceOf(
-        ConflictException,
-      );
+      await expect(
+        service.quoteForUser('u1', 'SAVE10', 1000, 'CAD'),
+      ).rejects.toBeInstanceOf(ConflictException);
     });
 
     it('normalizes the code and floors percent discounts', async () => {
       prisma.coupon.findUnique.mockResolvedValue(percent10);
-      const quote = await service.quoteForUser('u1', '  save10 ', 1099);
+      const quote = await service.quoteForUser('u1', '  save10 ', 1099, 'CAD');
       expect(prisma.coupon.findUnique).toHaveBeenCalledWith({
         where: { code: 'SAVE10' },
       });
@@ -83,8 +83,43 @@ describe('CouponsService', () => {
         value: 500,
         active: true,
       });
-      const quote = await service.quoteForUser('u1', 'FIVE', 300);
+      const quote = await service.quoteForUser('u1', 'FIVE', 300, 'CAD');
       expect(quote.discountCents).toBe(300);
+    });
+  });
+
+  describe('currency rules', () => {
+    it('allows a PERCENT coupon on a USD cart', async () => {
+      prisma.coupon.findUnique.mockResolvedValue({
+        id: 'c1', code: 'TENOFF', type: 'PERCENT', value: 10, active: true,
+      });
+      prisma.couponRedemption.findUnique.mockResolvedValue(null);
+
+      const quote = await service.quoteForUser('u1', 'TENOFF', 10000, 'USD');
+
+      expect(quote.discountCents).toBe(1000);
+    });
+
+    it('rejects a FIXED coupon on a USD cart', async () => {
+      prisma.coupon.findUnique.mockResolvedValue({
+        id: 'c2', code: 'TENBUCKS', type: 'FIXED', value: 1000, active: true,
+      });
+      prisma.couponRedemption.findUnique.mockResolvedValue(null);
+
+      await expect(
+        service.quoteForUser('u1', 'TENBUCKS', 10000, 'USD'),
+      ).rejects.toThrow('This code is valid on CAD orders only');
+    });
+
+    it('still allows a FIXED coupon on a CAD cart', async () => {
+      prisma.coupon.findUnique.mockResolvedValue({
+        id: 'c2', code: 'TENBUCKS', type: 'FIXED', value: 1000, active: true,
+      });
+      prisma.couponRedemption.findUnique.mockResolvedValue(null);
+
+      const quote = await service.quoteForUser('u1', 'TENBUCKS', 10000, 'CAD');
+
+      expect(quote.discountCents).toBe(1000);
     });
   });
 

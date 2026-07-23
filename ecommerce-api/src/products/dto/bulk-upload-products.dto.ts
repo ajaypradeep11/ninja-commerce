@@ -33,6 +33,11 @@ export class BulkProductItemDto {
   @IsOptional()
   @IsInt()
   @Min(0)
+  priceUsdCents?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(0)
   stockQty?: number;
 
   @IsOptional()

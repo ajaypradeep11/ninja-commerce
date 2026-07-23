@@ -21,6 +21,11 @@ enum OrderStatus {
   REFUNDED
 }
 
+enum Currency {
+  CAD
+  USD
+}
+
 model Category {
   id        String    @id @default(cuid())
   name      String
@@ -44,22 +49,23 @@ model Brand {
 }
 
 model Product {
-  id          String      @id @default(cuid())
-  name        String
-  slug        String      @unique
-  description String
-  priceCents  Int
-  images      String[]
-  stockQty    Int         @default(0)
-  active      Boolean     @default(true)
-  category    Category    @relation(fields: [categoryId], references: [id])
-  categoryId  String
-  brand       Brand?      @relation(fields: [brandId], references: [id], onDelete: SetNull)
-  brandId     String?
-  reviews     Review[]
-  orderItems  OrderItem[]
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id            String      @id @default(cuid())
+  name          String
+  slug          String      @unique
+  description   String
+  priceCents    Int // CAD, in cents — the base currency
+  priceUsdCents Int // USD, in cents — entered by hand, never converted at runtime
+  images        String[]
+  stockQty      Int         @default(0)
+  active        Boolean     @default(true)
+  category      Category    @relation(fields: [categoryId], references: [id])
+  categoryId    String
+  brand         Brand?      @relation(fields: [brandId], references: [id], onDelete: SetNull)
+  brandId       String?
+  reviews       Review[]
+  orderItems    OrderItem[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 
   @@index([categoryId])
   @@index([brandId])
@@ -113,6 +119,7 @@ model Order {
   user                  User              @relation(fields: [userId], references: [id])
   userId                String
   email                 String
+  currency              Currency          @default(CAD)
   status                OrderStatus       @default(PENDING)
   stripeSessionId       String?           @unique
   stripePaymentIntentId String?           @unique

@@ -242,6 +242,13 @@ export class ProductsService {
         errors.push({ row, message: `invalid price for "${name}"` });
         return;
       }
+      if (
+        !Number.isInteger(item.priceUsdCents) ||
+        (item.priceUsdCents ?? -1) < 0
+      ) {
+        errors.push({ row, message: `invalid USD price for "${name}"` });
+        return;
+      }
       if (!Number.isInteger(item.stockQty) || (item.stockQty ?? -1) < 0) {
         errors.push({ row, message: `invalid stock for "${name}"` });
         return;
@@ -261,6 +268,7 @@ export class ProductsService {
         slug: uniqueSlug(name, usedSlugs),
         description: (item.description ?? '').trim(),
         priceCents: item.priceCents!,
+        priceUsdCents: item.priceUsdCents!,
         stockQty: item.stockQty!,
         images: [],
         active: item.active ?? true,

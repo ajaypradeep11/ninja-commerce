@@ -21,6 +21,7 @@ interface AnimeProduct {
   slug: string;
   description: string;
   priceCents: number;
+  priceUsdCents: number;
   images: string[];
   stockQty: number;
 }
@@ -32,6 +33,7 @@ const PRODUCTS: AnimeProduct[] = [
     description:
       "Miss Kobayashi's Dragon Maid acrylic LED lamp. 16 RGB colors with remote, runs on batteries or USB.",
     priceCents: 3999,
+    priceUsdCents: 2999,
     images: imgs('0594', '0595', '0596'),
     stockQty: 25,
   },
@@ -41,6 +43,7 @@ const PRODUCTS: AnimeProduct[] = [
     description:
       'The Fairy Tail guild emblem as a glowing acrylic LED lamp. 16 RGB colors with remote.',
     priceCents: 4299,
+    priceUsdCents: 3199,
     images: imgs('0597', '0598', '0600'),
     stockQty: 18,
   },
@@ -50,6 +53,7 @@ const PRODUCTS: AnimeProduct[] = [
     description:
       'Naruto Shippuden Hidden Leaf Village symbol LED lamp with 16 RGB colors and remote control.',
     priceCents: 3799,
+    priceUsdCents: 2799,
     images: imgs('0601', '0602', '0603'),
     stockQty: 30,
   },
@@ -59,6 +63,7 @@ const PRODUCTS: AnimeProduct[] = [
     description:
       'Call of Duty: Modern Warfare II Ghost LED lamp. 16 RGB colors with remote, USB or battery powered.',
     priceCents: 4499,
+    priceUsdCents: 3299,
     images: imgs('0604', '0605', '0606'),
     stockQty: 12,
   },
@@ -68,6 +73,7 @@ const PRODUCTS: AnimeProduct[] = [
     description:
       'Mob Psycho 100 acrylic LED lamp featuring Mob at full power. 16 RGB colors with remote.',
     priceCents: 3999,
+    priceUsdCents: 2999,
     images: imgs('0607', '0608', '0609'),
     stockQty: 20,
   },
@@ -77,6 +83,7 @@ const PRODUCTS: AnimeProduct[] = [
     description:
       'Hunter x Hunter LED lamp with Gon and Killua back to back. 16 RGB colors with remote.',
     priceCents: 4499,
+    priceUsdCents: 3299,
     images: imgs('0610', '0611', '0612'),
     stockQty: 16,
   },
@@ -86,6 +93,7 @@ const PRODUCTS: AnimeProduct[] = [
     description:
       "BT21 Halloween edition LED lamp — the crew at a haunted doorway from Who's There?. 16 RGB colors.",
     priceCents: 2799,
+    priceUsdCents: 2099,
     images: imgs('0616', '0617', '0618'),
     stockQty: 22,
   },
@@ -95,6 +103,7 @@ const PRODUCTS: AnimeProduct[] = [
     description:
       'Chainsaw Man LED lamp featuring Aki Hayakawa with his katana. 16 RGB colors with remote.',
     priceCents: 4199,
+    priceUsdCents: 3099,
     images: imgs('0620', '0621', '0622'),
     stockQty: 14,
   },
@@ -104,6 +113,7 @@ const PRODUCTS: AnimeProduct[] = [
     description:
       'Denji in full Chainsaw Man form as a glowing acrylic LED lamp. 16 RGB colors with remote.',
     priceCents: 4599,
+    priceUsdCents: 3399,
     images: imgs('0624', '0626', '0627'),
     stockQty: 28,
   },
@@ -113,6 +123,7 @@ const PRODUCTS: AnimeProduct[] = [
     description:
       'Chainsaw Man LED lamp featuring Power, the Blood Fiend. 16 RGB colors with remote.',
     priceCents: 4199,
+    priceUsdCents: 3099,
     images: imgs('0628', '0629', '0630'),
     stockQty: 19,
   },
@@ -122,6 +133,7 @@ const PRODUCTS: AnimeProduct[] = [
     description:
       'Attack on Titan LED lamp of Captain Levi mid-strike with dual blades. 16 RGB colors with remote.',
     priceCents: 4699,
+    priceUsdCents: 3499,
     images: imgs('0631', '0632', '0636'),
     stockQty: 15,
   },
@@ -131,6 +143,7 @@ const PRODUCTS: AnimeProduct[] = [
     description:
       'Attack on Titan Final Season edition Levi LED lamp with 16 RGB colors and remote control.',
     priceCents: 4899,
+    priceUsdCents: 3599,
     images: imgs('0639', '0637', '0638'),
     stockQty: 10,
   },
@@ -140,6 +153,7 @@ const PRODUCTS: AnimeProduct[] = [
     description:
       "Eren's Attack Titan from the Final Season as a glowing LED lamp. 16 RGB colors with remote.",
     priceCents: 4899,
+    priceUsdCents: 3599,
     images: imgs('0642', '0640', '0641'),
     stockQty: 13,
   },
@@ -149,6 +163,7 @@ const PRODUCTS: AnimeProduct[] = [
     description:
       "JoJo's Bizarre Adventure: Stardust Crusaders LED lamp featuring Dio. 16 RGB colors with remote.",
     priceCents: 4499,
+    priceUsdCents: 3299,
     images: imgs('1183', '1184', '1186'),
     stockQty: 17,
   },
@@ -158,6 +173,7 @@ const PRODUCTS: AnimeProduct[] = [
     description:
       'Tokyo Revengers LED lamp featuring Mikey, leader of the Tokyo Manji Gang. 16 RGB colors.',
     priceCents: 4299,
+    priceUsdCents: 3199,
     images: imgs('1187', '1188', '1190'),
     stockQty: 21,
   },
@@ -167,6 +183,7 @@ const PRODUCTS: AnimeProduct[] = [
     description:
       'Dragon Ball Super four-star Dragon Ball LED lamp. Currently sold out — restocking soon.',
     priceCents: 3599,
+    priceUsdCents: 2699,
     images: imgs('1191', '1193', '1195'),
     stockQty: 0,
   },
@@ -176,6 +193,7 @@ const PRODUCTS: AnimeProduct[] = [
     description:
       'Naruto Shippuden LED lamp featuring Itachi Uchiha, with 16 RGB colors and remote control.',
     priceCents: 4399,
+    priceUsdCents: 3299,
     images: imgs('1196', '1198', '1199'),
     stockQty: 24,
   },
@@ -185,6 +203,7 @@ const PRODUCTS: AnimeProduct[] = [
     description:
       'Tokyo Ghoul LED lamp of Ken Kaneki, half-ghoul mask and all. 16 RGB colors with remote.',
     priceCents: 4499,
+    priceUsdCents: 3299,
     images: imgs('1200', '1201', '1203'),
     stockQty: 26,
   },
@@ -194,6 +213,7 @@ const PRODUCTS: AnimeProduct[] = [
     description:
       'Berserk LED lamp of Guts with the Dragon Slayer. Only a few left in this run.',
     priceCents: 7900,
+    priceUsdCents: 5900,
     images: imgs('1204', '1205', '1206'),
     stockQty: 3, // low stock on purpose (threshold is 5)
   },
@@ -203,6 +223,7 @@ const PRODUCTS: AnimeProduct[] = [
     description:
       'Fairy Tail LED lamp with Natsu, Lucy, Gray, Erza and Happy together. 16 RGB colors with remote.',
     priceCents: 4999,
+    priceUsdCents: 3699,
     images: imgs('1207', '1210'),
     stockQty: 9,
   },

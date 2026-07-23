@@ -246,6 +246,7 @@ describe('ProductsService', () => {
         {
           name: 'Naruto Lamp',
           priceCents: 3999,
+          priceUsdCents: 2999,
           stockQty: 5,
           categoryName: 'anime lamps',
         },
@@ -253,6 +254,7 @@ describe('ProductsService', () => {
           name: 'Goku Lamp',
           description: 'saiyan',
           priceCents: 4999,
+          priceUsdCents: 3699,
           stockQty: 2,
           categoryName: 'Anime Lamps',
           active: false,
@@ -275,10 +277,17 @@ describe('ProductsService', () => {
         {
           name: 'Good',
           priceCents: 1000,
+          priceUsdCents: 750,
           stockQty: 1,
           categoryName: 'Anime Lamps',
         },
-        { name: 'Bad', priceCents: 1000, stockQty: 1, categoryName: 'Nope' },
+        {
+          name: 'Bad',
+          priceCents: 1000,
+          priceUsdCents: 750,
+          stockQty: 1,
+          categoryName: 'Nope',
+        },
       ]);
       expect(res.created).toBe(1);
       expect(created).toHaveLength(1);
@@ -293,19 +302,39 @@ describe('ProductsService', () => {
         {
           name: '  ',
           priceCents: 1000,
+          priceUsdCents: 750,
           stockQty: 1,
           categoryName: 'Anime Lamps',
         },
-        { name: 'X', priceCents: -5, stockQty: 1, categoryName: 'Anime Lamps' },
+        {
+          name: 'X',
+          priceCents: -5,
+          priceUsdCents: 750,
+          stockQty: 1,
+          categoryName: 'Anime Lamps',
+        },
         {
           name: 'Y',
           priceCents: 100,
+          priceUsdCents: 75,
           stockQty: 1.5,
+          categoryName: 'Anime Lamps',
+        },
+        {
+          name: 'Z',
+          priceCents: 100,
+          priceUsdCents: -50,
+          stockQty: 1,
           categoryName: 'Anime Lamps',
         },
       ]);
       expect(res.created).toBe(0);
-      expect(res.errors.map((e) => e.row)).toEqual([1, 2, 3]);
+      expect(res.errors).toEqual([
+        { row: 1, message: 'name is required' },
+        { row: 2, message: 'invalid price for "X"' },
+        { row: 3, message: 'invalid stock for "Y"' },
+        { row: 4, message: 'invalid USD price for "Z"' },
+      ]);
     });
 
     it('auto-suffixes duplicate slugs (within batch and vs existing)', async () => {
@@ -314,12 +343,14 @@ describe('ProductsService', () => {
         {
           name: 'Naruto Lamp',
           priceCents: 100,
+          priceUsdCents: 75,
           stockQty: 1,
           categoryName: 'Anime Lamps',
         },
         {
           name: 'Naruto Lamp',
           priceCents: 100,
+          priceUsdCents: 75,
           stockQty: 1,
           categoryName: 'Anime Lamps',
         },

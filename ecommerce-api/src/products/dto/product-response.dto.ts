@@ -8,6 +8,8 @@ export class ProductBaseResponseDto {
   slug!: string;
   description!: string;
   priceCents!: number;
+  @ApiProperty({ description: 'USD price in cents', example: 3999 })
+  priceUsdCents!: number;
   images!: string[];
   stockQty!: number;
   active!: boolean;

@@ -4,7 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Coupon, Prisma } from '@prisma/client';
+import { Coupon, Currency, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCouponDto, UpdateCouponDto } from './dto/coupon.dto';
 
@@ -88,6 +88,7 @@ export class CouponsService {
     userId: string,
     code: string,
     subtotalCents: number,
+    currency: Currency,
   ): Promise<CouponQuote> {
     const normalized = code.trim().toUpperCase();
     const coupon = await this.prisma.coupon.findUnique({
@@ -101,6 +102,12 @@ export class CouponsService {
     });
     if (redeemed) {
       throw new ConflictException('You have already used this coupon');
+    }
+    // A FIXED coupon's `value` is bare cents with no currency of its own, so it
+    // only means anything against CAD. PERCENT coupons are proportional and
+    // therefore currency-agnostic.
+    if (coupon.type === 'FIXED' && currency !== 'CAD') {
+      throw new BadRequestException('This code is valid on CAD orders only');
     }
     const discountCents =
       coupon.type === 'PERCENT'
