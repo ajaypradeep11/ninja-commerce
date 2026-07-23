@@ -17,6 +17,7 @@ vi.mock('@/api/hooks/orders', () => ({
       stripeSessionId: 'cs_123',
       stripePaymentIntentId: 'pi_123',
       shippingAddress: { name: 'Demo Buyer', line1: '1 Main St' },
+      currency: 'CAD',
       subtotalCents: 5800,
       taxCents: 754,
       totalCents: 6554,
@@ -94,7 +95,7 @@ describe('OrderDetailPage', () => {
     renderPage();
     expect(screen.getByText('Organic Cotton Tee')).toBeInTheDocument();
     expect(screen.getByText('× 2')).toBeInTheDocument();
-    expect(screen.getAllByText('$58.00').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('CAD $58.00').length).toBeGreaterThan(0);
   });
 
   it('itemizes tax between subtotal and total when taxCents is set', () => {
@@ -102,9 +103,9 @@ describe('OrderDetailPage', () => {
     renderPage();
     expect(screen.getByText('Subtotal')).toBeInTheDocument();
     expect(screen.getByText('Tax')).toBeInTheDocument();
-    expect(screen.getByText('$7.54')).toBeInTheDocument();
+    expect(screen.getByText('CAD $7.54')).toBeInTheDocument();
     // total = subtotal 58.00 + tax 7.54
-    expect(screen.getByText('$65.54')).toBeInTheDocument();
+    expect(screen.getByText('CAD $65.54')).toBeInTheDocument();
   });
 
   it('shows no return banner when none was requested', () => {

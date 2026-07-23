@@ -19,7 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { formatUsd } from '@/lib/money';
+import { formatMoney } from '@/lib/money';
 import type { OrderStatus } from '@/lib/order-actions';
 
 const ALL_STATUSES = '__all__';
@@ -128,7 +128,7 @@ export function OrdersPage() {
                   </TableCell>
                   <TableCell>{o.email}</TableCell>
                   <TableCell>
-                    {formatUsd(o.totalCents ?? o.subtotalCents)}
+                    {formatMoney(o.totalCents ?? o.subtotalCents, o.currency)}
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">

@@ -27,7 +27,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { formatUsd } from '@/lib/money';
+import { formatMoney } from '@/lib/money';
 import {
   availableOrderActions,
   type OrderStatus,
@@ -84,7 +84,7 @@ export function OrderDetailPage() {
                     × {item.quantity}
                   </span>
                 </span>
-                <span>{formatUsd(item.priceCents * item.quantity)}</span>
+                <span>{formatMoney(item.priceCents * item.quantity, order.currency)}</span>
               </div>
             ))}
             <Separator />
@@ -92,17 +92,17 @@ export function OrderDetailPage() {
               <>
                 <div className="flex justify-between text-sm text-muted-foreground">
                   <span>Subtotal</span>
-                  <span>{formatUsd(order.subtotalCents)}</span>
+                  <span>{formatMoney(order.subtotalCents, order.currency)}</span>
                 </div>
                 <div className="flex justify-between text-sm text-muted-foreground">
                   <span>Tax</span>
-                  <span>{formatUsd(order.taxCents)}</span>
+                  <span>{formatMoney(order.taxCents, order.currency)}</span>
                 </div>
               </>
             )}
             <div className="flex justify-between text-sm font-medium">
               <span>Total</span>
-              <span>{formatUsd(order.totalCents ?? order.subtotalCents)}</span>
+              <span>{formatMoney(order.totalCents ?? order.subtotalCents, order.currency)}</span>
             </div>
           </CardContent>
         </Card>
@@ -215,7 +215,7 @@ export function OrderDetailPage() {
               <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogTitle>
-                    Refund {formatUsd(order.totalCents ?? order.subtotalCents)}?
+                    Refund {formatMoney(order.totalCents ?? order.subtotalCents, order.currency)}?
                   </AlertDialogTitle>
                   <AlertDialogDescription>
                     This triggers a full refund in Stripe. The order flips to

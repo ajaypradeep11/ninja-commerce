@@ -53,7 +53,7 @@ describe('ProductsPage', () => {
       </MemoryRouter>,
     );
     expect(screen.getByText('Organic Cotton Tee')).toBeInTheDocument();
-    expect(screen.getByText('$29.00')).toBeInTheDocument();
+    expect(screen.getByText('CAD $29.00')).toBeInTheDocument();
     expect(screen.getByText('40')).toBeInTheDocument();
     expect(screen.getByText('Inactive')).toBeInTheDocument();
     expect(screen.getByText('4.5 (2)')).toBeInTheDocument();
