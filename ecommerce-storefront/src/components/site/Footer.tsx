@@ -1,9 +1,6 @@
 import { ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
-import { cookies } from 'next/headers';
-import { CURRENCY_COOKIE, parseCurrency } from '@/lib/currency';
 import { SITE } from '@/lib/site';
-import { CurrencySwitcher } from './CurrencySwitcher';
 import { PaymentBadges } from './PaymentBadges';
 import { UspStrip } from './UspStrip';
 
@@ -31,9 +28,7 @@ const COLUMNS = [
   },
 ];
 
-export async function Footer() {
-  const currency = parseCurrency((await cookies()).get(CURRENCY_COOKIE)?.value);
-
+export function Footer() {
   return (
     <footer className="bg-subtle">
       <UspStrip />
@@ -91,7 +86,6 @@ export async function Footer() {
         <a href={`mailto:${SITE.contactEmail}`} className="text-ink hover:text-brand">
           {SITE.contactEmail}
         </a>
-        <CurrencySwitcher current={currency} />
       </div>
 
       <div className="border-t border-ink/10 py-5">
