@@ -39,10 +39,14 @@ export class CouponsController {
     @Body() dto: ValidateCouponDto,
     @Req() req: { user: AuthUser },
   ): Promise<CouponQuoteDto> {
+    // TODO(dual-currency): the cart doesn't have a currency in scope yet.
+    // Hardcoding 'CAD' preserves today's behaviour; revisit once the cart
+    // knows which currency the shopper is checking out in.
     const { coupon, discountCents } = await this.coupons.quoteForUser(
       req.user.uid,
       dto.code,
       dto.subtotalCents,
+      'CAD',
     );
     return {
       code: coupon.code,
