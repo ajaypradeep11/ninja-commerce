@@ -1,7 +1,9 @@
+import { Currency } from '@prisma/client';
 import { Transform, Type } from 'class-transformer';
 import {
   ArrayMinSize,
   IsArray,
+  IsEnum,
   IsInt,
   IsOptional,
   IsString,
@@ -34,4 +36,10 @@ export class CreateCheckoutDto {
   @IsString()
   @MaxLength(32)
   couponCode?: string;
+
+  // Which currency the shopper is buying in. The server picks the matching
+  // price column from the database — this only selects the column, it never
+  // supplies an amount.
+  @IsEnum(Currency)
+  currency!: Currency;
 }
