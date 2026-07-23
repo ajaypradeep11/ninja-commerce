@@ -1,8 +1,14 @@
-export function formatUsd(cents: number): string {
-  return new Intl.NumberFormat('en-US', {
+// Orders are charged in either CAD or USD, so the code is always spelled out —
+// a bare "$" is ambiguous between the two currencies the store actually sells in.
+export function formatMoney(cents: number, currency: 'CAD' | 'USD'): string {
+  const amount = new Intl.NumberFormat('en-CA', {
     style: 'currency',
-    currency: 'USD',
+    currency,
+    currencyDisplay: 'symbol',
   }).format(cents / 100);
+  // en-CA renders USD as "US$39.99"; normalise both to a bare "$" so the
+  // explicit prefix below is the only currency marker.
+  return `${currency} ${amount.replace(/^US\$/, '$').replace(/^CA\$/, '$')}`;
 }
 
 export function centsToDollars(cents: number): string {

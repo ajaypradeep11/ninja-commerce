@@ -1,10 +1,20 @@
-import { centsToDollars, dollarsToCents, formatUsd } from './money';
+import { centsToDollars, dollarsToCents, formatMoney } from './money';
 
-describe('formatUsd', () => {
-  it('formats cents as USD', () => {
-    expect(formatUsd(2900)).toBe('$29.00');
-    expect(formatUsd(0)).toBe('$0.00');
-    expect(formatUsd(123456)).toBe('$1,234.56');
+describe('formatMoney', () => {
+  it('formats CAD with an explicit code', () => {
+    expect(formatMoney(5499, 'CAD')).toBe('CAD $54.99');
+  });
+
+  it('formats USD with an explicit code', () => {
+    expect(formatMoney(3999, 'USD')).toBe('USD $39.99');
+  });
+
+  it('formats zero', () => {
+    expect(formatMoney(0, 'CAD')).toBe('CAD $0.00');
+  });
+
+  it('groups thousands', () => {
+    expect(formatMoney(100000, 'USD')).toBe('USD $1,000.00');
   });
 });
 
