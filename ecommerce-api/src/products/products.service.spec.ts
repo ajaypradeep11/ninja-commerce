@@ -302,19 +302,39 @@ describe('ProductsService', () => {
         {
           name: '  ',
           priceCents: 1000,
+          priceUsdCents: 750,
           stockQty: 1,
           categoryName: 'Anime Lamps',
         },
-        { name: 'X', priceCents: -5, stockQty: 1, categoryName: 'Anime Lamps' },
+        {
+          name: 'X',
+          priceCents: -5,
+          priceUsdCents: 750,
+          stockQty: 1,
+          categoryName: 'Anime Lamps',
+        },
         {
           name: 'Y',
           priceCents: 100,
+          priceUsdCents: 75,
           stockQty: 1.5,
+          categoryName: 'Anime Lamps',
+        },
+        {
+          name: 'Z',
+          priceCents: 100,
+          priceUsdCents: -50,
+          stockQty: 1,
           categoryName: 'Anime Lamps',
         },
       ]);
       expect(res.created).toBe(0);
-      expect(res.errors.map((e) => e.row)).toEqual([1, 2, 3]);
+      expect(res.errors).toEqual([
+        { row: 1, message: 'name is required' },
+        { row: 2, message: 'invalid price for "X"' },
+        { row: 3, message: 'invalid stock for "Y"' },
+        { row: 4, message: 'invalid USD price for "Z"' },
+      ]);
     });
 
     it('auto-suffixes duplicate slugs (within batch and vs existing)', async () => {
