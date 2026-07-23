@@ -19,6 +19,7 @@ function order(overrides: Partial<Order> = {}): Order {
     userId: 'u1',
     email: 'buyer@example.com',
     status: 'SHIPPED',
+    currency: 'CAD',
     stripeSessionId: null,
     stripePaymentIntentId: null,
     shippingAddress: null,

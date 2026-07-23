@@ -95,6 +95,7 @@ describe('Ecommerce API (e2e)', () => {
         slug: 'chiller-tee',
         description: 'Organic cotton tee',
         priceCents: 2500,
+        priceUsdCents: 1900,
         images: ['https://example.com/tee.jpg'],
         stockQty: 10,
         categoryId,
@@ -123,7 +124,7 @@ describe('Ecommerce API (e2e)', () => {
     const res = await request(app.getHttpServer())
       .post('/checkout')
       .set(customer)
-      .send({ items: [{ productId, quantity: 2 }] })
+      .send({ items: [{ productId, quantity: 2 }], currency: 'CAD' })
       .expect(201);
     expect(res.body.url).toBe('https://stripe.test/cs_test_1');
     orderId = res.body.orderId;

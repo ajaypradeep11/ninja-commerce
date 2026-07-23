@@ -246,6 +246,7 @@ describe('ProductsService', () => {
         {
           name: 'Naruto Lamp',
           priceCents: 3999,
+          priceUsdCents: 2999,
           stockQty: 5,
           categoryName: 'anime lamps',
         },
@@ -253,6 +254,7 @@ describe('ProductsService', () => {
           name: 'Goku Lamp',
           description: 'saiyan',
           priceCents: 4999,
+          priceUsdCents: 3699,
           stockQty: 2,
           categoryName: 'Anime Lamps',
           active: false,
@@ -275,10 +277,17 @@ describe('ProductsService', () => {
         {
           name: 'Good',
           priceCents: 1000,
+          priceUsdCents: 750,
           stockQty: 1,
           categoryName: 'Anime Lamps',
         },
-        { name: 'Bad', priceCents: 1000, stockQty: 1, categoryName: 'Nope' },
+        {
+          name: 'Bad',
+          priceCents: 1000,
+          priceUsdCents: 750,
+          stockQty: 1,
+          categoryName: 'Nope',
+        },
       ]);
       expect(res.created).toBe(1);
       expect(created).toHaveLength(1);
@@ -314,12 +323,14 @@ describe('ProductsService', () => {
         {
           name: 'Naruto Lamp',
           priceCents: 100,
+          priceUsdCents: 75,
           stockQty: 1,
           categoryName: 'Anime Lamps',
         },
         {
           name: 'Naruto Lamp',
           priceCents: 100,
+          priceUsdCents: 75,
           stockQty: 1,
           categoryName: 'Anime Lamps',
         },

@@ -14,6 +14,8 @@ export class OrderResponseDto {
   id!: string;
   userId!: string;
   email!: string;
+  @ApiProperty({ enum: ['CAD', 'USD'], description: 'Currency this order was charged in' })
+  currency!: 'CAD' | 'USD';
   @ApiProperty({ enum: OrderStatus, enumName: 'OrderStatus' })
   status!: OrderStatus;
   @ApiProperty({ type: String, nullable: true })

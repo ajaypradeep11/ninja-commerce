@@ -41,6 +41,7 @@ async function main(): Promise<void> {
       description:
         'A mid-weight everyday tee in 100% GOTS-certified organic cotton. Pre-washed so it keeps its shape, wash after wash.',
       priceCents: 2900,
+      priceUsdCents: 2200,
       images: imgs('organic-cotton-tee'),
       stockQty: 40,
       categoryId: tees.id,
@@ -51,6 +52,7 @@ async function main(): Promise<void> {
       description:
         'A mid-weight everyday tee in 100% GOTS-certified organic cotton. Pre-washed so it keeps its shape, wash after wash.',
       priceCents: 2900,
+      priceUsdCents: 2200,
       images: imgs('organic-cotton-tee'),
       stockQty: 40,
       categoryId: tees.id,
@@ -63,6 +65,7 @@ async function main(): Promise<void> {
       description:
         'A brushed-fleece hoodie in a heavier 400gsm organic cotton blend. Relaxed fit, dropped shoulder, and a kangaroo pocket built for cold mornings.',
       priceCents: 7900,
+      priceUsdCents: 5900,
       images: imgs('heavyweight-hoodie'),
       stockQty: 3, // low stock on purpose (threshold is 5)
       categoryId: hoodies.id,
@@ -73,6 +76,7 @@ async function main(): Promise<void> {
       description:
         'A brushed-fleece hoodie in a heavier 400gsm organic cotton blend. Relaxed fit, dropped shoulder, and a kangaroo pocket built for cold mornings.',
       priceCents: 7900,
+      priceUsdCents: 5900,
       images: imgs('heavyweight-hoodie'),
       stockQty: 3, // low stock on purpose (threshold is 5)
       categoryId: hoodies.id,
@@ -85,6 +89,7 @@ async function main(): Promise<void> {
       description:
         'A discontinued colourway of our standard crewneck. Same 350gsm organic fleece, no longer in production.',
       priceCents: 5900,
+      priceUsdCents: 4400,
       images: imgs('retired-crewneck'),
       stockQty: 0,
       categoryId: hoodies.id,
@@ -95,6 +100,7 @@ async function main(): Promise<void> {
       description:
         'A discontinued colourway of our standard crewneck. Same 350gsm organic fleece, no longer in production.',
       priceCents: 5900,
+      priceUsdCents: 4400,
       images: imgs('retired-crewneck'),
       stockQty: 0,
       active: false,
@@ -109,6 +115,7 @@ async function main(): Promise<void> {
       description:
         'A boxier, cropped cut of our house tee in undyed ecru organic cotton. Dropped shoulders and a wider body for an off-duty fit.',
       priceCents: 3200,
+      priceUsdCents: 2400,
       images: imgs('boxy-tee-ecru'),
       stockQty: 25,
       categoryId: tees.id,
@@ -119,6 +126,7 @@ async function main(): Promise<void> {
       description:
         'A boxier, cropped cut of our house tee in undyed ecru organic cotton. Dropped shoulders and a wider body for an off-duty fit.',
       priceCents: 3200,
+      priceUsdCents: 2400,
       images: imgs('boxy-tee-ecru'),
       stockQty: 25,
       categoryId: tees.id,
@@ -131,6 +139,7 @@ async function main(): Promise<void> {
       description:
         'A long-sleeve tee in a garment-dyed indigo that fades gently with every wash. Ribbed crew neck, same organic cotton jersey as the rest of the line.',
       priceCents: 3900,
+      priceUsdCents: 2900,
       images: imgs('longsleeve-indigo'),
       stockQty: 18,
       categoryId: tees.id,
@@ -141,6 +150,7 @@ async function main(): Promise<void> {
       description:
         'A long-sleeve tee in a garment-dyed indigo that fades gently with every wash. Ribbed crew neck, same organic cotton jersey as the rest of the line.',
       priceCents: 3900,
+      priceUsdCents: 2900,
       images: imgs('longsleeve-indigo'),
       stockQty: 18,
       categoryId: tees.id,
@@ -153,6 +163,7 @@ async function main(): Promise<void> {
       description:
         'A chest-pocket tee dyed with madder root for a warm, earthy red that varies slightly piece to piece. Currently sold out — restocking soon.',
       priceCents: 3400,
+      priceUsdCents: 2600,
       images: imgs('pocket-tee-madder'),
       stockQty: 0,
       categoryId: tees.id,
@@ -163,6 +174,7 @@ async function main(): Promise<void> {
       description:
         'A chest-pocket tee dyed with madder root for a warm, earthy red that varies slightly piece to piece. Currently sold out — restocking soon.',
       priceCents: 3400,
+      priceUsdCents: 2600,
       images: imgs('pocket-tee-madder'),
       stockQty: 0,
       categoryId: tees.id,
@@ -175,6 +187,7 @@ async function main(): Promise<void> {
       description:
         'A full-zip hoodie in a light flax colourway, cut from the same 400gsm organic fleece as the pullover. Ribbed cuffs and hem keep the shape over time.',
       priceCents: 8900,
+      priceUsdCents: 6700,
       images: imgs('zip-hoodie-flax'),
       stockQty: 12,
       categoryId: hoodies.id,
@@ -185,6 +198,7 @@ async function main(): Promise<void> {
       description:
         'A full-zip hoodie in a light flax colourway, cut from the same 400gsm organic fleece as the pullover. Ribbed cuffs and hem keep the shape over time.',
       priceCents: 8900,
+      priceUsdCents: 6700,
       images: imgs('zip-hoodie-flax'),
       stockQty: 12,
       categoryId: hoodies.id,
@@ -197,6 +211,7 @@ async function main(): Promise<void> {
       description:
         'A tapered sweatpant in brushed French terry, with an elastic waistband and drawcord. Cut from the same organic cotton as the rest of the range.',
       priceCents: 6900,
+      priceUsdCents: 5200,
       images: imgs('french-terry-sweatpant'),
       stockQty: 20,
       categoryId: sweatpants.id,
@@ -207,6 +222,7 @@ async function main(): Promise<void> {
       description:
         'A tapered sweatpant in brushed French terry, with an elastic waistband and drawcord. Cut from the same organic cotton as the rest of the range.',
       priceCents: 6900,
+      priceUsdCents: 5200,
       images: imgs('french-terry-sweatpant'),
       stockQty: 20,
       categoryId: sweatpants.id,
@@ -219,6 +235,7 @@ async function main(): Promise<void> {
       description:
         'A relaxed lounge short in mid-weight French terry, with side pockets and a covered elastic waistband. Only a few left in this run.',
       priceCents: 4400,
+      priceUsdCents: 3300,
       images: imgs('lounge-short'),
       stockQty: 5,
       categoryId: sweatpants.id,
@@ -229,6 +246,7 @@ async function main(): Promise<void> {
       description:
         'A relaxed lounge short in mid-weight French terry, with side pockets and a covered elastic waistband. Only a few left in this run.',
       priceCents: 4400,
+      priceUsdCents: 3300,
       images: imgs('lounge-short'),
       stockQty: 5,
       categoryId: sweatpants.id,
@@ -241,6 +259,7 @@ async function main(): Promise<void> {
       description:
         'A snug, ribbed beanie knit from organic cotton yarn. One size, unlined, with a folded cuff.',
       priceCents: 2400,
+      priceUsdCents: 1800,
       images: imgs('beanie-rib-knit'),
       stockQty: 30,
       categoryId: accessories.id,
@@ -251,6 +270,7 @@ async function main(): Promise<void> {
       description:
         'A snug, ribbed beanie knit from organic cotton yarn. One size, unlined, with a folded cuff.',
       priceCents: 2400,
+      priceUsdCents: 1800,
       images: imgs('beanie-rib-knit'),
       stockQty: 30,
       categoryId: accessories.id,
@@ -263,6 +283,7 @@ async function main(): Promise<void> {
       description:
         'A heavy-canvas tote built for daily use, with reinforced straps and a flat base that stands on its own. Undyed organic cotton canvas.',
       priceCents: 1800,
+      priceUsdCents: 1400,
       images: imgs('tote-everyday'),
       stockQty: 50,
       categoryId: accessories.id,
@@ -273,6 +294,7 @@ async function main(): Promise<void> {
       description:
         'A heavy-canvas tote built for daily use, with reinforced straps and a flat base that stands on its own. Undyed organic cotton canvas.',
       priceCents: 1800,
+      priceUsdCents: 1400,
       images: imgs('tote-everyday'),
       stockQty: 50,
       categoryId: accessories.id,
@@ -285,6 +307,7 @@ async function main(): Promise<void> {
       description:
         'A low-profile six-panel cap in the same heavy canvas as the tote, with a brass buckle strap for adjustable sizing.',
       priceCents: 2800,
+      priceUsdCents: 2100,
       images: imgs('canvas-cap'),
       stockQty: 14,
       categoryId: accessories.id,
@@ -295,6 +318,7 @@ async function main(): Promise<void> {
       description:
         'A low-profile six-panel cap in the same heavy canvas as the tote, with a brass buckle strap for adjustable sizing.',
       priceCents: 2800,
+      priceUsdCents: 2100,
       images: imgs('canvas-cap'),
       stockQty: 14,
       categoryId: accessories.id,
