@@ -17,12 +17,21 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-const schema = z.object({
+const loginSchema = z.object({
   email: z.string().email('Enter a valid email address.'),
   password: z.string().min(6, 'Password must be at least 6 characters.'),
 });
 
-type FormValues = z.infer<typeof schema>;
+// Signing up asks twice — a typo'd password on the only account-creation
+// screen is otherwise unrecoverable without a reset email.
+const signupSchema = loginSchema
+  .extend({ confirmPassword: z.string() })
+  .refine((values) => values.password === values.confirmPassword, {
+    message: 'Passwords do not match.',
+    path: ['confirmPassword'],
+  });
+
+type FormValues = z.infer<typeof loginSchema> & { confirmPassword?: string };
 
 const FIREBASE_ERROR_MESSAGES: Record<string, string> = {
   // Production Identity Platform (with enumeration protection) returns
@@ -86,7 +95,9 @@ export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<FormValues>({ resolver: zodResolver(schema) });
+  } = useForm<FormValues>({
+    resolver: zodResolver(mode === 'signup' ? signupSchema : loginSchema),
+  });
 
   const copy = COPY[mode];
   const swapHref =
@@ -159,6 +170,23 @@ export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
             <p className="text-sm text-highlight">{errors.password.message}</p>
           )}
         </div>
+        {mode === 'signup' && (
+          <div className="grid gap-2">
+            <Label htmlFor="confirmPassword">Confirm password</Label>
+            <Input
+              id="confirmPassword"
+              type="password"
+              autoComplete="new-password"
+              aria-invalid={!!errors.confirmPassword}
+              {...register('confirmPassword')}
+            />
+            {errors.confirmPassword && (
+              <p className="text-sm text-highlight">
+                {errors.confirmPassword.message}
+              </p>
+            )}
+          </div>
+        )}
         {formError && <p className="text-sm text-highlight">{formError}</p>}
         <Button type="submit" disabled={isSubmitting}>
           {copy.submit}

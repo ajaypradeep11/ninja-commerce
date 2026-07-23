@@ -129,6 +129,7 @@ describe('AuthForm', () => {
 
     await user.type(screen.getByLabelText('Email'), 'shopper@example.com');
     await user.type(screen.getByLabelText('Password'), 'password123');
+    await user.type(screen.getByLabelText('Confirm password'), 'password123');
     await user.click(screen.getByRole('button', { name: 'Create account' }));
 
     await waitFor(() =>
@@ -139,6 +140,26 @@ describe('AuthForm', () => {
       ),
     );
     await waitFor(() => expect(replaceMock).toHaveBeenCalledWith('/'));
+  });
+
+  it('blocks signup when the confirmation does not match', async () => {
+    const user = userEvent.setup();
+    render(<AuthForm mode="signup" />);
+
+    await user.type(screen.getByLabelText('Email'), 'shopper@example.com');
+    await user.type(screen.getByLabelText('Password'), 'password123');
+    await user.type(screen.getByLabelText('Confirm password'), 'password124');
+    await user.click(screen.getByRole('button', { name: 'Create account' }));
+
+    expect(await screen.findByText(/passwords do not match/i)).toBeInTheDocument();
+    expect(createUserWithEmailAndPasswordMock).not.toHaveBeenCalled();
+  });
+
+  it('does not ask for a confirmation on the login form', () => {
+    render(<AuthForm mode="login" />);
+
+    expect(screen.getByLabelText('Password')).toBeInTheDocument();
+    expect(screen.queryByLabelText('Confirm password')).not.toBeInTheDocument();
   });
 
   it('navigates to the sanitized next param on success', async () => {
