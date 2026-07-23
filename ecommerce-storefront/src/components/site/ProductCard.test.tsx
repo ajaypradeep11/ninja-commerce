@@ -26,7 +26,7 @@ describe('ProductCard', () => {
     render(<ProductCard product={makeProduct()} />);
 
     expect(screen.getByText('Organic Cotton Tee')).toBeInTheDocument();
-    expect(screen.getByText('$29.00 CAD')).toBeInTheDocument();
+    expect(screen.getByText('CAD $29.00')).toBeInTheDocument();
     expect(screen.getByRole('link')).toHaveAttribute('href', '/products/organic-cotton-tee');
   });
 
