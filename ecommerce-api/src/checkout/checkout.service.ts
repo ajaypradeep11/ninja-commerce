@@ -7,6 +7,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Currency } from '@prisma/client';
 import type { AuthUser } from '../auth/auth.types';
 import { CouponsService } from '../coupons/coupons.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -14,10 +15,21 @@ import { StripeService } from '../stripe/stripe.service';
 import { UsersService } from '../users/users.service';
 import { CreateCheckoutDto } from './dto/create-checkout.dto';
 
-// Canada-only shipping. Stripe Tax computes provincial GST/HST/PST/QST from the
+// Canada and the US. Stripe Tax computes the destination's sales tax from the
 // address the customer enters on the hosted Checkout page.
-const SHIPPING_COUNTRIES = ['CA'] as const;
-const CURRENCY = 'cad';
+const SHIPPING_COUNTRIES = ['CA', 'US'] as const;
+
+// The shopper's chosen currency selects which price column we bill from. Both
+// prices are set by hand in admin, so nothing is converted at request time.
+const PRICE_COLUMN = {
+  CAD: 'priceCents',
+  USD: 'priceUsdCents',
+} as const satisfies Record<Currency, 'priceCents' | 'priceUsdCents'>;
+
+const unitAmountFor = (
+  product: { priceCents: number; priceUsdCents: number },
+  currency: Currency,
+): number => product[PRICE_COLUMN[currency]];
 
 @Injectable()
 export class CheckoutService {
@@ -65,20 +77,26 @@ export class CheckoutService {
     await this.users.ensureUser(user.uid, user.email);
 
     const subtotalCents = lines.reduce(
-      (sum, l) => sum + l.product.priceCents * l.quantity,
+      (sum, l) => sum + unitAmountFor(l.product, dto.currency) * l.quantity,
       0,
     );
 
     // Re-quote the coupon server-side (existence, active, once-per-customer,
     // discount math) — the cart's earlier /coupons/validate is advisory only.
     const quote = dto.couponCode
-      ? await this.coupons.quoteForUser(user.uid, dto.couponCode, subtotalCents)
+      ? await this.coupons.quoteForUser(
+          user.uid,
+          dto.couponCode,
+          subtotalCents,
+          dto.currency,
+        )
       : null;
 
     const order = await this.prisma.order.create({
       data: {
         userId: user.uid,
         email: user.email,
+        currency: dto.currency,
         subtotalCents,
         couponCode: quote?.coupon.code ?? null,
         discountCents: quote?.discountCents ?? null,
@@ -86,7 +104,7 @@ export class CheckoutService {
           create: lines.map((l) => ({
             productId: l.product.id,
             name: l.product.name,
-            priceCents: l.product.priceCents,
+            priceCents: unitAmountFor(l.product, dto.currency),
             quantity: l.quantity,
           })),
         },
@@ -104,7 +122,7 @@ export class CheckoutService {
               coupon: (
                 await this.stripe.client.coupons.create({
                   amount_off: quote.discountCents,
-                  currency: CURRENCY,
+                  currency: dto.currency.toLowerCase(),
                   duration: 'once' as const,
                   name: quote.coupon.code,
                 })
@@ -124,10 +142,10 @@ export class CheckoutService {
         line_items: lines.map((l) => ({
           quantity: l.quantity,
           price_data: {
-            currency: CURRENCY,
-            unit_amount: l.product.priceCents,
+            currency: dto.currency.toLowerCase(),
+            unit_amount: unitAmountFor(l.product, dto.currency),
             product_data: { name: l.product.name },
-            // Prices are tax-exclusive; Stripe Tax adds the provincial tax on top.
+            // Prices are tax-exclusive; Stripe Tax adds the destination tax on top.
             tax_behavior: 'exclusive',
           },
         })),

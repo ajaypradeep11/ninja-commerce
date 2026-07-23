@@ -76,8 +76,14 @@ describe('CheckoutService', () => {
     await service.createSession(user, {
       items: [{ productId: 'p1', quantity: 2 }],
       couponCode: 'SAVE10',
+      currency: 'CAD',
     });
-    expect(coupons.quoteForUser).toHaveBeenCalledWith('u1', 'SAVE10', 5000);
+    expect(coupons.quoteForUser).toHaveBeenCalledWith(
+      'u1',
+      'SAVE10',
+      5000,
+      'CAD',
+    );
     expect(prisma.order.create.mock.calls[0][0].data).toMatchObject({
       couponCode: 'SAVE10',
       discountCents: 500,
@@ -98,6 +104,7 @@ describe('CheckoutService', () => {
     await expect(
       service.createSession(user, {
         items: [{ productId: 'p1', quantity: 1 }],
+        currency: 'CAD',
       }),
     ).rejects.toBeInstanceOf(NotFoundException);
   });
@@ -107,6 +114,7 @@ describe('CheckoutService', () => {
     await expect(
       service.createSession(user, {
         items: [{ productId: 'p1', quantity: 3 }],
+        currency: 'CAD',
       }),
     ).rejects.toThrow('Only 2 left of Tee');
   });
@@ -119,12 +127,14 @@ describe('CheckoutService', () => {
     });
     const result = await service.createSession(user, {
       items: [{ productId: 'p1', quantity: 2 }],
+      currency: 'CAD',
     });
     expect(users.ensureUser).toHaveBeenCalledWith('u1', 'a@b.com');
     expect(prisma.order.create).toHaveBeenCalledWith({
       data: {
         userId: 'u1',
         email: 'a@b.com',
+        currency: 'CAD',
         subtotalCents: 5000,
         couponCode: null,
         discountCents: null,
@@ -141,10 +151,11 @@ describe('CheckoutService', () => {
     expect(sessionArgs.allow_promotion_codes).toBeUndefined();
     expect(sessionArgs.discounts).toBeUndefined();
     expect(sessionArgs.metadata).toEqual({ orderId: 'o1' });
-    // Canada-only shipping and Stripe Tax compute provincial GST/HST/PST/QST.
+    // Canada and the US; Stripe Tax computes the destination's sales tax.
     expect(sessionArgs.automatic_tax).toEqual({ enabled: true });
     expect(sessionArgs.shipping_address_collection.allowed_countries).toEqual([
       'CA',
+      'US',
     ]);
     expect(sessionArgs.line_items).toEqual([
       {
@@ -175,6 +186,7 @@ describe('CheckoutService', () => {
     await expect(
       service.createSession(user, {
         items: [{ productId: 'p1', quantity: 1 }],
+        currency: 'CAD',
       }),
     ).rejects.toBeInstanceOf(BadGatewayException);
     expect(prisma.order.update).toHaveBeenCalledWith({
@@ -190,6 +202,7 @@ describe('CheckoutService', () => {
           { productId: 'p1', quantity: 1 },
           { productId: 'p1', quantity: 2 },
         ],
+        currency: 'CAD',
       }),
     ).rejects.toBeInstanceOf(ConflictException);
   });
@@ -199,7 +212,72 @@ describe('CheckoutService', () => {
     await expect(
       service.createSession(user, {
         items: [{ productId: 'p1', quantity: 3 }],
+        currency: 'CAD',
       }),
     ).rejects.toBeInstanceOf(ConflictException);
+  });
+
+  it('builds a USD session from the USD price and stamps the order', async () => {
+    prisma.product.findMany.mockResolvedValue([
+      { id: 'p1', name: 'Lamp', priceCents: 5499, priceUsdCents: 3999, stockQty: 10, active: true },
+    ]);
+    stripe.client.checkout.sessions.create.mockResolvedValue({
+      id: 'cs_1',
+      url: 'https://stripe.test/session',
+    });
+
+    await service.createSession(user, {
+      items: [{ productId: 'p1', quantity: 2 }],
+      currency: 'USD',
+    });
+
+    const session = stripe.client.checkout.sessions.create.mock.calls[0][0];
+    expect(session.line_items[0].price_data.currency).toBe('usd');
+    expect(session.line_items[0].price_data.unit_amount).toBe(3999);
+
+    const order = prisma.order.create.mock.calls[0][0].data;
+    expect(order.currency).toBe('USD');
+    expect(order.subtotalCents).toBe(7998);
+    expect(order.items.create[0].priceCents).toBe(3999);
+  });
+
+  it('builds a CAD session from the CAD price', async () => {
+    prisma.product.findMany.mockResolvedValue([
+      { id: 'p1', name: 'Lamp', priceCents: 5499, priceUsdCents: 3999, stockQty: 10, active: true },
+    ]);
+    stripe.client.checkout.sessions.create.mockResolvedValue({
+      id: 'cs_1',
+      url: 'https://stripe.test/session',
+    });
+
+    await service.createSession(user, {
+      items: [{ productId: 'p1', quantity: 1 }],
+      currency: 'CAD',
+    });
+
+    const session = stripe.client.checkout.sessions.create.mock.calls[0][0];
+    expect(session.line_items[0].price_data.currency).toBe('cad');
+    expect(session.line_items[0].price_data.unit_amount).toBe(5499);
+  });
+
+  it('allows a US shipping address', async () => {
+    prisma.product.findMany.mockResolvedValue([
+      { id: 'p1', name: 'Lamp', priceCents: 5499, priceUsdCents: 3999, stockQty: 10, active: true },
+    ]);
+    stripe.client.checkout.sessions.create.mockResolvedValue({
+      id: 'cs_1',
+      url: 'https://stripe.test/session',
+    });
+
+    await service.createSession(user, {
+      items: [{ productId: 'p1', quantity: 1 }],
+      currency: 'USD',
+    });
+
+    const session = stripe.client.checkout.sessions.create.mock.calls[0][0];
+    expect(session.shipping_address_collection.allowed_countries).toEqual([
+      'CA',
+      'US',
+    ]);
   });
 });
