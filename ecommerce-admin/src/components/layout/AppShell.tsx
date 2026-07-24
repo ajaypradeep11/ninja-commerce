@@ -11,6 +11,7 @@ const NAV = [
   { to: '/brands', label: 'Brands' },
   { to: '/coupons', label: 'Coupons' },
   { to: '/orders', label: 'Orders' },
+  { to: '/settings', label: 'Settings' },
 ];
 
 export function AppShell() {

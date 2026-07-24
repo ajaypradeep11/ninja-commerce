@@ -13,6 +13,7 @@ import { OrdersPage } from '@/pages/orders';
 import { OrderDetailPage } from '@/pages/orders/order-detail';
 import { ProductsPage } from '@/pages/products';
 import { ProductFormPage } from '@/pages/products/product-form';
+import { SettingsPage } from '@/pages/settings';
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 10_000 } },
@@ -41,6 +42,7 @@ export default function App() {
               <Route path="coupons" element={<CouponsPage />} />
               <Route path="orders" element={<OrdersPage />} />
               <Route path="orders/:id" element={<OrderDetailPage />} />
+              <Route path="settings" element={<SettingsPage />} />
             </Route>
           </Routes>
         </BrowserRouter>
