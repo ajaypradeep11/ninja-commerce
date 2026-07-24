@@ -33,6 +33,8 @@ const connectSrc = [
   apiOrigin ? '' : 'https://*.run.app',
   'https://identitytoolkit.googleapis.com',
   'https://securetoken.googleapis.com',
+  // Canada Post AddressComplete lookups (src/lib/addresscomplete.ts)
+  'https://ws1.postescanada-canadapost.ca',
   isDev ? 'ws: http://localhost:*' : '',
 ]
   .filter(Boolean)

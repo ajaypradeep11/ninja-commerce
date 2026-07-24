@@ -22,3 +22,7 @@ env:
   # Deployed ecommerce-api on Cloud Run (same project, us-east4)
   - variable: NEXT_PUBLIC_API_URL
     value: https://ninja-commerce-api-1047378822080.us-east4.run.app
+
+  # Canada Post AddressComplete (client-side key, domain-restricted by Canada Post)
+  - variable: NEXT_PUBLIC_ADDRESSCOMPLETE_KEY
+    value: gd77-rb69-fw88-nm13
