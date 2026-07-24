@@ -52,20 +52,6 @@ export default function ShippingPage() {
       </section>
 
       <section>
-        <h2 className="font-display text-xl text-ink">Shipping to the United States</h2>
-        <p className="mt-2">
-          We ship across the US with free standard delivery on orders over{' '}
-          {policy.freeShippingUsd}. Standard delivery takes 5 to 9 business
-          days, and expedited rates are calculated at checkout based on your
-          location.
-        </p>
-        <p className="mt-4">
-          US orders are priced and charged in US dollars — switch the currency
-          at the bottom of any page to see US pricing.
-        </p>
-      </section>
-
-      <section>
         <h2 className="font-display text-xl text-ink">
           We&rsquo;re here for you
         </h2>
