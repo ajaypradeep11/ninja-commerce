@@ -449,6 +449,9 @@ describe('CheckoutService', () => {
     });
     const session = stripe.client.checkout.sessions.create.mock.calls[0][0];
     expect(session.customer).toBe('cus_1');
+    // Required by Stripe when automatic_tax + address collection ride on an
+    // existing customer — without it session creation 400s.
+    expect(session.customer_update).toEqual({ shipping: 'auto' });
     expect(session.customer_email).toBeUndefined();
   });
 

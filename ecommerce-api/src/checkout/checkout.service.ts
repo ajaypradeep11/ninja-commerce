@@ -239,8 +239,14 @@ export class CheckoutService {
 
       const session = await this.stripe.client.checkout.sessions.create({
         mode: 'payment',
+        // With an existing customer + automatic_tax + address collection,
+        // Stripe requires the collected shipping address to be saved back to
+        // the customer (customer_update.shipping = 'auto') for tax math.
         ...(customerId
-          ? { customer: customerId }
+          ? {
+              customer: customerId,
+              customer_update: { shipping: 'auto' as const },
+            }
           : { customer_email: user.email }),
         discounts,
         automatic_tax: { enabled: true },
