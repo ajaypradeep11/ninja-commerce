@@ -138,4 +138,39 @@ describe('AddressAutocomplete', () => {
     await new Promise((r) => setTimeout(r, 400));
     expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
   });
+
+  it('cancels a pending debounce on Escape so the dropdown does not reopen', async () => {
+    findAddressesMock.mockResolvedValueOnce([SUGGESTION]);
+    const user = userEvent.setup();
+    render(<Harness onSelect={vi.fn()} />);
+
+    const input = screen.getByRole('combobox');
+    await user.type(input, '1 Main');
+    await screen.findByRole('option', { name: /1 Main St/ });
+
+    // Continue typing (re-arms the debounce), then dismiss before it fires.
+    findAddressesMock.mockResolvedValueOnce([SUGGESTION]);
+    await user.type(input, ' St');
+    await user.keyboard('{Escape}');
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+
+    await new Promise((r) => setTimeout(r, 400));
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+    // The debounce armed by the post-open typing must never have fired.
+    expect(findAddressesMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('sets aria-activedescendant to the active option after ArrowDown', async () => {
+    findAddressesMock.mockResolvedValue([SUGGESTION]);
+    const user = userEvent.setup();
+    render(<Harness onSelect={vi.fn()} />);
+
+    const input = screen.getByRole('combobox');
+    await user.type(input, '1 Main');
+    const option = await screen.findByRole('option', { name: /1 Main St/ });
+
+    expect(input).not.toHaveAttribute('aria-activedescendant');
+    await user.keyboard('{ArrowDown}');
+    expect(input).toHaveAttribute('aria-activedescendant', option.id);
+  });
 });

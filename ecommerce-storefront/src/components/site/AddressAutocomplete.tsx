@@ -34,10 +34,12 @@ export function AddressAutocomplete({
   // Increments per lookup so stale responses can't overwrite newer ones.
   const requestRef = useRef(0);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const blurTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
+      if (blurTimeoutRef.current) clearTimeout(blurTimeoutRef.current);
     };
   }, []);
 
@@ -90,6 +92,13 @@ export function AddressAutocomplete({
       }
     } else if (e.key === 'Escape') {
       setOpen(false);
+      // Discard any debounce that's still armed and any in-flight lookup,
+      // so a Find triggered before the Escape can't reopen the dropdown.
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+        debounceRef.current = null;
+      }
+      requestRef.current++;
     }
   }
 
@@ -101,6 +110,9 @@ export function AddressAutocomplete({
         aria-expanded={open}
         aria-autocomplete="list"
         aria-controls={`${id}-listbox`}
+        aria-activedescendant={
+          activeIndex >= 0 ? `${id}-option-${activeIndex}` : undefined
+        }
         aria-invalid={ariaInvalid}
         autoComplete="off"
         {...registration}
@@ -112,7 +124,7 @@ export function AddressAutocomplete({
         onBlur={(e) => {
           void registration.onBlur(e);
           // Delay so a click on a suggestion lands before the list closes.
-          setTimeout(() => setOpen(false), 150);
+          blurTimeoutRef.current = setTimeout(() => setOpen(false), 150);
         }}
       />
       {open && (
@@ -124,6 +136,7 @@ export function AddressAutocomplete({
           {suggestions.map((suggestion, index) => (
             <li
               key={suggestion.id}
+              id={`${id}-option-${index}`}
               role="option"
               aria-selected={index === activeIndex}
               className={`cursor-pointer px-3 py-2 text-sm ${
