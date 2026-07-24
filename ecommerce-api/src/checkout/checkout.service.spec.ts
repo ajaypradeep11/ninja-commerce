@@ -9,6 +9,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { StripeService } from '../stripe/stripe.service';
 import { UsersService } from '../users/users.service';
 import { ConfigService } from '@nestjs/config';
+import { SettingsService } from '../settings/settings.service';
 
 const user = { uid: 'u1', email: 'a@b.com', admin: false };
 
@@ -25,6 +26,7 @@ describe('CheckoutService', () => {
   };
   let users: { ensureUser: jest.Mock };
   let coupons: { quoteForUser: jest.Mock };
+  let settings: { getShippingSettings: jest.Mock };
   let service: CheckoutService;
 
   beforeEach(() => {
@@ -43,6 +45,16 @@ describe('CheckoutService', () => {
     };
     users = { ensureUser: jest.fn().mockResolvedValue({ id: 'u1' }) };
     coupons = { quoteForUser: jest.fn() };
+    settings = {
+      getShippingSettings: jest.fn(),
+    };
+    settings.getShippingSettings.mockResolvedValue({
+      id: 1,
+      freeShippingThresholdCents: 6500,
+      standardShippingCents: 999,
+      expeditedShippingCents: 1499,
+      updatedAt: new Date(),
+    });
     const config = {
       getOrThrow: jest.fn().mockReturnValue('http://localhost:3000'),
     };
@@ -51,6 +63,7 @@ describe('CheckoutService', () => {
       stripe as unknown as StripeService,
       users as unknown as UsersService,
       coupons as unknown as CouponsService,
+      settings as unknown as SettingsService,
       config as unknown as ConfigService,
     );
   });
@@ -310,5 +323,75 @@ describe('CheckoutService', () => {
       duration: 'once',
       name: 'SAVE20',
     });
+  });
+
+  const expectedRate = (
+    name: string,
+    amount: number,
+    min: number,
+    max: number,
+    currency = 'cad',
+  ) => ({
+    shipping_rate_data: {
+      display_name: name,
+      type: 'fixed_amount',
+      fixed_amount: { amount, currency },
+      tax_behavior: 'exclusive',
+      delivery_estimate: {
+        minimum: { unit: 'business_day', value: min },
+        maximum: { unit: 'business_day', value: max },
+      },
+    },
+  });
+
+  it('charges standard and expedited shipping below the free threshold', async () => {
+    prisma.product.findMany.mockResolvedValue([
+      { id: 'p1', name: 'Tee', priceCents: 2500, priceUsdCents: 1900, stockQty: 5, active: true },
+    ]);
+    stripe.client.checkout.sessions.create.mockResolvedValue({ id: 'cs_1', url: 'https://stripe.test/session' });
+
+    await service.createSession(user, { items: [{ productId: 'p1', quantity: 1 }], currency: 'CAD' });
+
+    const session = stripe.client.checkout.sessions.create.mock.calls[0][0];
+    expect(session.shipping_options).toEqual([
+      expectedRate('Standard (4-7 business days)', 999, 4, 7),
+      expectedRate('Expedited (2-4 business days)', 1499, 2, 4),
+    ]);
+  });
+
+  it('makes standard free at the threshold while expedited stays paid', async () => {
+    prisma.product.findMany.mockResolvedValue([
+      { id: 'p1', name: 'Lamp', priceCents: 6500, priceUsdCents: 4900, stockQty: 5, active: true },
+    ]);
+    stripe.client.checkout.sessions.create.mockResolvedValue({ id: 'cs_1', url: 'https://stripe.test/session' });
+
+    await service.createSession(user, { items: [{ productId: 'p1', quantity: 1 }], currency: 'CAD' });
+
+    const session = stripe.client.checkout.sessions.create.mock.calls[0][0];
+    expect(session.shipping_options).toEqual([
+      expectedRate('Standard (4-7 business days)', 0, 4, 7),
+      expectedRate('Expedited (2-4 business days)', 1499, 2, 4),
+    ]);
+  });
+
+  it('uses the post-coupon subtotal for the free-shipping threshold', async () => {
+    // 70.00 cart with a 10.00 coupon → 60.00 discounted → below 65.00 → paid shipping
+    prisma.product.findMany.mockResolvedValue([
+      { id: 'p1', name: 'Lamp', priceCents: 7000, priceUsdCents: 4900, stockQty: 5, active: true },
+    ]);
+    coupons.quoteForUser.mockResolvedValue({
+      coupon: { id: 'c1', code: 'SAVE10', type: 'FIXED', value: 1000 },
+      discountCents: 1000,
+    });
+    stripe.client.checkout.sessions.create.mockResolvedValue({ id: 'cs_1', url: 'https://stripe.test/session' });
+
+    await service.createSession(user, {
+      items: [{ productId: 'p1', quantity: 1 }],
+      currency: 'CAD',
+      couponCode: 'SAVE10',
+    });
+
+    const session = stripe.client.checkout.sessions.create.mock.calls[0][0];
+    expect(session.shipping_options[0].shipping_rate_data.fixed_amount.amount).toBe(999);
   });
 });

@@ -11,6 +11,7 @@ import { Currency } from '@prisma/client';
 import type { AuthUser } from '../auth/auth.types';
 import { CouponsService } from '../coupons/coupons.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { SettingsService } from '../settings/settings.service';
 import { StripeService } from '../stripe/stripe.service';
 import { UsersService } from '../users/users.service';
 import { CreateCheckoutDto } from './dto/create-checkout.dto';
@@ -31,6 +32,26 @@ const unitAmountFor = (
   currency: Currency,
 ): number => product[PRICE_COLUMN[currency]];
 
+const shippingRate = (
+  displayName: string,
+  amountCents: number,
+  currency: string,
+  minDays: number,
+  maxDays: number,
+) => ({
+  shipping_rate_data: {
+    display_name: displayName,
+    type: 'fixed_amount' as const,
+    fixed_amount: { amount: amountCents, currency },
+    // Prices are tax-exclusive; Stripe Tax adds the destination tax on top.
+    tax_behavior: 'exclusive' as const,
+    delivery_estimate: {
+      minimum: { unit: 'business_day' as const, value: minDays },
+      maximum: { unit: 'business_day' as const, value: maxDays },
+    },
+  },
+});
+
 @Injectable()
 export class CheckoutService {
   private readonly logger = new Logger(CheckoutService.name);
@@ -40,6 +61,7 @@ export class CheckoutService {
     private readonly stripe: StripeService,
     private readonly users: UsersService,
     private readonly coupons: CouponsService,
+    private readonly settings: SettingsService,
     private readonly config: ConfigService,
   ) {}
 
@@ -131,6 +153,28 @@ export class CheckoutService {
           ]
         : undefined;
 
+      const shippingSettings = await this.settings.getShippingSettings();
+      const discountedSubtotalCents = subtotalCents - (quote?.discountCents ?? 0);
+      const sessionCurrency = dto.currency.toLowerCase();
+      const shippingOptions = [
+        shippingRate(
+          'Standard (4-7 business days)',
+          discountedSubtotalCents >= shippingSettings.freeShippingThresholdCents
+            ? 0
+            : shippingSettings.standardShippingCents,
+          sessionCurrency,
+          4,
+          7,
+        ),
+        shippingRate(
+          'Expedited (2-4 business days)',
+          shippingSettings.expeditedShippingCents,
+          sessionCurrency,
+          2,
+          4,
+        ),
+      ];
+
       const session = await this.stripe.client.checkout.sessions.create({
         mode: 'payment',
         customer_email: user.email,
@@ -139,6 +183,7 @@ export class CheckoutService {
         shipping_address_collection: {
           allowed_countries: [...SHIPPING_COUNTRIES],
         },
+        shipping_options: shippingOptions,
         line_items: lines.map((l) => ({
           quantity: l.quantity,
           price_data: {
