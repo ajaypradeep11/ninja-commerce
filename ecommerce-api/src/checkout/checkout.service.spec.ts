@@ -259,7 +259,7 @@ describe('CheckoutService', () => {
     expect(session.line_items[0].price_data.unit_amount).toBe(5499);
   });
 
-  it('allows a US shipping address', async () => {
+  it('ships only to Canada regardless of billing currency', async () => {
     prisma.product.findMany.mockResolvedValue([
       { id: 'p1', name: 'Lamp', priceCents: 5499, priceUsdCents: 3999, stockQty: 10, active: true },
     ]);
