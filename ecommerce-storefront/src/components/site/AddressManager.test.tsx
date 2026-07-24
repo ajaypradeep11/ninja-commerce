@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { AddressDto, UserResponseDto } from '@/api/generated';
 
@@ -9,6 +9,14 @@ const useUpdateAddressesMock = vi.fn();
 vi.mock('@/api/hooks/account', () => ({
   useMe: () => useMeMock(),
   useUpdateAddresses: () => useUpdateAddressesMock(),
+}));
+
+const findAddressesMock = vi.fn();
+const retrieveAddressMock = vi.fn();
+
+vi.mock('@/lib/addresscomplete', () => ({
+  findAddresses: (...args: unknown[]) => findAddressesMock(...args),
+  retrieveAddress: (...args: unknown[]) => retrieveAddressMock(...args),
 }));
 
 import { AddressManager } from './AddressManager';
@@ -43,6 +51,7 @@ const ADDR_2: AddressDto = {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  findAddressesMock.mockResolvedValue([]);
   useUpdateAddressesMock.mockReturnValue({
     mutate: mutateMock,
     isPending: false,
@@ -161,5 +170,36 @@ describe('AddressManager', () => {
 
     expect(card.getByRole('button', { name: 'Edit' })).toBeDisabled();
     expect(card.getByRole('button', { name: 'Delete' })).toBeDisabled();
+  });
+
+  it('fills city, province, and postal code when an autocomplete suggestion is chosen', async () => {
+    useMeMock.mockReturnValue({ data: makeUser([]) });
+    findAddressesMock.mockResolvedValue([
+      {
+        id: 'CA|1',
+        text: '1 Main St',
+        description: 'Ottawa, ON, K1A 0B1',
+        next: 'Retrieve',
+      },
+    ]);
+    retrieveAddressMock.mockResolvedValue({
+      line1: '1 Main St',
+      city: 'Ottawa',
+      province: 'ON',
+      postalCode: 'K1A 0B1',
+    });
+    const user = userEvent.setup();
+    render(<AddressManager />);
+
+    await user.click(screen.getByRole('button', { name: 'Add address' }));
+    await user.type(screen.getByLabelText('Line 1'), '1 Main');
+    await user.click(await screen.findByRole('option', { name: /1 Main St/ }));
+
+    await waitFor(() =>
+      expect(screen.getByLabelText('Postal code')).toHaveValue('K1A 0B1'),
+    );
+    expect(screen.getByLabelText('Line 1')).toHaveValue('1 Main St');
+    expect(screen.getByLabelText('City')).toHaveValue('Ottawa');
+    expect(screen.getByLabelText('Province')).toHaveValue('ON');
   });
 });

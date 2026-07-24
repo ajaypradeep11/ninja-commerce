@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 import type { AddressDto } from '@/api/generated';
 import { useMe, useUpdateAddresses } from '@/api/hooks/account';
+import { AddressAutocomplete } from '@/components/site/AddressAutocomplete';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -64,6 +65,7 @@ function AddressForm({
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<FormInput, unknown, FormOutput>({
     resolver: zodResolver(schema),
@@ -95,10 +97,19 @@ function AddressForm({
       </div>
       <div className="grid gap-2">
         <Label htmlFor="address-line1">Line 1</Label>
-        <Input
+        <AddressAutocomplete
           id="address-line1"
-          aria-invalid={!!errors.line1}
-          {...register('line1')}
+          ariaInvalid={!!errors.line1}
+          registration={register('line1')}
+          onSelect={(address) => {
+            setValue('line1', address.line1, { shouldValidate: true });
+            setValue('line2', address.line2 ?? '');
+            setValue('city', address.city, { shouldValidate: true });
+            setValue('state', address.province);
+            setValue('postalCode', address.postalCode, {
+              shouldValidate: true,
+            });
+          }}
         />
         {errors.line1 && (
           <p className="text-sm text-highlight">{errors.line1.message}</p>
