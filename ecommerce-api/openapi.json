@@ -905,6 +905,66 @@
         ]
       }
     },
+    "/admin/settings/shipping": {
+      "get": {
+        "operationId": "SettingsController_getShipping",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShippingSettingsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "settings"
+        ]
+      },
+      "put": {
+        "operationId": "SettingsController_updateShipping",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateShippingSettingsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShippingSettingsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "settings"
+        ]
+      }
+    },
     "/webhooks/stripe": {
       "post": {
         "operationId": "WebhooksController_handleStripe",
@@ -2120,6 +2180,9 @@
       "CreateCheckoutDto": {
         "type": "object",
         "properties": {
+          "shippingAddress": {
+            "$ref": "#/components/schemas/AddressDto"
+          },
           "items": {
             "minItems": 1,
             "type": "array",
@@ -2159,6 +2222,50 @@
         "required": [
           "url",
           "orderId"
+        ]
+      },
+      "ShippingSettingsDto": {
+        "type": "object",
+        "properties": {
+          "freeShippingThresholdCents": {
+            "type": "number"
+          },
+          "standardShippingCents": {
+            "type": "number"
+          },
+          "expeditedShippingCents": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "freeShippingThresholdCents",
+          "standardShippingCents",
+          "expeditedShippingCents"
+        ]
+      },
+      "UpdateShippingSettingsDto": {
+        "type": "object",
+        "properties": {
+          "freeShippingThresholdCents": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1000000
+          },
+          "standardShippingCents": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1000000
+          },
+          "expeditedShippingCents": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1000000
+          }
+        },
+        "required": [
+          "freeShippingThresholdCents",
+          "standardShippingCents",
+          "expeditedShippingCents"
         ]
       },
       "OrderStatus": {

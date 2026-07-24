@@ -234,6 +234,7 @@ export type CheckoutItemDto = {
 };
 
 export type CreateCheckoutDto = {
+  shippingAddress?: AddressDto;
   items: Array<CheckoutItemDto>;
   couponCode?: string;
   currency: 'CAD' | 'USD';
@@ -248,6 +249,18 @@ export type CheckoutSessionResponseDto = {
    * Local order id created in PENDING state
    */
   orderId: string;
+};
+
+export type ShippingSettingsDto = {
+  freeShippingThresholdCents: number;
+  standardShippingCents: number;
+  expeditedShippingCents: number;
+};
+
+export type UpdateShippingSettingsDto = {
+  freeShippingThresholdCents: number;
+  standardShippingCents: number;
+  expeditedShippingCents: number;
 };
 
 export type OrderStatus =
@@ -728,6 +741,34 @@ export type CheckoutControllerCreateResponses = {
 
 export type CheckoutControllerCreateResponse =
   CheckoutControllerCreateResponses[keyof CheckoutControllerCreateResponses];
+
+export type SettingsControllerGetShippingData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/admin/settings/shipping';
+};
+
+export type SettingsControllerGetShippingResponses = {
+  200: ShippingSettingsDto;
+};
+
+export type SettingsControllerGetShippingResponse =
+  SettingsControllerGetShippingResponses[keyof SettingsControllerGetShippingResponses];
+
+export type SettingsControllerUpdateShippingData = {
+  body: UpdateShippingSettingsDto;
+  path?: never;
+  query?: never;
+  url: '/admin/settings/shipping';
+};
+
+export type SettingsControllerUpdateShippingResponses = {
+  200: ShippingSettingsDto;
+};
+
+export type SettingsControllerUpdateShippingResponse =
+  SettingsControllerUpdateShippingResponses[keyof SettingsControllerUpdateShippingResponses];
 
 export type WebhooksControllerHandleStripeData = {
   body?: never;

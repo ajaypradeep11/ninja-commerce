@@ -75,6 +75,10 @@ import type {
   ReviewsControllerCreateResponses,
   ReviewsControllerListData,
   ReviewsControllerListResponses,
+  SettingsControllerGetShippingData,
+  SettingsControllerGetShippingResponses,
+  SettingsControllerUpdateShippingData,
+  SettingsControllerUpdateShippingResponses,
   UsersControllerGetMeData,
   UsersControllerGetMeResponses,
   UsersControllerUpdateAddressesData,
@@ -498,6 +502,48 @@ export const checkoutControllerCreate = <ThrowOnError extends boolean = false>(
   >({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/checkout',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+export const settingsControllerGetShipping = <
+  ThrowOnError extends boolean = false,
+>(
+  options?: Options<SettingsControllerGetShippingData, ThrowOnError>,
+): RequestResult<
+  SettingsControllerGetShippingResponses,
+  unknown,
+  ThrowOnError
+> =>
+  (options?.client ?? client).get<
+    SettingsControllerGetShippingResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/admin/settings/shipping',
+    ...options,
+  });
+
+export const settingsControllerUpdateShipping = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<SettingsControllerUpdateShippingData, ThrowOnError>,
+): RequestResult<
+  SettingsControllerUpdateShippingResponses,
+  unknown,
+  ThrowOnError
+> =>
+  (options.client ?? client).put<
+    SettingsControllerUpdateShippingResponses,
+    unknown,
+    ThrowOnError
+  >({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/admin/settings/shipping',
     ...options,
     headers: {
       'Content-Type': 'application/json',

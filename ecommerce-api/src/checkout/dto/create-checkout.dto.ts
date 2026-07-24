@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Currency } from '@prisma/client';
 import { Transform, Type } from 'class-transformer';
 import {
@@ -12,6 +13,7 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
+import { AddressDto } from '../../users/dto/update-addresses.dto';
 
 export class CheckoutItemDto {
   @IsString()
@@ -42,4 +44,10 @@ export class CreateCheckoutDto {
   // supplies an amount.
   @IsEnum(Currency)
   currency!: Currency;
+
+  @ApiProperty({ required: false, type: AddressDto })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => AddressDto)
+  shippingAddress?: AddressDto;
 }

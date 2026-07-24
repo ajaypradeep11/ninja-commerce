@@ -1,5 +1,6 @@
 import {
   BadGatewayException,
+  BadRequestException,
   ConflictException,
   HttpException,
   Injectable,
@@ -14,6 +15,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { SettingsService } from '../settings/settings.service';
 import { StripeService } from '../stripe/stripe.service';
 import { UsersService } from '../users/users.service';
+import { AddressDto } from '../users/dto/update-addresses.dto';
 import { CreateCheckoutDto } from './dto/create-checkout.dto';
 
 // Canada only. Stripe Tax computes the destination's sales tax from the
@@ -65,6 +67,56 @@ export class CheckoutService {
     private readonly config: ConfigService,
   ) {}
 
+  private async stripeCustomerId(user: AuthUser): Promise<string> {
+    const row = await this.prisma.user.findUnique({ where: { id: user.uid } });
+    if (row?.stripeCustomerId) return row.stripeCustomerId;
+    const customer = await this.stripe.client.customers.create({
+      email: user.email,
+    });
+    await this.prisma.user.update({
+      where: { id: user.uid },
+      data: { stripeCustomerId: customer.id },
+    });
+    return customer.id;
+  }
+
+  // Sets the chosen address as the customer's shipping so hosted Checkout
+  // prefills it (fields stay editable there). Recovers if the stored customer
+  // id no longer exists on Stripe (e.g. test/live key switch).
+  private async customerWithShipping(
+    user: AuthUser,
+    address: AddressDto,
+  ): Promise<string> {
+    const shipping = {
+      name: address.name ?? user.email,
+      address: {
+        line1: address.line1,
+        line2: address.line2 ?? undefined,
+        city: address.city,
+        state: address.state ?? undefined,
+        postal_code: address.postalCode,
+        country: address.country,
+      },
+    };
+    const customerId = await this.stripeCustomerId(user);
+    try {
+      await this.stripe.client.customers.update(customerId, { shipping });
+      return customerId;
+    } catch (err) {
+      const code = (err as { code?: string } | null)?.code;
+      if (code !== 'resource_missing') throw err;
+      const fresh = await this.stripe.client.customers.create({
+        email: user.email,
+        shipping,
+      });
+      await this.prisma.user.update({
+        where: { id: user.uid },
+        data: { stripeCustomerId: fresh.id },
+      });
+      return fresh.id;
+    }
+  }
+
   async createSession(
     user: AuthUser,
     dto: CreateCheckoutDto,
@@ -73,6 +125,12 @@ export class CheckoutService {
     if (new Set(ids).size !== ids.length) {
       throw new ConflictException(
         'Duplicate products in cart — merge quantities',
+      );
+    }
+
+    if (dto.shippingAddress && dto.shippingAddress.country !== 'CA') {
+      throw new BadRequestException(
+        'Shipping is available within Canada only',
       );
     }
 
@@ -153,6 +211,10 @@ export class CheckoutService {
           ]
         : undefined;
 
+      const customerId = dto.shippingAddress
+        ? await this.customerWithShipping(user, dto.shippingAddress)
+        : null;
+
       const shippingSettings = await this.settings.getShippingSettings();
       const discountedSubtotalCents = subtotalCents - (quote?.discountCents ?? 0);
       const sessionCurrency = dto.currency.toLowerCase();
@@ -177,7 +239,9 @@ export class CheckoutService {
 
       const session = await this.stripe.client.checkout.sessions.create({
         mode: 'payment',
-        customer_email: user.email,
+        ...(customerId
+          ? { customer: customerId }
+          : { customer_email: user.email }),
         discounts,
         automatic_tax: { enabled: true },
         shipping_address_collection: {

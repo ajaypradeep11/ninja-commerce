@@ -1,5 +1,6 @@
 import {
   BadGatewayException,
+  BadRequestException,
   ConflictException,
   NotFoundException,
 } from '@nestjs/common';
@@ -13,15 +14,26 @@ import { SettingsService } from '../settings/settings.service';
 
 const user = { uid: 'u1', email: 'a@b.com', admin: false };
 
+const ADDRESS = {
+  name: 'Riley Shopper',
+  line1: '205-1600 Merivale Rd',
+  city: 'Nepean',
+  state: 'ON',
+  postalCode: 'K2G 5J8',
+  country: 'CA',
+};
+
 describe('CheckoutService', () => {
   let prisma: {
     product: { findMany: jest.Mock };
     order: { create: jest.Mock; update: jest.Mock };
+    user: { findUnique: jest.Mock; update: jest.Mock };
   };
   let stripe: {
     client: {
       checkout: { sessions: { create: jest.Mock } };
       coupons: { create: jest.Mock };
+      customers: { create: jest.Mock; update: jest.Mock };
     };
   };
   let users: { ensureUser: jest.Mock };
@@ -36,11 +48,19 @@ describe('CheckoutService', () => {
         create: jest.fn().mockResolvedValue({ id: 'o1' }),
         update: jest.fn().mockResolvedValue({ id: 'o1' }),
       },
+      user: {
+        findUnique: jest.fn(),
+        update: jest.fn().mockResolvedValue({}),
+      },
     };
     stripe = {
       client: {
         checkout: { sessions: { create: jest.fn() } },
         coupons: { create: jest.fn().mockResolvedValue({ id: 'stripe_c1' }) },
+        customers: {
+          create: jest.fn(),
+          update: jest.fn().mockResolvedValue({}),
+        },
       },
     };
     users = { ensureUser: jest.fn().mockResolvedValue({ id: 'u1' }) };
@@ -393,5 +413,112 @@ describe('CheckoutService', () => {
 
     const session = stripe.client.checkout.sessions.create.mock.calls[0][0];
     expect(session.shipping_options[0].shipping_rate_data.fixed_amount.amount).toBe(999);
+  });
+
+  it('creates a Stripe customer once, sets shipping, and passes customer instead of customer_email', async () => {
+    prisma.product.findMany.mockResolvedValue([
+      { id: 'p1', name: 'Tee', priceCents: 2500, priceUsdCents: 1900, stockQty: 5, active: true },
+    ]);
+    prisma.user.findUnique.mockResolvedValue({ id: 'u1', stripeCustomerId: null });
+    stripe.client.customers.create.mockResolvedValue({ id: 'cus_1' });
+    stripe.client.checkout.sessions.create.mockResolvedValue({ id: 'cs_1', url: 'https://stripe.test/session' });
+
+    await service.createSession(user, {
+      items: [{ productId: 'p1', quantity: 1 }],
+      currency: 'CAD',
+      shippingAddress: ADDRESS,
+    });
+
+    expect(stripe.client.customers.create).toHaveBeenCalledWith({ email: user.email });
+    expect(prisma.user.update).toHaveBeenCalledWith({
+      where: { id: user.uid },
+      data: { stripeCustomerId: 'cus_1' },
+    });
+    expect(stripe.client.customers.update).toHaveBeenCalledWith('cus_1', {
+      shipping: {
+        name: 'Riley Shopper',
+        address: {
+          line1: '205-1600 Merivale Rd',
+          line2: undefined,
+          city: 'Nepean',
+          state: 'ON',
+          postal_code: 'K2G 5J8',
+          country: 'CA',
+        },
+      },
+    });
+    const session = stripe.client.checkout.sessions.create.mock.calls[0][0];
+    expect(session.customer).toBe('cus_1');
+    expect(session.customer_email).toBeUndefined();
+  });
+
+  it('reuses a stored Stripe customer id', async () => {
+    prisma.product.findMany.mockResolvedValue([
+      { id: 'p1', name: 'Tee', priceCents: 2500, priceUsdCents: 1900, stockQty: 5, active: true },
+    ]);
+    prisma.user.findUnique.mockResolvedValue({ id: 'u1', stripeCustomerId: 'cus_9' });
+    stripe.client.checkout.sessions.create.mockResolvedValue({ id: 'cs_1', url: 'https://stripe.test/session' });
+
+    await service.createSession(user, {
+      items: [{ productId: 'p1', quantity: 1 }],
+      currency: 'CAD',
+      shippingAddress: ADDRESS,
+    });
+
+    expect(stripe.client.customers.create).not.toHaveBeenCalled();
+    expect(stripe.client.customers.update).toHaveBeenCalledWith('cus_9', expect.anything());
+  });
+
+  it('recovers from a stale stored customer id', async () => {
+    prisma.product.findMany.mockResolvedValue([
+      { id: 'p1', name: 'Tee', priceCents: 2500, priceUsdCents: 1900, stockQty: 5, active: true },
+    ]);
+    prisma.user.findUnique.mockResolvedValue({ id: 'u1', stripeCustomerId: 'cus_gone' });
+    stripe.client.customers.update.mockRejectedValueOnce(
+      Object.assign(new Error('No such customer'), { code: 'resource_missing' }),
+    );
+    stripe.client.customers.create.mockResolvedValue({ id: 'cus_new' });
+    stripe.client.checkout.sessions.create.mockResolvedValue({ id: 'cs_1', url: 'https://stripe.test/session' });
+
+    await service.createSession(user, {
+      items: [{ productId: 'p1', quantity: 1 }],
+      currency: 'CAD',
+      shippingAddress: ADDRESS,
+    });
+
+    expect(stripe.client.customers.create).toHaveBeenCalledWith({
+      email: user.email,
+      shipping: expect.anything(),
+    });
+    expect(prisma.user.update).toHaveBeenLastCalledWith({
+      where: { id: user.uid },
+      data: { stripeCustomerId: 'cus_new' },
+    });
+    const session = stripe.client.checkout.sessions.create.mock.calls[0][0];
+    expect(session.customer).toBe('cus_new');
+  });
+
+  it('rejects a non-Canadian shipping address with 400', async () => {
+    await expect(
+      service.createSession(user, {
+        items: [{ productId: 'p1', quantity: 1 }],
+        currency: 'CAD',
+        shippingAddress: { ...ADDRESS, country: 'US' },
+      }),
+    ).rejects.toBeInstanceOf(BadRequestException);
+  });
+
+  it('keeps customer_email when no shipping address is sent', async () => {
+    prisma.product.findMany.mockResolvedValue([
+      { id: 'p1', name: 'Tee', priceCents: 2500, priceUsdCents: 1900, stockQty: 5, active: true },
+    ]);
+    stripe.client.checkout.sessions.create.mockResolvedValue({ id: 'cs_1', url: 'https://stripe.test/session' });
+
+    await service.createSession(user, { items: [{ productId: 'p1', quantity: 1 }], currency: 'CAD' });
+
+    const session = stripe.client.checkout.sessions.create.mock.calls[0][0];
+    expect(session.customer_email).toBe(user.email);
+    expect(session.customer).toBeUndefined();
+    expect(stripe.client.customers.create).not.toHaveBeenCalled();
   });
 });

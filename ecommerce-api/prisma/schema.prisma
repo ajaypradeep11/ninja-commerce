@@ -72,15 +72,16 @@ model Product {
 }
 
 model User {
-  id          String             @id // Firebase UID
-  email       String             @unique
-  role        Role               @default(CUSTOMER)
-  addresses   Json               @default("[]")
-  orders      Order[]
-  reviews     Review[]
-  redemptions CouponRedemption[]
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
+  id               String             @id // Firebase UID
+  email            String             @unique
+  role             Role               @default(CUSTOMER)
+  addresses        Json               @default("[]")
+  stripeCustomerId String?            @unique
+  orders           Order[]
+  reviews          Review[]
+  redemptions      CouponRedemption[]
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
 }
 
 enum DiscountType {
