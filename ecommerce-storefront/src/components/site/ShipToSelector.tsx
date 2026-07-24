@@ -44,7 +44,10 @@ export function ShipToSelector({
   const [adding, setAdding] = useState(false);
   const groupName = useId();
 
-  const addresses = me?.addresses ?? [];
+  // Only Canadian addresses are offered — shipping is CA-only (see
+  // checkout.service.ts). Legacy non-CA addresses just don't appear; the
+  // shopper types their address on Stripe's page instead.
+  const addresses = (me?.addresses ?? []).filter((a) => a.country?.toUpperCase() === 'CA');
   const selectedIndex = resolveSelectedIndex(addresses, selected);
 
   // Preselect the first saved address once the profile loads.

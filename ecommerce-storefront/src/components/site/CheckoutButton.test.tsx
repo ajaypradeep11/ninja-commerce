@@ -164,6 +164,24 @@ describe('CheckoutButton', () => {
     expect(applyCartRefreshMock).not.toHaveBeenCalled();
   });
 
+  it('toasts the API message on a 400 (e.g. shipping outside Canada), without re-running the refresh', async () => {
+    useAuthMock.mockReturnValue({ user: { uid: 'u1' }, loading: false });
+    checkoutControllerCreateMock.mockResolvedValue({
+      error: { message: 'Shipping is available within Canada only' },
+      response: { status: 400 },
+    });
+    const lines = [makeLine()];
+    const user = userEvent.setup();
+    renderWithClient(<CheckoutButton lines={lines} currency="CAD" />);
+
+    await user.click(screen.getByRole('button', { name: 'Checkout' }));
+
+    await vi.waitFor(() =>
+      expect(toastErrorMock).toHaveBeenCalledWith('Shipping is available within Canada only'),
+    );
+    expect(applyCartRefreshMock).not.toHaveBeenCalled();
+  });
+
   it('toasts a generic failure message for other errors, without re-running the refresh', async () => {
     useAuthMock.mockReturnValue({ user: { uid: 'u1' }, loading: false });
     checkoutControllerCreateMock.mockRejectedValue(new ApiError(500, 'boom'));

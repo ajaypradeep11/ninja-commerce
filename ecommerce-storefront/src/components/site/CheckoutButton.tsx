@@ -61,7 +61,7 @@ export function CheckoutButton({
         void applyCartRefresh(lines, currency);
         return;
       }
-      if (error instanceof ApiError && error.status === 502) {
+      if (error instanceof ApiError && (error.status === 502 || error.status === 400)) {
         toast.error(error.message);
         return;
       }

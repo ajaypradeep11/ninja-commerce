@@ -15,7 +15,7 @@ const dollars = z.coerce
   .number<number>()
   .min(0, 'Must be 0 or more')
   .max(10000, 'Too large')
-  .refine((v) => Math.round(v * 100) === v * 100, 'Max 2 decimals');
+  .refine((v) => Math.abs(v * 100 - Math.round(v * 100)) < 1e-6, 'Max 2 decimals');
 
 const formSchema = z.object({
   freeShippingThreshold: dollars,

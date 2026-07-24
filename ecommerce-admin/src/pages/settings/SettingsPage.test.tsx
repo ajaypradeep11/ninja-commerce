@@ -49,6 +49,24 @@ describe('SettingsPage', () => {
     });
   });
 
+  it('accepts a value with 2 decimals that is not exactly representable in floating point', async () => {
+    const user = userEvent.setup();
+    render(<SettingsPage />);
+
+    const standard = screen.getByLabelText('Standard shipping fee (CAD)');
+    await user.clear(standard);
+    await user.type(standard, '10.20');
+    await user.click(screen.getByRole('button', { name: 'Save' }));
+
+    await waitFor(() => expect(mutateMock).toHaveBeenCalledTimes(1));
+    expect(mutateMock.mock.calls[0][0]).toEqual({
+      freeShippingThresholdCents: 6500,
+      standardShippingCents: 1020,
+      expeditedShippingCents: 1499,
+    });
+    expect(screen.queryByText(/max 2 decimals/i)).not.toBeInTheDocument();
+  });
+
   it('rejects negative values', async () => {
     const user = userEvent.setup();
     render(<SettingsPage />);

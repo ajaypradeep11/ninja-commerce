@@ -37,6 +37,14 @@ const WORK: AddressDto = {
   postalCode: 'M5V 2T6',
   country: 'CA',
 };
+const US_ADDRESS: AddressDto = {
+  label: 'Old US address',
+  line1: '99 Broadway',
+  city: 'New York',
+  state: 'NY',
+  postalCode: '10001',
+  country: 'US',
+};
 
 function makeMe(addresses: AddressDto[]) {
   return { data: { id: 'u1', email: 's@example.com', role: 'CUSTOMER', addresses, createdAt: '', updatedAt: '' } };
@@ -69,6 +77,15 @@ describe('ShipToSelector', () => {
     useMeMock.mockReturnValue(makeMe([HOME, WORK]));
     const onSelect = vi.fn();
     render(<ShipToSelector selected={null} onSelect={onSelect} />);
+    await waitFor(() => expect(onSelect).toHaveBeenCalledWith(HOME));
+  });
+
+  it('excludes non-CA addresses and preselects a CA one even if it comes first in the list', async () => {
+    useMeMock.mockReturnValue(makeMe([US_ADDRESS, HOME]));
+    const onSelect = vi.fn();
+    render(<ShipToSelector selected={null} onSelect={onSelect} />);
+
+    expect(screen.queryByText(/99 Broadway/)).not.toBeInTheDocument();
     await waitFor(() => expect(onSelect).toHaveBeenCalledWith(HOME));
   });
 

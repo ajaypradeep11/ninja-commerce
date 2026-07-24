@@ -1,3 +1,4 @@
+import { AdminGuard } from '../auth/admin.guard';
 import { SettingsController } from './settings.controller';
 
 const ROW = {
@@ -37,9 +38,9 @@ describe('SettingsController', () => {
   });
 
   it('is admin-guarded', () => {
-    // Mirror the guard-metadata assertion style used elsewhere if present;
-    // otherwise assert the guards metadata directly:
+    // FirebaseAuthGuard is registered globally (APP_GUARD), so only
+    // AdminGuard needs to be declared here — mirror other admin controllers.
     const guards = Reflect.getMetadata('__guards__', SettingsController) as unknown[];
-    expect(guards?.length).toBeGreaterThanOrEqual(2);
+    expect(guards).toContain(AdminGuard);
   });
 });

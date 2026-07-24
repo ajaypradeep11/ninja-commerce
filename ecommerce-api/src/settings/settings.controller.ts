@@ -1,7 +1,6 @@
 import { Body, Controller, Get, Put, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { AdminGuard } from '../auth/admin.guard';
-import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 import {
   ShippingSettingsDto,
   UpdateShippingSettingsDto,
@@ -17,7 +16,7 @@ const toDto = (row: StoreSettings): ShippingSettingsDto => ({
 
 @ApiTags('settings')
 @ApiBearerAuth()
-@UseGuards(FirebaseAuthGuard, AdminGuard)
+@UseGuards(AdminGuard)
 @Controller('admin/settings')
 export class SettingsController {
   constructor(private readonly settings: SettingsService) {}

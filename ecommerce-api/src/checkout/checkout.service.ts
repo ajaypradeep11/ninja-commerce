@@ -128,7 +128,10 @@ export class CheckoutService {
       );
     }
 
-    if (dto.shippingAddress && dto.shippingAddress.country !== 'CA') {
+    if (
+      dto.shippingAddress &&
+      dto.shippingAddress.country.toUpperCase() !== 'CA'
+    ) {
       throw new BadRequestException(
         'Shipping is available within Canada only',
       );
