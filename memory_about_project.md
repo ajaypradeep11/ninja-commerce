@@ -33,6 +33,14 @@ This clone (`~/Work/LOCALNINJA/localninja-commerce`, from `github.com/ajaypradee
 | Storefront (Phase 3) | Next.js 15, Tailwind |
 
 ## What's Built (2026-07-24)
+**Shipping fees + cart address selection + CAD-only — COMPLETE & PUSHED** (2026-07-24, master @ c8dd62f pushed to GitHub; final review "Ready to merge: Yes" after one fix round)
+- **Shipping fees**: Stripe `shipping_options` — Standard (4-7bd) $9.99 / Expedited (2-4bd) $14.99; free standard when post-coupon subtotal ≥ $65. All three values in `StoreSettings` singleton (Prisma, id=1), editable at admin `/settings` (GET/PUT `/admin/settings/shipping`, AdminGuard). E2E-verified on real Stripe test page incl. HST on shipping.
+- **Cart address selection**: `ShipToSelector` on /cart (CA-only saved addresses, native sr-only radios, first preselected, add-dialog reuses shared `AddressForm`); checkout DTO takes optional `shippingAddress` → get-or-create Stripe customer (`User.stripeCustomerId`, stale-id recovery) → session `customer` + `customer_update.shipping='auto'` (REQUIRED by Stripe with automatic_tax — found in live smoke, mocks can't catch) → Stripe page arrives prefilled, still editable. Webhook still snapshots the session's final address.
+- **CAD-only**: `parseCurrency`/`readClientCurrency` pinned to CAD, CurrencySwitcher deleted; USD plumbing (priceUsdCents, currency param, priceFor) dormant for re-enable.
+- **⚠️ DEPLOY SEQUENCE (as of push): App Hosting auto-deploys storefront from master, but Cloud Run API is manual + prod Supabase lacks 2 new migrations (`store_settings`, `user_stripe_customer`). Until API redeploy + `npx prisma migrate deploy`, prod checkout with a selected address 400s (forbidNonWhitelisted rejects `shippingAddress`). Redeploy API promptly.**
+- Spec/plan: docs/superpowers/{specs/2026-07-24-shipping-fees-design.md, plans/2026-07-24-shipping-fees-cart-address.md}. Tests: API 128, storefront 235, admin 80, all builds ✓.
+- Riding minors: Stripe customer-create race (orphan customer, low impact); anon /cart fires a 401 /users/me (pre-existing convention); no USD shipping-rate test (dormant path).
+
 **Dual currency + Canada-only shipping + Canada Post autocomplete — COMPLETE** (2026-07-24, merged to master @ 311ebb2; final review "Ready to merge: Yes"; NOT yet pushed/deployed — remote `feat/dual-currency` branch is stale, delete on next push)
 - **Dual currency (CAD/USD)**: `priceUsdCents` column, per-currency billing at checkout, header flag switcher (`CurrencySwitcher.tsx`), cart keeps active currency. CAD $49.99 / USD $36.99 e2e-verified. Kept deliberately even though shipping is now Canada-only (user decision: US card holders can buy for Canadian delivery).
 - **Canada-only shipping**: Stripe `allowed_countries=['CA']` (`checkout.service.ts`); US copy removed from shipping page + FAQ; `freeShippingUsd` deleted from site.ts.
