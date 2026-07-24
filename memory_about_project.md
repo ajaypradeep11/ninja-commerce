@@ -32,6 +32,16 @@ This clone (`~/Work/LOCALNINJA/localninja-commerce`, from `github.com/ajaypradee
 | Admin (Phase 2) | React 19 + Vite SPA, TS strict, Tailwind v4 + shadcn/ui, React Router 7, TanStack Query 5, RHF+zod v4, @hey-api/openapi-ts generated client |
 | Storefront (Phase 3) | Next.js 15, Tailwind |
 
+## What's Built (2026-07-24)
+**Dual currency + Canada-only shipping + Canada Post autocomplete — COMPLETE** (2026-07-24, merged to master @ 311ebb2; final review "Ready to merge: Yes"; NOT yet pushed/deployed — remote `feat/dual-currency` branch is stale, delete on next push)
+- **Dual currency (CAD/USD)**: `priceUsdCents` column, per-currency billing at checkout, header flag switcher (`CurrencySwitcher.tsx`), cart keeps active currency. CAD $49.99 / USD $36.99 e2e-verified. Kept deliberately even though shipping is now Canada-only (user decision: US card holders can buy for Canadian delivery).
+- **Canada-only shipping**: Stripe `allowed_countries=['CA']` (`checkout.service.ts`); US copy removed from shipping page + FAQ; `freeShippingUsd` deleted from site.ts.
+- **Saved-address form** (`AddressManager.tsx`): country locked to CA (read-only "Canada"), "Province" label, Canadian postal regex + normalization to `A1A 1A1`.
+- **AddressComplete autocomplete**: `src/lib/addresscomplete.ts` (typed Find v2.10/Retrieve v2.11 json3 client) + `AddressAutocomplete.tsx` combobox on Line 1 (250ms debounce, container drill-down via LastId, ARIA combobox with aria-activedescendant, Escape cancels pending lookups). **No API key yet** — set `NEXT_PUBLIC_ADDRESSCOMPLETE_KEY` (see `.env.example`); without it the form silently degrades to plain typing (browser-QA'd).
+- Spec/plan: `docs/superpowers/specs/2026-07-23-canada-only-addresscomplete-design.md`, `docs/superpowers/plans/2026-07-23-canada-only-addresscomplete.md`. Tests: API 115, storefront 232, admin 75, prod build ✓.
+- Riding minors (from final review): no regression test for editing legacy `country:'US'` addresses; aria-activedescendant test covers ArrowDown only; postal regex accepts letters Canada Post never issues (D/F/I/O/Q/U — spec choice).
+- Test-env smoke artifacts: user `claude-smoke-test@example.com` + one saved address in `ninja-commerce-test` Firebase/Supabase — harmless, delete if tidying.
+
 ## What's Built (2026-07-11)
 **Font config — `ecommerce-storefront` — COMPLETE** (2026-07-11, merged ff to master @ f6b5b44)
 - `src/theme/fonts.ts` = single font edit point (all 12 next/font loaders + `THEME_FONTS` + `fontVariables` + forker recipe); layout.tsx just imports `fontVariables`
