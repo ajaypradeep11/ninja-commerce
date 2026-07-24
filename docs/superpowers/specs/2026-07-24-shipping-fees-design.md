@@ -1,14 +1,16 @@
-# Shipping fees + admin settings, CAD-only storefront
+# Shipping fees + admin settings, cart address selection, CAD-only storefront
 
 **Date:** 2026-07-24
-**Branch:** to be created from master
+**Branch:** feat/shipping-fees
 **Status:** Approved
 
 ## Goal
 
 Charge shipping at checkout — $9.99 standard / $14.99 expedited below a $65
 free-shipping threshold — with all three values editable from the admin
-portal. Simultaneously hide USD: the storefront becomes CAD-only.
+portal. Let the shopper pick a saved shipping address on the cart page and
+have Stripe's checkout arrive with it pre-filled. Simultaneously hide USD:
+the storefront becomes CAD-only.
 
 ## Decisions made
 
@@ -25,6 +27,18 @@ portal. Simultaneously hide USD: the storefront becomes CAD-only.
   not built).
 - **Shipping-page copy:** unchanged — it says rates are calculated at
   checkout, so admin edits never stale it.
+- **Address prefill mechanism (verified against Stripe docs):** hosted
+  Checkout prefills shipping fields when the session is created with an
+  existing `customer` whose `shipping` is set and the address is within
+  `shipping_address_collection.allowed_countries`. The fields stay editable
+  on Stripe's page. This requires storing a `stripeCustomerId` per user
+  (replaces `customer_email` on the session — Stripe forbids passing both).
+- **Cart UX:** saved addresses render as selectable cards on the cart page
+  with an inline "Add address" dialog (reusing the account form incl.
+  Canada Post autocomplete). Selecting is optional — with none selected,
+  checkout behaves as today (shopper types the address at Stripe).
+- **Addresses have no ids** (Json array on User), so the checkout request
+  carries the full selected address object, validated server-side.
 
 ## Changes
 
@@ -73,7 +87,36 @@ The dormant USD path (API still accepts `currency: 'USD'`) applies the same
 numeric amounts in USD — acceptable because the storefront no longer sends
 USD.
 
-### 2. Storefront (`ecommerce-storefront`)
+### 2. Cart address selection + Stripe prefill
+
+**Schema** — `User` gains `stripeCustomerId String? @unique` (migration,
+nullable — created lazily).
+
+**Checkout API** — `CreateCheckoutDto` gains optional
+`shippingAddress?: AddressDto` (nested validation, country must be `CA`).
+When present, `createSession`:
+1. Gets-or-creates the user's Stripe customer (`stripeCustomerId` on User;
+   create with `email`, persist id; on Stripe "No such customer" — e.g. key
+   switched between test/live — create a fresh one and overwrite).
+2. Updates the customer's `shipping` to
+   `{ name: address.name ?? user.email, address: { line1, line2, city,
+   state, postal_code, country } }`.
+3. Creates the session with `customer: <id>` instead of `customer_email`,
+   keeping `shipping_address_collection` → Stripe prefills, shopper can
+   still edit. Without a `shippingAddress`, the session keeps using
+   `customer_email` exactly as today.
+The PENDING order is unaffected — the webhook still snapshots whatever
+address the session completes with (source of truth stays Stripe).
+
+**Cart page** (`app/(store)/cart/page.tsx`) — signed-in shoppers with items
+see a "Ship to" section above the checkout button: saved addresses as
+selectable cards (radio semantics, first address preselected), an "Add
+address" button opening the same dialog/form as the account page (Canada
+Post autocomplete included — extract the form from `AddressManager` for
+reuse rather than duplicating it), and the selected address rides along on
+the checkout POST. Signed-out or empty-cart states unchanged.
+
+### 3. Storefront CAD-only (`ecommerce-storefront`)
 
 - Remove `CurrencySwitcher` from the header (delete component + its test;
   the underlying `currency` lib and cart currency handling stay).
@@ -82,7 +125,7 @@ USD.
   sends `currency: 'CAD'`. Stored `USD` preferences are ignored.
 - No copy changes.
 
-### 3. Admin (`ecommerce-admin`)
+### 4. Admin (`ecommerce-admin`)
 
 - Regenerate client (`npm run generate:api`) after API changes.
 - New **Settings** page `src/pages/settings/` + nav entry: form with three
@@ -97,9 +140,14 @@ USD.
 - API: settings service (default-row creation, update), controller guard
   wiring; checkout spec — below threshold (9.99/14.99), at/above threshold
   (0/14.99), threshold uses post-coupon subtotal, rates carry
-  `tax_behavior: 'exclusive'` and the session currency.
+  `tax_behavior: 'exclusive'` and the session currency; address path —
+  customer created once then reused, `customer` replaces `customer_email`,
+  customer `shipping` updated per checkout, no-address path unchanged,
+  non-CA shippingAddress rejected 400.
 - Storefront: header renders without the switcher; checkout body always
-  `currency: 'CAD'` even with a stored USD preference.
+  `currency: 'CAD'` even with a stored USD preference; cart address cards
+  render/select/preselect, add-address dialog reuses the shared form,
+  selected address included in the checkout POST (and absent when none).
 - Admin: settings page loads values, converts dollars↔cents, submits, shows
   validation errors.
 - Manual: full-stack smoke — cart under $65 shows both paid options at
