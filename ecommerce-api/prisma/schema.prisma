@@ -170,3 +170,11 @@ model ProcessedStripeEvent {
   type      String
   createdAt DateTime @default(now())
 }
+
+model StoreSettings {
+  id                         Int      @id @default(1)
+  freeShippingThresholdCents Int      @default(6500)
+  standardShippingCents      Int      @default(999)
+  expeditedShippingCents     Int      @default(1499)
+  updatedAt                  DateTime @updatedAt
+}
