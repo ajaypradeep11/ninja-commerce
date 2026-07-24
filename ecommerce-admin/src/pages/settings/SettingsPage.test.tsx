@@ -61,4 +61,17 @@ describe('SettingsPage', () => {
     expect(await screen.findByText(/must be 0 or more/i)).toBeInTheDocument();
     expect(mutateMock).not.toHaveBeenCalled();
   });
+
+  it('rejects values with more than 2 decimals', async () => {
+    const user = userEvent.setup();
+    render(<SettingsPage />);
+
+    const standard = screen.getByLabelText('Standard shipping fee (CAD)');
+    await user.clear(standard);
+    await user.type(standard, '10.999');
+    await user.click(screen.getByRole('button', { name: 'Save' }));
+
+    expect(await screen.findByText(/max 2 decimals/i)).toBeInTheDocument();
+    expect(mutateMock).not.toHaveBeenCalled();
+  });
 });

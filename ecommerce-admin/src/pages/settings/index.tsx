@@ -39,6 +39,7 @@ export function SettingsPage() {
           expeditedShippingFee: data.expeditedShippingCents / 100,
         }
       : undefined,
+    resetOptions: { keepDirtyValues: true },
   });
 
   if (isLoading) return <div className="text-muted-foreground">Loading…</div>;
