@@ -7,6 +7,7 @@ import { couponsControllerValidate } from '@/api/generated';
 import { ApiError, unwrap } from '@/api/unwrap';
 import { useAuth } from '@/auth/AuthProvider';
 import { subtotalCents, type CartLine } from '@/cart/store';
+import type { Currency } from '@/lib/money';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { CheckoutButton } from './CheckoutButton';
@@ -17,7 +18,7 @@ interface CouponQuote {
   discountCents: number;
 }
 
-export function CartSummary({ lines }: { lines: CartLine[] }) {
+export function CartSummary({ lines, currency }: { lines: CartLine[]; currency: Currency }) {
   const subtotal = subtotalCents(lines);
   const { user } = useAuth();
   const router = useRouter();
@@ -78,7 +79,7 @@ export function CartSummary({ lines }: { lines: CartLine[] }) {
     <div className="h-fit border border-ink p-6">
       <div className="flex items-center justify-between">
         <span className="font-mono text-xs tracking-wide text-ink/60 uppercase">Subtotal</span>
-        <Price cents={subtotal} className="text-lg" />
+        <Price cents={subtotal} currency={currency} className="text-lg" />
       </div>
 
       {quote ? (
@@ -94,7 +95,7 @@ export function CartSummary({ lines }: { lines: CartLine[] }) {
             </button>
           </span>
           <span className="text-ink">
-            −<Price cents={quote.discountCents} className="inline" />
+            −<Price cents={quote.discountCents} currency={currency} className="inline" />
           </span>
         </div>
       ) : (
@@ -124,7 +125,7 @@ export function CartSummary({ lines }: { lines: CartLine[] }) {
           <span className="font-mono text-xs tracking-wide text-ink/60 uppercase">
             Estimated total
           </span>
-          <Price cents={estimatedTotal} className="text-lg" />
+          <Price cents={estimatedTotal} currency={currency} className="text-lg" />
         </div>
       )}
 
@@ -133,7 +134,7 @@ export function CartSummary({ lines }: { lines: CartLine[] }) {
         one use per customer.
       </p>
       <div className="mt-6">
-        <CheckoutButton lines={lines} couponCode={quote?.code} />
+        <CheckoutButton lines={lines} couponCode={quote?.code} currency={currency} />
       </div>
     </div>
   );

@@ -151,11 +151,10 @@ describe('CheckoutService', () => {
     expect(sessionArgs.allow_promotion_codes).toBeUndefined();
     expect(sessionArgs.discounts).toBeUndefined();
     expect(sessionArgs.metadata).toEqual({ orderId: 'o1' });
-    // Canada and the US; Stripe Tax computes the destination's sales tax.
+    // Canada only; Stripe Tax computes the destination's sales tax.
     expect(sessionArgs.automatic_tax).toEqual({ enabled: true });
     expect(sessionArgs.shipping_address_collection.allowed_countries).toEqual([
       'CA',
-      'US',
     ]);
     expect(sessionArgs.line_items).toEqual([
       {
@@ -260,7 +259,7 @@ describe('CheckoutService', () => {
     expect(session.line_items[0].price_data.unit_amount).toBe(5499);
   });
 
-  it('allows a US shipping address', async () => {
+  it('ships only to Canada regardless of billing currency', async () => {
     prisma.product.findMany.mockResolvedValue([
       { id: 'p1', name: 'Lamp', priceCents: 5499, priceUsdCents: 3999, stockQty: 10, active: true },
     ]);
@@ -277,7 +276,6 @@ describe('CheckoutService', () => {
     const session = stripe.client.checkout.sessions.create.mock.calls[0][0];
     expect(session.shipping_address_collection.allowed_countries).toEqual([
       'CA',
-      'US',
     ]);
   });
 

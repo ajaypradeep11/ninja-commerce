@@ -1,12 +1,15 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { cookies } from 'next/headers';
 import { User } from 'lucide-react';
 import { brandsControllerFindAll } from '@/api/generated';
 import { serverFetchOptions } from '@/api/server';
 import { unwrap } from '@/api/unwrap';
+import { CURRENCY_COOKIE, parseCurrency } from '@/lib/currency';
 import { SITE } from '@/lib/site';
 import { SearchBox } from './SearchBox';
 import { CartBadge } from './CartBadge';
+import { CurrencySwitcher } from './CurrencySwitcher';
 import { HeaderMenu } from './HeaderMenu';
 
 // Non-breaking spaces so the gaps between messages survive HTML
@@ -18,6 +21,10 @@ const ANNOUNCEMENT_TEXT = Array.from(
 ).join(SEP);
 
 export async function Header() {
+  // Reading cookies opts the header into dynamic rendering, so the switcher
+  // always shows the currency the page's prices were rendered in.
+  const currency = parseCurrency((await cookies()).get(CURRENCY_COOKIE)?.value);
+
   // Brands feed the hamburger menu's "Anime" group; a failed fetch (e.g. API
   // down during build) degrades to an empty group rather than a crash.
   const brands = await unwrap(
@@ -94,6 +101,7 @@ export async function Header() {
           <div className="hidden sm:block">
             <SearchBox />
           </div>
+          <CurrencySwitcher current={currency} />
           <Link href="/account" aria-label="Account" className="p-1.5 text-ink hover:text-brand">
             <User aria-hidden className="size-5" />
           </Link>

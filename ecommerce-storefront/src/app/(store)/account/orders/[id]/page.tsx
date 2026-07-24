@@ -70,6 +70,10 @@ export default function OrderDetailPage() {
 
   const address = normalizeShippingAddress(order.shippingAddress);
   const total = order.totalCents ?? order.subtotalCents;
+  // An order is pinned to whatever currency it was actually charged in, not
+  // whatever the shopper's cookie says right now — those can differ if they
+  // switch currency after checking out.
+  const currency = order.currency;
 
   return (
     <div>
@@ -101,10 +105,10 @@ export default function OrderDetailPage() {
             <div>
               <p className="text-ink">{item.name}</p>
               <p className="mt-1 text-sm text-ink/60">
-                {item.quantity} × <Price cents={item.priceCents} />
+                {item.quantity} × <Price cents={item.priceCents} currency={currency} />
               </p>
             </div>
-            <Price cents={item.priceCents * item.quantity} />
+            <Price cents={item.priceCents * item.quantity} currency={currency} />
           </div>
         ))}
       </div>
@@ -114,7 +118,7 @@ export default function OrderDetailPage() {
           <span className="font-mono text-xs tracking-wide text-ink/60 uppercase">
             Subtotal
           </span>
-          <Price cents={order.subtotalCents} />
+          <Price cents={order.subtotalCents} currency={currency} />
         </div>
         {order.discountCents != null && order.discountCents > 0 && (
           <div className="flex items-center justify-between">
@@ -122,7 +126,7 @@ export default function OrderDetailPage() {
               Coupon {order.couponCode}
             </span>
             <span>
-              −<Price cents={order.discountCents} className="inline" />
+              −<Price cents={order.discountCents} currency={currency} className="inline" />
             </span>
           </div>
         )}
@@ -131,14 +135,14 @@ export default function OrderDetailPage() {
             <span className="font-mono text-xs tracking-wide text-ink/60 uppercase">
               Tax
             </span>
-            <Price cents={order.taxCents} />
+            <Price cents={order.taxCents} currency={currency} />
           </div>
         )}
         <div className="flex items-center justify-between">
           <span className="font-mono text-xs tracking-wide text-ink/60 uppercase">
             Total
           </span>
-          <Price cents={total} className="text-lg" />
+          <Price cents={total} currency={currency} className="text-lg" />
         </div>
       </div>
 

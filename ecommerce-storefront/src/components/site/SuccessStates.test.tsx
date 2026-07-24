@@ -1,6 +1,10 @@
 import { render, screen, within } from '@testing-library/react';
 import type { OrderItemResponseDto, OrderResponseDto } from '@/api/generated';
-import { formatCents } from '@/lib/money';
+import { formatMoney } from '@/lib/money';
+
+function money(cents: number): string {
+  return formatMoney(cents, 'CAD');
+}
 
 const useAuthMock = vi.fn();
 vi.mock('@/auth/AuthProvider', () => ({
@@ -48,14 +52,20 @@ function makeOrder(overrides: Partial<OrderResponseDto> = {}): OrderResponseDto 
     id: 'order_1',
     userId: 'user_1',
     email: 'shopper@example.com',
+    currency: 'CAD',
     status: 'PAID',
     stripeSessionId: 'cs_test_1',
     stripePaymentIntentId: 'pi_test_1',
     shippingAddress: null,
+    discountCents: null,
+    couponCode: null,
     subtotalCents: 15800,
     taxCents: null,
     totalCents: 16800,
     items: [makeItem()],
+    deliveredAt: null,
+    returnRequestedAt: null,
+    returnReason: null,
     createdAt: '2026-01-01T00:00:00.000Z',
     updatedAt: '2026-01-01T00:00:00.000Z',
     ...overrides,
@@ -100,12 +110,12 @@ describe('SuccessStates', () => {
       expect(orderIdEl).toHaveClass('font-mono');
 
       expect(screen.getByText('Heavyweight Hoodie')).toBeInTheDocument();
-      expect(screen.getByText(formatCents(7900 * 2))).toBeInTheDocument();
+      expect(screen.getByText(money(7900 * 2))).toBeInTheDocument();
       expect(screen.getByText('Organic Cotton Tee')).toBeInTheDocument();
-      expect(screen.getByText(formatCents(3200 * 1))).toBeInTheDocument();
+      expect(screen.getByText(money(3200 * 1))).toBeInTheDocument();
 
       const totalRow = screen.getByText('Total').closest('div');
-      expect(within(totalRow!).getByText(formatCents(20500))).toBeInTheDocument();
+      expect(within(totalRow!).getByText(money(20500))).toBeInTheDocument();
     });
 
     it('itemizes a Tax line between subtotal and total when taxCents is set', async () => {
@@ -122,9 +132,9 @@ describe('SuccessStates', () => {
 
       await screen.findByText('Thank you');
       const taxRow = screen.getByText('Tax').closest('div');
-      expect(within(taxRow!).getByText(formatCents(2470))).toBeInTheDocument();
+      expect(within(taxRow!).getByText(money(2470))).toBeInTheDocument();
       const totalRow = screen.getByText('Total').closest('div');
-      expect(within(totalRow!).getByText(formatCents(21470))).toBeInTheDocument();
+      expect(within(totalRow!).getByText(money(21470))).toBeInTheDocument();
     });
 
     it('hides the Tax line when taxCents is null', async () => {
@@ -149,7 +159,7 @@ describe('SuccessStates', () => {
 
       await screen.findByText('Thank you');
       const totalRow = screen.getByText('Total').closest('div');
-      expect(within(totalRow!).getByText(formatCents(4200))).toBeInTheDocument();
+      expect(within(totalRow!).getByText(money(4200))).toBeInTheDocument();
     });
 
     it('renders no address block and does not crash when shippingAddress is null', async () => {

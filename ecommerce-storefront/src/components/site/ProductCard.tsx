@@ -1,14 +1,22 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import type { ProductResponseDto } from '@/api/generated';
+import { priceFor } from '@/lib/currency';
+import type { Currency } from '@/lib/money';
 import { Price } from './Price';
 import { RatingStars } from './RatingStars';
 
 const IMAGE_SIZES =
   '(max-width: 768px) 50vw, (max-width: 1280px) 25vw, (max-width: 1536px) 20vw, 17vw';
 
-export function ProductCard({ product }: { product: ProductResponseDto }) {
-  const { name, slug, images, priceCents, stockQty, averageRating, reviewCount } = product;
+export function ProductCard({
+  product,
+  currency,
+}: {
+  product: ProductResponseDto;
+  currency: Currency;
+}) {
+  const { name, slug, images, stockQty, averageRating, reviewCount } = product;
   const outOfStock = stockQty === 0;
   const lowStock = stockQty >= 1 && stockQty <= 5;
 
@@ -53,7 +61,7 @@ export function ProductCard({ product }: { product: ProductResponseDto }) {
       </div>
       <div className="mt-3 space-y-1">
         <h3 className="text-sm font-medium text-ink">{name}</h3>
-        <Price cents={priceCents} className="text-sm text-ink/80" />
+        <Price cents={priceFor(product, currency)} currency={currency} className="text-sm text-ink/80" />
         <RatingStars rating={averageRating} count={reviewCount} />
       </div>
     </Link>

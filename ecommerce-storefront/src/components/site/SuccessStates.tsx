@@ -69,6 +69,10 @@ function ReassuranceView() {
 function PaidView({ order }: { order: OrderResponseDto }) {
   const address = normalizeShippingAddress(order.shippingAddress);
   const total = order.totalCents ?? order.subtotalCents;
+  // An order is pinned to whatever currency it was actually charged in, not
+  // whatever the shopper's cookie says right now — those can differ if they
+  // switch currency after checking out.
+  const currency = order.currency;
 
   return (
     <div>
@@ -85,7 +89,7 @@ function PaidView({ order }: { order: OrderResponseDto }) {
               <p className="text-ink">{item.name}</p>
               <p className="text-sm text-ink/60">Qty {item.quantity}</p>
             </div>
-            <Price cents={item.priceCents * item.quantity} />
+            <Price cents={item.priceCents * item.quantity} currency={currency} />
           </div>
         ))}
       </div>
@@ -93,17 +97,17 @@ function PaidView({ order }: { order: OrderResponseDto }) {
       <div className="mt-6 space-y-1">
         <div className="flex items-center justify-between">
           <span className="font-mono text-xs tracking-wide text-ink/60 uppercase">Subtotal</span>
-          <Price cents={order.subtotalCents} />
+          <Price cents={order.subtotalCents} currency={currency} />
         </div>
         {order.taxCents != null && (
           <div className="flex items-center justify-between">
             <span className="font-mono text-xs tracking-wide text-ink/60 uppercase">Tax</span>
-            <Price cents={order.taxCents} />
+            <Price cents={order.taxCents} currency={currency} />
           </div>
         )}
         <div className="flex items-center justify-between">
           <span className="font-mono text-xs tracking-wide text-ink/60 uppercase">Total</span>
-          <Price cents={total} className="text-lg" />
+          <Price cents={total} currency={currency} className="text-lg" />
         </div>
       </div>
 

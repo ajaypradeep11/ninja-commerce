@@ -8,6 +8,7 @@ import { ApiError, unwrap } from '@/api/unwrap';
 import { useAuth } from '@/auth/AuthProvider';
 import type { CartLine } from '@/cart/store';
 import { Button } from '@/components/ui/button';
+import type { Currency } from '@/lib/money';
 import { applyCartRefresh } from './cart-refresh';
 
 const STRIPE_CHECKOUT_ORIGIN = 'https://checkout.stripe.com';
@@ -24,9 +25,11 @@ function isStripeCheckoutUrl(url: string): boolean {
 export function CheckoutButton({
   lines,
   couponCode,
+  currency,
 }: {
   lines: CartLine[];
   couponCode?: string;
+  currency: Currency;
 }) {
   const { user } = useAuth();
   const router = useRouter();
@@ -37,6 +40,7 @@ export function CheckoutButton({
         checkoutControllerCreate({
           body: {
             items: lines.map((l) => ({ productId: l.productId, quantity: l.quantity })),
+            currency,
             ...(couponCode ? { couponCode } : {}),
           },
         }),
@@ -51,7 +55,7 @@ export function CheckoutButton({
     onError: (error) => {
       if (error instanceof ApiError && (error.status === 409 || error.status === 404)) {
         toast.error(error.message);
-        void applyCartRefresh(lines);
+        void applyCartRefresh(lines, currency);
         return;
       }
       if (error instanceof ApiError && error.status === 502) {

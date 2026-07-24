@@ -22,7 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { formatUsd } from '@/lib/money';
+import { formatMoney } from '@/lib/money';
 import { BulkUploadDialog } from './bulk-upload-dialog';
 
 const ALL_CATEGORIES = '__all__';
@@ -127,7 +127,7 @@ export function ProductsPage() {
                 >
                   <TableCell className="font-medium">{p.name}</TableCell>
                   <TableCell>{p.category?.name ?? '—'}</TableCell>
-                  <TableCell>{formatUsd(p.priceCents)}</TableCell>
+                  <TableCell>{formatMoney(p.priceCents, 'CAD')}</TableCell>
                   <TableCell>{p.stockQty}</TableCell>
                   <TableCell>
                     {p.averageRating === null

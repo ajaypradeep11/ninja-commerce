@@ -4,16 +4,19 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { X } from 'lucide-react';
 import type { CartLine } from '@/cart/store';
+import type { Currency } from '@/lib/money';
 import { cn } from '@/lib/utils';
 import { Price } from './Price';
 import { QtyStepper } from './QtyStepper';
 
 export function CartLineRow({
   line,
+  currency,
   onQuantityChange,
   onRemove,
 }: {
   line: CartLine;
+  currency: Currency;
   onQuantityChange: (productId: string, quantity: number) => void;
   onRemove: (productId: string) => void;
 }) {
@@ -38,7 +41,7 @@ export function CartLineRow({
             {line.name}
           </Link>
           <div className="mt-1">
-            <Price cents={line.priceCents} className="text-sm text-ink/60" />
+            <Price cents={line.priceCents} currency={currency} className="text-sm text-ink/60" />
           </div>
           {outOfStock && <p className="mt-1 font-mono text-sm text-highlight">Out of stock</p>}
           {lowStock && <p className="mt-1 font-mono text-sm text-highlight">Only {line.stockQty} left</p>}
@@ -51,7 +54,7 @@ export function CartLineRow({
             disabled={outOfStock}
             onChange={(q) => onQuantityChange(line.productId, q)}
           />
-          <Price cents={line.priceCents * line.quantity} className="w-20 text-right" />
+          <Price cents={line.priceCents * line.quantity} currency={currency} className="w-20 text-right" />
           <button
             type="button"
             aria-label={`Remove ${line.name}`}

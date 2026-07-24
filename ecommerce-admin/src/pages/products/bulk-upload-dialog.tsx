@@ -22,15 +22,16 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-const SAMPLE_CSV = `name,description,price,stock,category,active
-Fairy Tail Guild LED Lamp,16-color RGB lamp with remote,49.99,10,Anime Lamps,true
-Naruto Uzumaki LED Lamp,Sage mode pose with wood base,39.99,5,Anime Lamps,true`;
+const SAMPLE_CSV = `name,description,price,priceUsd,stock,category,active
+Fairy Tail Guild LED Lamp,16-color RGB lamp with remote,49.99,36.99,10,Anime Lamps,true
+Naruto Uzumaki LED Lamp,Sage mode pose with wood base,39.99,28.99,5,Anime Lamps,true`;
 
 interface ParsedRow {
   row: number;
   name: string;
   category: string;
   price: string;
+  priceUsd: string;
   stock: string;
   item?: BulkProductItemDto; // present when the row is valid
   error?: string;
@@ -45,13 +46,17 @@ export function validateRow(
   const name = (r.name ?? '').trim();
   const category = (r.category ?? '').trim();
   const priceStr = (r.price ?? '').trim();
+  const priceUsdStr = (r.priceUsd ?? '').trim();
   const stockStr = (r.stock ?? '').trim();
-  const base = { row, name, category, price: priceStr, stock: stockStr };
+  const base = { row, name, category, price: priceStr, priceUsd: priceUsdStr, stock: stockStr };
 
   if (!name) return { ...base, error: 'name is required' };
   const price = Number(priceStr);
   if (priceStr === '' || !Number.isFinite(price) || price < 0)
     return { ...base, error: 'invalid price' };
+  const priceUsd = Number(priceUsdStr);
+  if (priceUsdStr === '' || !Number.isFinite(priceUsd) || priceUsd < 0)
+    return { ...base, error: 'invalid USD price' };
   const stock = Number(stockStr);
   if (!Number.isInteger(stock) || stock < 0)
     return { ...base, error: 'invalid stock' };
@@ -68,6 +73,7 @@ export function validateRow(
       name,
       description: (r.description ?? '').trim(),
       priceCents: Math.round(price * 100),
+      priceUsdCents: Math.round(priceUsd * 100),
       stockQty: stock,
       categoryName: category,
       active,
@@ -151,8 +157,9 @@ export function BulkUploadDialog({
         <DialogHeader>
           <DialogTitle>Bulk upload products</DialogTitle>
           <DialogDescription>
-            Upload a CSV of products. Category must already exist. Price is in
-            dollars. Images are added per-product afterwards.
+            Upload a CSV of products. Category must already exist. Prices
+            (price = CAD, priceUsd = USD) are in dollars. Images are added
+            per-product afterwards.
           </DialogDescription>
         </DialogHeader>
 
@@ -185,7 +192,8 @@ export function BulkUploadDialog({
                     <TableHead className="w-10">#</TableHead>
                     <TableHead>Name</TableHead>
                     <TableHead>Category</TableHead>
-                    <TableHead>Price</TableHead>
+                    <TableHead>Price (CAD)</TableHead>
+                    <TableHead>Price (USD)</TableHead>
                     <TableHead>Status</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -198,6 +206,7 @@ export function BulkUploadDialog({
                       <TableCell>{r.name || '—'}</TableCell>
                       <TableCell>{r.category || '—'}</TableCell>
                       <TableCell>{r.price || '—'}</TableCell>
+                      <TableCell>{r.priceUsd || '—'}</TableCell>
                       <TableCell>
                         {r.item ? (
                           <span className="text-green-600">ok</span>

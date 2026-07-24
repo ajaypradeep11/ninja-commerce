@@ -1729,6 +1729,11 @@
       "ProductResponseDto": {
         "type": "object",
         "properties": {
+          "priceUsdCents": {
+            "type": "number",
+            "description": "USD price in cents",
+            "example": 3999
+          },
           "brandId": {
             "type": "string",
             "nullable": true
@@ -1792,6 +1797,7 @@
           }
         },
         "required": [
+          "priceUsdCents",
           "brandId",
           "averageRating",
           "reviewCount",
@@ -1851,6 +1857,10 @@
             "type": "number",
             "minimum": 0
           },
+          "priceUsdCents": {
+            "type": "number",
+            "minimum": 0
+          },
           "images": {
             "type": "array",
             "items": {
@@ -1878,6 +1888,7 @@
           "slug",
           "description",
           "priceCents",
+          "priceUsdCents",
           "images",
           "stockQty",
           "categoryId"
@@ -1886,6 +1897,11 @@
       "ProductBaseResponseDto": {
         "type": "object",
         "properties": {
+          "priceUsdCents": {
+            "type": "number",
+            "description": "USD price in cents",
+            "example": 3999
+          },
           "brandId": {
             "type": "string",
             "nullable": true
@@ -1930,6 +1946,7 @@
           }
         },
         "required": [
+          "priceUsdCents",
           "brandId",
           "id",
           "name",
@@ -1954,6 +1971,10 @@
             "type": "string"
           },
           "priceCents": {
+            "type": "number",
+            "minimum": 0
+          },
+          "priceUsdCents": {
             "type": "number",
             "minimum": 0
           },
@@ -2049,6 +2070,10 @@
             "type": "number",
             "minimum": 0
           },
+          "priceUsdCents": {
+            "type": "number",
+            "minimum": 0
+          },
           "images": {
             "type": "array",
             "items": {
@@ -2102,10 +2127,18 @@
           "couponCode": {
             "type": "string",
             "maxLength": 32
+          },
+          "currency": {
+            "type": "string",
+            "enum": [
+              "CAD",
+              "USD"
+            ]
           }
         },
         "required": [
-          "items"
+          "items",
+          "currency"
         ]
       },
       "CheckoutSessionResponseDto": {
@@ -2170,6 +2203,14 @@
       "OrderResponseDto": {
         "type": "object",
         "properties": {
+          "currency": {
+            "enum": [
+              "CAD",
+              "USD"
+            ],
+            "type": "string",
+            "description": "Currency this order was charged in"
+          },
           "status": {
             "allOf": [
               {
@@ -2247,6 +2288,7 @@
           }
         },
         "required": [
+          "currency",
           "status",
           "stripeSessionId",
           "stripePaymentIntentId",

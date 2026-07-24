@@ -1,6 +1,8 @@
 import { productsControllerFindBySlug, type ProductResponseDto } from '@/api/generated';
 import { ApiError, unwrap } from '@/api/unwrap';
-import { removeLine, updateLineMeta, type CartLine } from '@/cart/store';
+import { removeLine, setCartCurrency, updateLineMeta, type CartLine } from '@/cart/store';
+import { priceFor } from '@/lib/currency';
+import type { Currency } from '@/lib/money';
 
 type LinePatch = Parameters<typeof updateLineMeta>[1];
 
@@ -12,6 +14,7 @@ type LinePatch = Parameters<typeof updateLineMeta>[1];
 export async function refreshCartLines(
   lines: CartLine[],
   fetchBySlug: (slug: string) => Promise<ProductResponseDto>,
+  currency: Currency,
 ): Promise<{ updates: Array<{ productId: string; patch: LinePatch }>; unavailable: string[] }> {
   const results = await Promise.allSettled(lines.map((line) => fetchBySlug(line.slug)));
 
@@ -31,7 +34,10 @@ export async function refreshCartLines(
 
     const product = result.value;
     const patch: LinePatch = {};
-    if (product.priceCents !== line.priceCents) patch.priceCents = product.priceCents;
+    // The cart caches a price per line, so it must be re-read in whatever
+    // currency is active — otherwise switching currency leaves stale amounts.
+    const activePrice = priceFor(product, currency);
+    if (activePrice !== line.priceCents) patch.priceCents = activePrice;
     if (product.stockQty !== line.stockQty) patch.stockQty = product.stockQty;
     if (product.name !== line.name) patch.name = product.name;
     const image = product.images[0] ?? null;
@@ -56,10 +62,12 @@ function defaultFetchBySlug(slug: string): Promise<ProductResponseDto> {
  */
 export async function applyCartRefresh(
   lines: CartLine[],
+  currency: Currency,
   fetchBySlug: (slug: string) => Promise<ProductResponseDto> = defaultFetchBySlug,
 ): Promise<{ removedUnavailable: boolean }> {
-  const { updates, unavailable } = await refreshCartLines(lines, fetchBySlug);
+  const { updates, unavailable } = await refreshCartLines(lines, fetchBySlug, currency);
   updates.forEach(({ productId, patch }) => updateLineMeta(productId, patch));
   unavailable.forEach((productId) => removeLine(productId));
+  setCartCurrency(currency);
   return { removedUnavailable: unavailable.length > 0 };
 }

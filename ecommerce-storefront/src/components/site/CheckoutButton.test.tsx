@@ -66,7 +66,7 @@ describe('CheckoutButton', () => {
   it('redirects to login with a next param when signed out, without calling checkout', async () => {
     useAuthMock.mockReturnValue({ user: null, loading: false });
     const user = userEvent.setup();
-    renderWithClient(<CheckoutButton lines={[makeLine()]} />);
+    renderWithClient(<CheckoutButton lines={[makeLine()]} currency="CAD" />);
 
     await user.click(screen.getByRole('button', { name: 'Checkout' }));
 
@@ -81,7 +81,7 @@ describe('CheckoutButton', () => {
     });
     const lines = [makeLine({ productId: 'prod_1', quantity: 2 }), makeLine({ productId: 'prod_2', quantity: 1 })];
     const user = userEvent.setup();
-    renderWithClient(<CheckoutButton lines={lines} />);
+    renderWithClient(<CheckoutButton lines={lines} currency="CAD" />);
 
     await user.click(screen.getByRole('button', { name: 'Checkout' }));
 
@@ -91,6 +91,7 @@ describe('CheckoutButton', () => {
           { productId: 'prod_1', quantity: 2 },
           { productId: 'prod_2', quantity: 1 },
         ],
+        currency: 'CAD',
       },
     });
     await vi.waitFor(() => expect(assignMock).toHaveBeenCalledWith('https://checkout.stripe.com/session_123'));
@@ -102,7 +103,7 @@ describe('CheckoutButton', () => {
       data: { url: 'https://evil.example.com/phish', orderId: 'order_1' },
     });
     const user = userEvent.setup();
-    renderWithClient(<CheckoutButton lines={[makeLine()]} />);
+    renderWithClient(<CheckoutButton lines={[makeLine()]} currency="CAD" />);
 
     await user.click(screen.getByRole('button', { name: 'Checkout' }));
 
@@ -118,12 +119,12 @@ describe('CheckoutButton', () => {
     });
     const lines = [makeLine({ quantity: 3, stockQty: 1 })];
     const user = userEvent.setup();
-    renderWithClient(<CheckoutButton lines={lines} />);
+    renderWithClient(<CheckoutButton lines={lines} currency="CAD" />);
 
     await user.click(screen.getByRole('button', { name: 'Checkout' }));
 
     await vi.waitFor(() => expect(toastErrorMock).toHaveBeenCalledWith('Only 1 left of Heavyweight Hoodie'));
-    expect(applyCartRefreshMock).toHaveBeenCalledWith(lines);
+    expect(applyCartRefreshMock).toHaveBeenCalledWith(lines, 'CAD');
     expect(assignMock).not.toHaveBeenCalled();
   });
 
@@ -135,12 +136,12 @@ describe('CheckoutButton', () => {
     });
     const lines = [makeLine()];
     const user = userEvent.setup();
-    renderWithClient(<CheckoutButton lines={lines} />);
+    renderWithClient(<CheckoutButton lines={lines} currency="CAD" />);
 
     await user.click(screen.getByRole('button', { name: 'Checkout' }));
 
     await vi.waitFor(() => expect(toastErrorMock).toHaveBeenCalledWith('Product no longer exists'));
-    expect(applyCartRefreshMock).toHaveBeenCalledWith(lines);
+    expect(applyCartRefreshMock).toHaveBeenCalledWith(lines, 'CAD');
   });
 
   it('toasts the API message on a 502 (e.g. Stripe session-creation failure), without re-running the refresh', async () => {
@@ -151,7 +152,7 @@ describe('CheckoutButton', () => {
     });
     const lines = [makeLine()];
     const user = userEvent.setup();
-    renderWithClient(<CheckoutButton lines={lines} />);
+    renderWithClient(<CheckoutButton lines={lines} currency="CAD" />);
 
     await user.click(screen.getByRole('button', { name: 'Checkout' }));
 
@@ -168,7 +169,7 @@ describe('CheckoutButton', () => {
     checkoutControllerCreateMock.mockRejectedValue(new ApiError(500, 'boom'));
     const lines = [makeLine()];
     const user = userEvent.setup();
-    renderWithClient(<CheckoutButton lines={lines} />);
+    renderWithClient(<CheckoutButton lines={lines} currency="CAD" />);
 
     await user.click(screen.getByRole('button', { name: 'Checkout' }));
 
@@ -178,7 +179,7 @@ describe('CheckoutButton', () => {
 
   it('is disabled when the cart is empty', () => {
     useAuthMock.mockReturnValue({ user: { uid: 'u1' }, loading: false });
-    renderWithClient(<CheckoutButton lines={[]} />);
+    renderWithClient(<CheckoutButton lines={[]} currency="CAD" />);
 
     expect(screen.getByRole('button', { name: 'Checkout' })).toBeDisabled();
   });
@@ -186,7 +187,7 @@ describe('CheckoutButton', () => {
   it('is disabled with helper text when any line is out of stock', () => {
     useAuthMock.mockReturnValue({ user: { uid: 'u1' }, loading: false });
     const lines = [makeLine({ productId: 'prod_1' }), makeLine({ productId: 'prod_2', stockQty: 0, quantity: 1 })];
-    renderWithClient(<CheckoutButton lines={lines} />);
+    renderWithClient(<CheckoutButton lines={lines} currency="CAD" />);
 
     expect(screen.getByRole('button', { name: 'Checkout' })).toBeDisabled();
     expect(screen.getByText('Remove out-of-stock items to check out.')).toBeInTheDocument();

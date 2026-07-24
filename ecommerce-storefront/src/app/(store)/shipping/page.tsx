@@ -52,29 +52,6 @@ export default function ShippingPage() {
       </section>
 
       <section>
-        <h2 className="font-display text-xl text-ink">International shipping</h2>
-        <p className="mt-2">
-          We ship worldwide, with free standard international shipping on
-          eligible orders over {policy.freeShippingInternational}. Standard
-          delivery takes 15 to 25 business days, and faster expedited options
-          are calculated at checkout based on your location.
-        </p>
-        <p className="mt-4">
-          Due to some regional mailing restrictions, our anime lamps,
-          lightboxes, and keystraps are currently only available for domestic
-          shipping within Canada and the US.
-        </p>
-        <p className="mt-4">
-          International orders may be subject to import taxes, customs duties,
-          and fees levied by your destination country once the package arrives.
-          These charges are the customer&rsquo;s responsibility and are not
-          included in the item price or shipping cost at checkout. Customs
-          clearance can occasionally cause delays beyond our estimated
-          timelines, which are outside our control.
-        </p>
-      </section>
-
-      <section>
         <h2 className="font-display text-xl text-ink">
           We&rsquo;re here for you
         </h2>

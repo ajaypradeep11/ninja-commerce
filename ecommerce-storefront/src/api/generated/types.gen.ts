@@ -116,6 +116,10 @@ export type UpdateCouponDto = {
 };
 
 export type ProductResponseDto = {
+  /**
+   * USD price in cents
+   */
+  priceUsdCents: number;
   brandId: string | null;
   averageRating: number | null;
   category?: CategoryResponseDto;
@@ -146,6 +150,7 @@ export type CreateProductDto = {
   slug: string;
   description: string;
   priceCents: number;
+  priceUsdCents: number;
   images: Array<string>;
   stockQty: number;
   categoryId: string;
@@ -154,6 +159,10 @@ export type CreateProductDto = {
 };
 
 export type ProductBaseResponseDto = {
+  /**
+   * USD price in cents
+   */
+  priceUsdCents: number;
   brandId: string | null;
   id: string;
   name: string;
@@ -172,6 +181,7 @@ export type BulkProductItemDto = {
   name?: string;
   description?: string;
   priceCents?: number;
+  priceUsdCents?: number;
   stockQty?: number;
   categoryName?: string;
   active?: boolean;
@@ -209,6 +219,7 @@ export type UpdateProductDto = {
   slug?: string;
   description?: string;
   priceCents?: number;
+  priceUsdCents?: number;
   images?: Array<string>;
   stockQty?: number;
   categoryId?: string;
@@ -224,6 +235,7 @@ export type CheckoutItemDto = {
 export type CreateCheckoutDto = {
   items: Array<CheckoutItemDto>;
   couponCode?: string;
+  currency: 'CAD' | 'USD';
 };
 
 export type CheckoutSessionResponseDto = {
@@ -250,6 +262,10 @@ export type OrderItemResponseDto = {
 };
 
 export type OrderResponseDto = {
+  /**
+   * Currency this order was charged in
+   */
+  currency: 'CAD' | 'USD';
   status: OrderStatus;
   stripeSessionId: string | null;
   stripePaymentIntentId: string | null;

@@ -25,7 +25,7 @@ const SECTIONS = [
       {
         value: 'free-shipping',
         question: 'Do you offer free shipping?',
-        answer: `Yes. We offer free standard shipping on all orders over ${policy.freeShipping}, and free standard international shipping on eligible orders over ${policy.freeShippingInternational}.`,
+        answer: `Yes. We offer free standard shipping on all Canadian orders over ${policy.freeShipping}.`,
       },
       {
         value: 'ottawa',

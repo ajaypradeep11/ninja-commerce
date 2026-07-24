@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { cookies } from 'next/headers';
 import {
   brandsControllerFindAll,
   categoriesControllerFindAll,
@@ -7,6 +8,7 @@ import {
 } from '@/api/generated';
 import { unwrap } from '@/api/unwrap';
 import { serverFetchOptions } from '@/api/server';
+import { CURRENCY_COOKIE, parseCurrency } from '@/lib/currency';
 import { ProductCard } from '@/components/site/ProductCard';
 import { FilterSortPanel } from '@/components/site/FilterSortPanel';
 import { Pagination } from '@/components/site/Pagination';
@@ -50,6 +52,9 @@ interface ProductsPageProps {
 }
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
+  // Reading cookies opts this route into dynamic rendering, which is what stops
+  // a cached page from serving the wrong currency's prices.
+  const currency = parseCurrency((await cookies()).get(CURRENCY_COOKIE)?.value);
   const params = await searchParams;
   const categorySlugs = parseSlugs(params.category);
   const brandSlugs = parseSlugs(params.brand);
@@ -133,7 +138,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
           ) : (
             <div className="grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
               {products.items.map((product) => (
-                <ProductCard key={product.id} product={product} />
+                <ProductCard key={product.id} product={product} currency={currency} />
               ))}
             </div>
           )}

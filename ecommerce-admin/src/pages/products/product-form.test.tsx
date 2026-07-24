@@ -11,6 +11,7 @@ const existingProduct = {
   slug: 'organic-cotton-tee',
   description: 'Soft tee',
   priceCents: 2999,
+  priceUsdCents: 2199,
   images: [],
   stockQty: 10,
   active: true,
@@ -94,7 +95,8 @@ describe('ProductFormPage (create)', () => {
     renderNew();
     await user.type(screen.getByLabelText('Name'), 'Tee');
     await user.type(screen.getByPlaceholderText(/describe the product/i), 'Nice tee');
-    await user.type(screen.getByLabelText('Price (USD)'), '29.99');
+    await user.type(screen.getByLabelText('Price (CAD)'), '29.99');
+    await user.type(screen.getByLabelText('Price (USD)'), '21.99');
     await user.type(screen.getByLabelText('Stock'), '10');
     await user.click(screen.getByRole('combobox', { name: 'Category' }));
     await user.click(await screen.findByRole('option', { name: 'Tees' }));
@@ -105,6 +107,7 @@ describe('ProductFormPage (create)', () => {
       name: 'Tee',
       slug: 'tee',
       priceCents: 2999,
+      priceUsdCents: 2199,
       stockQty: 10,
       categoryId: 'c1',
       active: true,
@@ -116,7 +119,8 @@ describe('ProductFormPage (create)', () => {
     renderNew();
     await user.type(screen.getByLabelText('Name'), 'Tee');
     await user.type(screen.getByPlaceholderText(/describe the product/i), 'Nice tee');
-    await user.type(screen.getByLabelText('Price (USD)'), '1.999');
+    await user.type(screen.getByLabelText('Price (CAD)'), '1.999');
+    await user.type(screen.getByLabelText('Price (USD)'), '29.99');
     await user.type(screen.getByLabelText('Stock'), '10');
     await user.click(screen.getByRole('combobox', { name: 'Category' }));
     await user.click(await screen.findByRole('option', { name: 'Tees' }));
@@ -124,6 +128,27 @@ describe('ProductFormPage (create)', () => {
 
     expect(await screen.findByText(/valid price/i)).toBeInTheDocument();
     expect(createMutate).not.toHaveBeenCalled();
+  });
+
+  it('blocks submit when the USD price is empty', async () => {
+    const user = userEvent.setup();
+    renderNew();
+
+    await user.type(screen.getByLabelText('Name'), 'Lamp');
+    await user.type(screen.getByLabelText('Price (CAD)'), '54.99');
+    await user.click(screen.getByRole('button', { name: /save|create/i }));
+
+    expect(await screen.findByText('Enter a valid price')).toBeInTheDocument();
+  });
+
+  it('fills the USD price from CAD when the autofill button is clicked', async () => {
+    const user = userEvent.setup();
+    renderNew();
+
+    await user.type(screen.getByLabelText('Price (CAD)'), '54.99');
+    await user.click(screen.getByRole('button', { name: 'Autofill from CAD' }));
+
+    expect(screen.getByLabelText('Price (USD)')).toHaveValue('39.99');
   });
 });
 
