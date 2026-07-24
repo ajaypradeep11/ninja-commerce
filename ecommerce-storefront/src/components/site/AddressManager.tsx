@@ -18,17 +18,22 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
+// Canada-only store: country is fixed to CA and postal codes must be Canadian.
+const POSTAL_CODE_RE = /^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/;
+
 const schema = z.object({
   label: z.string().optional(),
   line1: z.string().min(1, 'Line 1 is required.'),
   line2: z.string().optional(),
   city: z.string().min(1, 'City is required.'),
   state: z.string().optional(),
-  postalCode: z.string().min(1, 'Postal code is required.'),
-  country: z
+  postalCode: z
     .string()
-    .length(2, 'Use a 2-letter country code')
-    .transform((v) => v.toUpperCase()),
+    .regex(POSTAL_CODE_RE, 'Enter a Canadian postal code (A1A 1A1).')
+    .transform((v) => {
+      const compact = v.toUpperCase().replace(/[ -]/g, '');
+      return `${compact.slice(0, 3)} ${compact.slice(3)}`;
+    }),
 });
 
 type FormInput = z.input<typeof schema>;
@@ -43,7 +48,6 @@ const BLANK: FormInput = {
   city: '',
   state: '',
   postalCode: '',
-  country: '',
 };
 
 function AddressForm({
@@ -74,7 +78,7 @@ function AddressForm({
       city: values.city,
       state: values.state || undefined,
       postalCode: values.postalCode,
-      country: values.country,
+      country: 'CA',
     };
     onSubmit(address);
   }
@@ -117,7 +121,7 @@ function AddressForm({
           )}
         </div>
         <div className="grid gap-2">
-          <Label htmlFor="address-state">State</Label>
+          <Label htmlFor="address-state">Province</Label>
           <Input id="address-state" {...register('state')} />
         </div>
       </div>
@@ -135,14 +139,7 @@ function AddressForm({
         </div>
         <div className="grid gap-2">
           <Label htmlFor="address-country">Country</Label>
-          <Input
-            id="address-country"
-            aria-invalid={!!errors.country}
-            {...register('country')}
-          />
-          {errors.country && (
-            <p className="text-sm text-highlight">{errors.country.message}</p>
-          )}
+          <Input id="address-country" value="Canada" readOnly disabled />
         </div>
       </div>
       <DialogFooter>

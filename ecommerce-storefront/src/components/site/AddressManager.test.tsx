@@ -27,16 +27,18 @@ function makeUser(addresses: AddressDto[]): UserResponseDto {
 const ADDR_1: AddressDto = {
   label: 'Home',
   line1: '1 Main St',
-  city: 'Springfield',
-  postalCode: '12345',
-  country: 'US',
+  city: 'Ottawa',
+  state: 'ON',
+  postalCode: 'K1A 0B1',
+  country: 'CA',
 };
 const ADDR_2: AddressDto = {
   label: 'Work',
   line1: '2 Market St',
-  city: 'Metropolis',
-  postalCode: '54321',
-  country: 'US',
+  city: 'Toronto',
+  state: 'ON',
+  postalCode: 'M5V 2T6',
+  country: 'CA',
 };
 
 beforeEach(() => {
@@ -76,9 +78,9 @@ describe('AddressManager', () => {
 
     await user.click(screen.getByRole('button', { name: 'Add address' }));
     await user.type(screen.getByLabelText('Line 1'), '3 New St');
-    await user.type(screen.getByLabelText('City'), 'Gotham');
-    await user.type(screen.getByLabelText('Postal code'), '99999');
-    await user.type(screen.getByLabelText('Country'), 'us');
+    await user.type(screen.getByLabelText('City'), 'Kanata');
+    await user.type(screen.getByLabelText('Province'), 'ON');
+    await user.type(screen.getByLabelText('Postal code'), 'k2l1t9');
     await user.click(screen.getByRole('button', { name: 'Save' }));
 
     expect(mutateMock).toHaveBeenCalledTimes(1);
@@ -86,9 +88,10 @@ describe('AddressManager', () => {
     expect(payload).toHaveLength(3);
     expect(payload[2]).toMatchObject({
       line1: '3 New St',
-      city: 'Gotham',
-      postalCode: '99999',
-      country: 'US',
+      city: 'Kanata',
+      state: 'ON',
+      postalCode: 'K2L 1T9',
+      country: 'CA',
     });
   });
 
@@ -112,7 +115,7 @@ describe('AddressManager', () => {
     expect(payload[0]).toMatchObject({ label: 'Work' });
   });
 
-  it('rejects a 3-letter country code with the exact message and does not submit', async () => {
+  it('rejects a non-Canadian postal code with the exact message and does not submit', async () => {
     useMeMock.mockReturnValue({ data: makeUser([]) });
     const user = userEvent.setup();
     render(<AddressManager />);
@@ -121,13 +124,23 @@ describe('AddressManager', () => {
     await user.type(screen.getByLabelText('Line 1'), '3 New St');
     await user.type(screen.getByLabelText('City'), 'Gotham');
     await user.type(screen.getByLabelText('Postal code'), '99999');
-    await user.type(screen.getByLabelText('Country'), 'USA');
     await user.click(screen.getByRole('button', { name: 'Save' }));
 
     expect(
-      await screen.findByText('Use a 2-letter country code'),
+      await screen.findByText('Enter a Canadian postal code (A1A 1A1).'),
     ).toBeInTheDocument();
     expect(mutateMock).not.toHaveBeenCalled();
+  });
+
+  it('shows the country as fixed Canada with no editable input', async () => {
+    useMeMock.mockReturnValue({ data: makeUser([]) });
+    const user = userEvent.setup();
+    render(<AddressManager />);
+
+    await user.click(screen.getByRole('button', { name: 'Add address' }));
+    const country = screen.getByLabelText('Country');
+    expect(country).toHaveValue('Canada');
+    expect(country).toHaveAttribute('readonly');
   });
 
   it('disables all mutating controls while an update is in flight', () => {
