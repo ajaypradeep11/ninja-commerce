@@ -1,16 +1,13 @@
 import { parseCurrency, priceFor } from './currency';
 
 describe('parseCurrency', () => {
-  it('accepts CAD and USD', () => {
+  it('always returns CAD — the store is CAD-only', () => {
     expect(parseCurrency('CAD')).toBe('CAD');
-    expect(parseCurrency('USD')).toBe('USD');
+    expect(parseCurrency('USD')).toBe('CAD');
   });
 
-  it('defaults to CAD when absent', () => {
+  it('ignores absent or unrecognised preferences', () => {
     expect(parseCurrency(undefined)).toBe('CAD');
-  });
-
-  it('defaults to CAD for an unrecognised value', () => {
     expect(parseCurrency('EUR')).toBe('CAD');
   });
 });
