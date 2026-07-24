@@ -192,4 +192,49 @@ describe('CheckoutButton', () => {
     expect(screen.getByRole('button', { name: 'Checkout' })).toBeDisabled();
     expect(screen.getByText('Remove out-of-stock items to check out.')).toBeInTheDocument();
   });
+
+  const HOME = {
+    name: 'Riley Shopper',
+    label: 'Home',
+    line1: '1 Main St',
+    city: 'Ottawa',
+    state: 'ON',
+    postalCode: 'K1A 0B1',
+    country: 'CA',
+  };
+
+  it('includes the selected shipping address in the checkout body', async () => {
+    useAuthMock.mockReturnValue({ user: { uid: 'u1' }, loading: false });
+    checkoutControllerCreateMock.mockResolvedValue({
+      data: { url: 'https://checkout.stripe.com/session_123', orderId: 'order_1' },
+    });
+    const lines = [makeLine()];
+    const user = userEvent.setup();
+    renderWithClient(<CheckoutButton lines={lines} currency="CAD" shippingAddress={HOME} />);
+
+    await user.click(screen.getByRole('button', { name: 'Checkout' }));
+
+    await vi.waitFor(() => expect(checkoutControllerCreateMock).toHaveBeenCalledTimes(1));
+    expect(checkoutControllerCreateMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        body: expect.objectContaining({ shippingAddress: HOME }),
+      }),
+    );
+  });
+
+  it('omits shippingAddress from the body when none is selected', async () => {
+    useAuthMock.mockReturnValue({ user: { uid: 'u1' }, loading: false });
+    checkoutControllerCreateMock.mockResolvedValue({
+      data: { url: 'https://checkout.stripe.com/session_123', orderId: 'order_1' },
+    });
+    const lines = [makeLine()];
+    const user = userEvent.setup();
+    renderWithClient(<CheckoutButton lines={lines} currency="CAD" />);
+
+    await user.click(screen.getByRole('button', { name: 'Checkout' }));
+
+    await vi.waitFor(() => expect(checkoutControllerCreateMock).toHaveBeenCalledTimes(1));
+    const body = checkoutControllerCreateMock.mock.calls[0][0].body;
+    expect(body).not.toHaveProperty('shippingAddress');
+  });
 });

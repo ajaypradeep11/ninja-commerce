@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { couponsControllerValidate } from '@/api/generated';
+import { couponsControllerValidate, type AddressDto } from '@/api/generated';
 import { ApiError, unwrap } from '@/api/unwrap';
 import { useAuth } from '@/auth/AuthProvider';
 import { subtotalCents, type CartLine } from '@/cart/store';
@@ -18,7 +18,15 @@ interface CouponQuote {
   discountCents: number;
 }
 
-export function CartSummary({ lines, currency }: { lines: CartLine[]; currency: Currency }) {
+export function CartSummary({
+  lines,
+  currency,
+  shippingAddress,
+}: {
+  lines: CartLine[];
+  currency: Currency;
+  shippingAddress?: AddressDto;
+}) {
   const subtotal = subtotalCents(lines);
   const { user } = useAuth();
   const router = useRouter();
@@ -134,7 +142,12 @@ export function CartSummary({ lines, currency }: { lines: CartLine[]; currency: 
         one use per customer.
       </p>
       <div className="mt-6">
-        <CheckoutButton lines={lines} couponCode={quote?.code} currency={currency} />
+        <CheckoutButton
+          lines={lines}
+          couponCode={quote?.code}
+          currency={currency}
+          shippingAddress={shippingAddress}
+        />
       </div>
     </div>
   );

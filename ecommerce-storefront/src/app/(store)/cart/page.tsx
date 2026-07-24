@@ -1,17 +1,20 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import type { AddressDto } from '@/api/generated';
 import { getLines, removeLine, setQuantity } from '@/cart/store';
 import { useCart } from '@/cart/useCart';
 import { applyCartRefresh } from '@/components/site/cart-refresh';
 import { CartLineRow } from '@/components/site/CartLineRow';
 import { CartSummary } from '@/components/site/CartSummary';
+import { ShipToSelector } from '@/components/site/ShipToSelector';
 import { readClientCurrency } from '@/lib/currency';
 
 export default function CartPage() {
   const { lines, hydrated } = useCart();
+  const [shipTo, setShipTo] = useState<AddressDto | null>(null);
 
   // Read fresh on every render (not memoized) so a currency switch — which
   // triggers router.refresh() — picks up the new cookie value immediately.
@@ -68,7 +71,12 @@ export default function CartPage() {
           ))}
         </div>
 
-        <CartSummary lines={lines} currency={currency} />
+        <div>
+          <ShipToSelector selected={shipTo} onSelect={setShipTo} />
+          <div className="mt-6">
+            <CartSummary lines={lines} currency={currency} shippingAddress={shipTo ?? undefined} />
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -3,7 +3,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { checkoutControllerCreate } from '@/api/generated';
+import { checkoutControllerCreate, type AddressDto } from '@/api/generated';
 import { ApiError, unwrap } from '@/api/unwrap';
 import { useAuth } from '@/auth/AuthProvider';
 import type { CartLine } from '@/cart/store';
@@ -26,10 +26,12 @@ export function CheckoutButton({
   lines,
   couponCode,
   currency,
+  shippingAddress,
 }: {
   lines: CartLine[];
   couponCode?: string;
   currency: Currency;
+  shippingAddress?: AddressDto;
 }) {
   const { user } = useAuth();
   const router = useRouter();
@@ -42,6 +44,7 @@ export function CheckoutButton({
             items: lines.map((l) => ({ productId: l.productId, quantity: l.quantity })),
             currency,
             ...(couponCode ? { couponCode } : {}),
+            ...(shippingAddress ? { shippingAddress } : {}),
           },
         }),
       ),
