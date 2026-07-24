@@ -15,9 +15,9 @@ import { StripeService } from '../stripe/stripe.service';
 import { UsersService } from '../users/users.service';
 import { CreateCheckoutDto } from './dto/create-checkout.dto';
 
-// Canada and the US. Stripe Tax computes the destination's sales tax from the
+// Canada only. Stripe Tax computes the destination's sales tax from the
 // address the customer enters on the hosted Checkout page.
-const SHIPPING_COUNTRIES = ['CA', 'US'] as const;
+const SHIPPING_COUNTRIES = ['CA'] as const;
 
 // The shopper's chosen currency selects which price column we bill from. Both
 // prices are set by hand in admin, so nothing is converted at request time.

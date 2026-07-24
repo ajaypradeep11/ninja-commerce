@@ -151,11 +151,10 @@ describe('CheckoutService', () => {
     expect(sessionArgs.allow_promotion_codes).toBeUndefined();
     expect(sessionArgs.discounts).toBeUndefined();
     expect(sessionArgs.metadata).toEqual({ orderId: 'o1' });
-    // Canada and the US; Stripe Tax computes the destination's sales tax.
+    // Canada only; Stripe Tax computes the destination's sales tax.
     expect(sessionArgs.automatic_tax).toEqual({ enabled: true });
     expect(sessionArgs.shipping_address_collection.allowed_countries).toEqual([
       'CA',
-      'US',
     ]);
     expect(sessionArgs.line_items).toEqual([
       {
@@ -277,7 +276,6 @@ describe('CheckoutService', () => {
     const session = stripe.client.checkout.sessions.create.mock.calls[0][0];
     expect(session.shipping_address_collection.allowed_countries).toEqual([
       'CA',
-      'US',
     ]);
   });
 
