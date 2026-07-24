@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import type { AddressDto } from '@/api/generated';
 import { useMe, useUpdateAddresses } from '@/api/hooks/account';
 import { useAuth } from '@/auth/AuthProvider';
@@ -15,6 +15,20 @@ import {
 
 const addressKey = (a: AddressDto) => `${a.line1}|${a.postalCode}|${a.label ?? ''}`;
 
+// Resolve which saved address is selected by array position, not content —
+// two saved addresses can have identical line1+postalCode+label, and a
+// content-based key would incorrectly mark both as checked. Reference
+// equality first (the common case: `selected` is the exact object handed
+// back by a prior onSelect from this same `addresses` array); fall back to
+// the first content match so a selection made just before a profile refetch
+// doesn't just vanish.
+function resolveSelectedIndex(addresses: AddressDto[], selected: AddressDto | null): number {
+  if (!selected) return -1;
+  const byRef = addresses.indexOf(selected);
+  if (byRef !== -1) return byRef;
+  return addresses.findIndex((a) => addressKey(a) === addressKey(selected));
+}
+
 // Cart-side picker for the saved-address book. Selecting is optional — with
 // nothing selected the shopper types the address on Stripe's page as before.
 export function ShipToSelector({
@@ -28,8 +42,10 @@ export function ShipToSelector({
   const { data: me } = useMe();
   const updateAddresses = useUpdateAddresses();
   const [adding, setAdding] = useState(false);
+  const groupName = useId();
 
   const addresses = me?.addresses ?? [];
+  const selectedIndex = resolveSelectedIndex(addresses, selected);
 
   // Preselect the first saved address once the profile loads.
   const firstKey = addresses.length > 0 ? addressKey(addresses[0]) : null;
@@ -63,19 +79,22 @@ export function ShipToSelector({
         </p>
       ) : (
         <div className="mt-3 grid gap-2" role="radiogroup" aria-label="Ship to">
-          {addresses.map((address) => {
-            const isSelected = selected !== null && addressKey(address) === addressKey(selected);
+          {addresses.map((address, index) => {
+            const isSelected = index === selectedIndex;
             return (
-              <button
-                key={addressKey(address)}
-                type="button"
-                role="radio"
-                aria-checked={isSelected}
-                onClick={() => onSelect(address)}
-                className={`border p-3 text-left text-sm ${
+              <label
+                key={`${addressKey(address)}-${index}`}
+                className={`block cursor-pointer border p-3 text-left text-sm ${
                   isSelected ? 'border-ink bg-ink/5' : 'border-ink/10'
                 }`}
               >
+                <input
+                  type="radio"
+                  name={groupName}
+                  className="sr-only"
+                  checked={isSelected}
+                  onChange={() => onSelect(address)}
+                />
                 {address.label && (
                   <span className="font-mono text-xs tracking-wide text-ink/60 uppercase">
                     {address.label}
@@ -87,7 +106,7 @@ export function ShipToSelector({
                   {address.line1}, {address.city}
                   {address.state ? `, ${address.state}` : ''} {address.postalCode}
                 </span>
-              </button>
+              </label>
             );
           })}
         </div>

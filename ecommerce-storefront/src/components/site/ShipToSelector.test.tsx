@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { useState } from 'react';
 import type { AddressDto } from '@/api/generated';
 
 const useMeMock = vi.fn();
@@ -39,6 +40,14 @@ const WORK: AddressDto = {
 
 function makeMe(addresses: AddressDto[]) {
   return { data: { id: 'u1', email: 's@example.com', role: 'CUSTOMER', addresses, createdAt: '', updatedAt: '' } };
+}
+
+// Controlled-component harness mirroring how cart/page.tsx owns `shipTo`
+// state — needed to exercise selection round-trips (click/arrow key -> a
+// re-render with the new `selected` prop) rather than just the callback arg.
+function ControlledSelector({ initial }: { initial: AddressDto | null }) {
+  const [selected, setSelected] = useState<AddressDto | null>(initial);
+  return <ShipToSelector selected={selected} onSelect={setSelected} />;
 }
 
 beforeEach(() => {
@@ -91,5 +100,43 @@ describe('ShipToSelector', () => {
     expect(onSelect).toHaveBeenCalledWith(
       expect.objectContaining({ line1: '3 New St', postalCode: 'K2L 1T9' }),
     );
+  });
+
+  it('checks exactly one radio when two saved addresses are identical', async () => {
+    // Same line1/postalCode/label on both — a content-based key would give
+    // them the same identity and (with the old aria-checked-by-key logic)
+    // both would render checked at once.
+    const DUP_A: AddressDto = { ...HOME };
+    const DUP_B: AddressDto = { ...HOME };
+    useMeMock.mockReturnValue(makeMe([DUP_A, DUP_B]));
+    const user = userEvent.setup();
+    render(<ControlledSelector initial={null} />);
+
+    const radios = await screen.findAllByRole('radio', { name: /1 Main St/ });
+    expect(radios).toHaveLength(2);
+    await waitFor(() => expect(radios[0]).toBeChecked());
+
+    await user.click(radios[1]);
+
+    expect(radios[1]).toBeChecked();
+    expect(radios[0]).not.toBeChecked();
+    expect(screen.getAllByRole('radio', { checked: true })).toHaveLength(1);
+  });
+
+  it('moves selection with the arrow keys like a native radio group', async () => {
+    useMeMock.mockReturnValue(makeMe([HOME, WORK]));
+    const user = userEvent.setup();
+    render(<ControlledSelector initial={null} />);
+
+    const home = await screen.findByRole('radio', { name: /1 Main St/ });
+    const work = screen.getByRole('radio', { name: /2 Market St/ });
+    await waitFor(() => expect(home).toBeChecked());
+
+    home.focus();
+    await user.keyboard('{ArrowDown}');
+
+    expect(work).toBeChecked();
+    expect(home).not.toBeChecked();
+    expect(screen.getAllByRole('radio', { checked: true })).toHaveLength(1);
   });
 });
