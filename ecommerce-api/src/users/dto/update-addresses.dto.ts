@@ -12,6 +12,11 @@ export class AddressDto {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
+  name?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
   label?: string;
 
   @ApiProperty()

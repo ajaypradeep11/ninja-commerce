@@ -5,6 +5,7 @@ export type ClientOptions = {
 };
 
 export type AddressDto = {
+  name?: string;
   label?: string;
   line1: string;
   line2?: string;

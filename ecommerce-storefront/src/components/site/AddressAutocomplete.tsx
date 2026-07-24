@@ -21,11 +21,13 @@ export function AddressAutocomplete({
   registration,
   onSelect,
   ariaInvalid,
+  placeholder,
 }: {
   id: string;
   registration: UseFormRegisterReturn;
   onSelect: (address: RetrievedAddress) => void;
   ariaInvalid?: boolean;
+  placeholder?: string;
 }) {
   const [suggestions, setSuggestions] = useState<AddressSuggestion[]>([]);
   const [open, setOpen] = useState(false);
@@ -114,6 +116,7 @@ export function AddressAutocomplete({
           activeIndex >= 0 ? `${id}-option-${activeIndex}` : undefined
         }
         aria-invalid={ariaInvalid}
+        placeholder={placeholder}
         autoComplete="off"
         {...registration}
         onChange={(e) => {

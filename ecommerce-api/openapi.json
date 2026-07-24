@@ -1335,6 +1335,9 @@
       "AddressDto": {
         "type": "object",
         "properties": {
+          "name": {
+            "type": "string"
+          },
           "label": {
             "type": "string"
           },

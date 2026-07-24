@@ -23,6 +23,7 @@ import { Label } from '@/components/ui/label';
 const POSTAL_CODE_RE = /^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/;
 
 const schema = z.object({
+  name: z.string().optional(),
   label: z.string().optional(),
   line1: z.string().min(1, 'Line 1 is required.'),
   line2: z.string().optional(),
@@ -43,6 +44,7 @@ type FormOutput = z.output<typeof schema>;
 // Empty strings (not undefined) so RHF treats optional fields as controlled
 // inputs from the start, matching what a pre-filled edit form would hand back.
 const BLANK: FormInput = {
+  name: '',
   label: '',
   line1: '',
   line2: '',
@@ -74,6 +76,7 @@ function AddressForm({
 
   function submit(values: FormOutput) {
     const address: AddressDto = {
+      name: values.name || undefined,
       label: values.label || undefined,
       line1: values.line1,
       line2: values.line2 || undefined,
@@ -92,13 +95,26 @@ function AddressForm({
       noValidate
     >
       <div className="grid gap-2">
-        <Label htmlFor="address-label">Label</Label>
-        <Input id="address-label" {...register('label')} />
+        <Label htmlFor="address-name">Full name</Label>
+        <Input
+          id="address-name"
+          placeholder="Who receives the package"
+          {...register('name')}
+        />
       </div>
       <div className="grid gap-2">
-        <Label htmlFor="address-line1">Line 1</Label>
+        <Label htmlFor="address-label">Address Label</Label>
+        <Input
+          id="address-label"
+          placeholder="e.g. Home, Work"
+          {...register('label')}
+        />
+      </div>
+      <div className="grid gap-2">
+        <Label htmlFor="address-line1">Address Line 1</Label>
         <AddressAutocomplete
           id="address-line1"
+          placeholder="Start typing your address…"
           ariaInvalid={!!errors.line1}
           registration={register('line1')}
           onSelect={(address) => {
@@ -116,8 +132,12 @@ function AddressForm({
         )}
       </div>
       <div className="grid gap-2">
-        <Label htmlFor="address-line2">Line 2</Label>
-        <Input id="address-line2" {...register('line2')} />
+        <Label htmlFor="address-line2">Address Line 2</Label>
+        <Input
+          id="address-line2"
+          placeholder="Apartment, suite, unit (optional)"
+          {...register('line2')}
+        />
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div className="grid gap-2">
@@ -188,6 +208,7 @@ function AddressCard({
         </p>
       )}
       <address className="mt-1 not-italic text-ink/80">
+        {address.name && <div className="text-ink">{address.name}</div>}
         <div>{address.line1}</div>
         {address.line2 && <div>{address.line2}</div>}
         <div>

@@ -33,6 +33,7 @@ function makeUser(addresses: AddressDto[]): UserResponseDto {
 }
 
 const ADDR_1: AddressDto = {
+  name: 'Riley Shopper',
   label: 'Home',
   line1: '1 Main St',
   city: 'Ottawa',
@@ -65,6 +66,7 @@ describe('AddressManager', () => {
 
     expect(screen.getByText('Home')).toBeInTheDocument();
     expect(screen.getByText('Work')).toBeInTheDocument();
+    expect(screen.getByText('Riley Shopper')).toBeInTheDocument();
     expect(screen.getByText('1 Main St')).toBeInTheDocument();
     expect(screen.getByText('2 Market St')).toBeInTheDocument();
   });
@@ -86,7 +88,8 @@ describe('AddressManager', () => {
     render(<AddressManager />);
 
     await user.click(screen.getByRole('button', { name: 'Add address' }));
-    await user.type(screen.getByLabelText('Line 1'), '3 New St');
+    await user.type(screen.getByLabelText('Full name'), 'Pat Tester');
+    await user.type(screen.getByLabelText('Address Line 1'), '3 New St');
     await user.type(screen.getByLabelText('City'), 'Kanata');
     await user.type(screen.getByLabelText('Province'), 'ON');
     await user.type(screen.getByLabelText('Postal code'), 'k2l1t9');
@@ -96,6 +99,7 @@ describe('AddressManager', () => {
     const payload = mutateMock.mock.calls[0][0] as AddressDto[];
     expect(payload).toHaveLength(3);
     expect(payload[2]).toMatchObject({
+      name: 'Pat Tester',
       line1: '3 New St',
       city: 'Kanata',
       state: 'ON',
@@ -130,7 +134,7 @@ describe('AddressManager', () => {
     render(<AddressManager />);
 
     await user.click(screen.getByRole('button', { name: 'Add address' }));
-    await user.type(screen.getByLabelText('Line 1'), '3 New St');
+    await user.type(screen.getByLabelText('Address Line 1'), '3 New St');
     await user.type(screen.getByLabelText('City'), 'Gotham');
     await user.type(screen.getByLabelText('Postal code'), '99999');
     await user.click(screen.getByRole('button', { name: 'Save' }));
@@ -192,13 +196,13 @@ describe('AddressManager', () => {
     render(<AddressManager />);
 
     await user.click(screen.getByRole('button', { name: 'Add address' }));
-    await user.type(screen.getByLabelText('Line 1'), '1 Main');
+    await user.type(screen.getByLabelText('Address Line 1'), '1 Main');
     await user.click(await screen.findByRole('option', { name: /1 Main St/ }));
 
     await waitFor(() =>
       expect(screen.getByLabelText('Postal code')).toHaveValue('K1A 0B1'),
     );
-    expect(screen.getByLabelText('Line 1')).toHaveValue('1 Main St');
+    expect(screen.getByLabelText('Address Line 1')).toHaveValue('1 Main St');
     expect(screen.getByLabelText('City')).toHaveValue('Ottawa');
     expect(screen.getByLabelText('Province')).toHaveValue('ON');
   });
